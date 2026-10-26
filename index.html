@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Ceria SD - Petualangan Belajar Seru!</title>
+    <!-- Tailwind CSS for modern responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for playful typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for fun icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #f0abfc 0%, #a855f7 50%, #3b82f6 100%);
+            min-height: 100vh;
+        }
+        .font-playful {
+            font-family: 'Fredoka One', cursive;
+        }
+        .bouncing-toy {
+            animation: bounce 2s infinite ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .pulse-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pulse-btn:active {
+            transform: scale(0.95);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4 selection:bg-yellow-300 selection:text-purple-900">
+
+    <!-- MODAL POP-UP INPUT NAMA & KELAS -->
+    <div id="profile-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 space-y-6 border-4 border-purple-200 animate-[bounce_0.3s_ease-out]">
+            <div class="text-center space-y-2">
+                <div class="text-5xl bouncing-toy">🎒</div>
+                <h2 class="text-2xl font-playful text-slate-800">Kenalan Dulu Yuk!</h2>
+                <p class="text-slate-500 text-sm">Masukkan nama dan kelasmu agar kuis dan peringkatnya pas buat kamu.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-extrabold text-purple-700 uppercase tracking-wider mb-1">Nama Panggilan</label>
+                    <input type="text" id="modal-name-input" placeholder="Contoh: Budi Cerdas" maxlength="15" class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none font-bold text-slate-700">
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold text-purple-700 uppercase tracking-wider mb-1">Pilih Kelas</label>
+                    <select id="modal-class-input" class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none font-bold text-slate-700 bg-white">
+                        <option value="Kelas 1">Kelas 1 SD</option>
+                        <option value="Kelas 2">Kelas 2 SD</option>
+                        <option value="Kelas 3">Kelas 3 SD</option>
+                        <option value="Kelas 4">Kelas 4 SD</option>
+                        <option value="Kelas 5">Kelas 5 SD</option>
+                        <option value="Kelas 6" selected>Kelas 6 SD</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="saveProfile()" class="pulse-btn w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-playful py-3.5 rounded-xl shadow-lg border-b-4 border-purple-800 text-lg">
+                Mulai Berpetualang! 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI BERHENTI BERMAIN -->
+    <div id="quit-confirm-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-6 border-4 border-rose-200">
+            <div class="text-5xl">🛑</div>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-playful text-slate-800">Berhenti Bermain?</h3>
+                <p class="text-slate-500 text-sm">Jika kamu berhenti sekarang, skor sesi ini <span class="font-bold text-rose-500">tidak akan dihitung</span> atau disimpan.</p>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="closeQuitModal()" class="pulse-btn flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl">
+                    Lanjut Main
+                </button>
+                <button onclick="confirmQuitGame()" class="pulse-btn flex-1 bg-rose-500 hover:bg-rose-600 text-white font-playful py-3 rounded-xl shadow">
+                    Ya, Berhenti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app-container" class="w-full max-w-xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border-4 border-white my-auto">
+        
+        <!-- HEADER -->
+        <header class="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 p-6 text-white text-center relative">
+            <div class="absolute top-2 left-4 text-2xl bouncing-toy">⭐</div>
+            <div class="absolute bottom-2 right-4 text-2xl bouncing-toy" style="animation-delay: 1s;">🎈</div>
+            
+            <h1 class="text-3xl sm:text-4xl font-playful tracking-wide drop-shadow-md">Kuis Ceria SD 🎒</h1>
+            <p class="text-sm sm:text-base font-bold opacity-90 mt-1">Belajar Seru, Main Asyik!</p>
+            
+            <!-- Center Profile Tag -->
+            <div class="mt-3 inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold cursor-pointer hover:bg-white/30 transition shadow-sm" onclick="openProfileModal()" title="Ubah Profil">
+                <i class="fa-solid fa-user-pen"></i>
+                <span id="header-user-tag">Halo, Siswa (Kelas 6)</span>
+            </div>
+        </header>
+
+        <!-- DYNAMIC CONTENT AREA -->
+        <div class="p-6 sm:p-8">
+
+            <!-- SCREEN 1: WELCOME / CATEGORY SELECTION -->
+            <div id="screen-home" class="space-y-6">
+                
+                <div class="text-center space-y-1">
+                    <div class="inline-block bg-yellow-100 text-yellow-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider mb-1">
+                        Pilih Tantanganmu!
+                    </div>
+                    <h2 class="text-2xl font-playful text-slate-700" id="welcome-greeting">Halo, Bintang Kelas! ✨</h2>
+                    <p class="text-slate-500 text-sm">Pilih mata pelajaran favoritmu dan kumpulkan skor tertinggi!</p>
+                </div>
+
+                <!-- LEADERBOARD CARD -->
+                <div onclick="openLeaderboardPreview()" class="pulse-btn bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-purple-400 transition">
+                    <div class="w-12 h-12 rounded-2xl bg-yellow-400 text-yellow-900 flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-105 transition">
+                        🏆
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-playful text-slate-800 text-base group-hover:text-purple-700 transition truncate">Peringkat Kelas</h3>
+                        <p class="text-xs text-slate-500 truncate">Klik melihat skor tertinggi.</p>
+                    </div>
+                </div>
+
+                <!-- Category Cards (5 Mata Pelajaran Utama Kelas 6) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="startGame('matematika')" class="pulse-btn bg-gradient-to-br from-blue-400 to-indigo-600 hover:from-blue-500 hover:to-indigo-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-indigo-800">
+                        <i class="fa-solid fa-calculator text-3xl"></i>
+                        <span class="font-playful text-lg text-center">Matematika Dasar</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Berhitung & Logika Asyik</span>
+                    </button>
+
+                    <button onclick="startGame('umum')" class="pulse-btn bg-gradient-to-br from-emerald-400 to-teal-600 hover:from-emerald-500 hover:to-teal-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-teal-800">
+                        <i class="fa-solid fa-earth-americas text-3xl"></i>
+                        <span class="font-playful text-lg text-center">IPAS (Sains & Sosial)</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Dunia & Alam Sekitar</span>
+                    </button>
+
+                    <button onclick="startGame('indonesian')" class="pulse-btn bg-gradient-to-br from-pink-400 to-rose-600 hover:from-pink-500 hover:to-rose-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-rose-800">
+                        <i class="fa-solid fa-book-open text-3xl"></i>
+                        <span class="font-playful text-lg text-center">Bahasa Indonesia</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Membaca & Tata Bahasa</span>
+                    </button>
+
+                    <button onclick="startGame('pancasila')" class="pulse-btn bg-gradient-to-br from-violet-400 to-purple-600 hover:from-violet-500 hover:to-purple-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-purple-800">
+                        <i class="fa-solid fa-flag text-3xl"></i>
+                        <span class="font-playful text-lg text-center">Pendidikan Pancasila</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Karakter & Wawasan</span>
+                    </button>
+
+                    <button onclick="startGame('pai')" class="pulse-btn sm:col-span-2 bg-gradient-to-br from-amber-400 to-orange-600 hover:from-amber-500 hover:to-orange-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-orange-800">
+                        <i class="fa-solid fa-book-quran text-3xl"></i>
+                        <span class="font-playful text-lg text-center">Agama Islam (PAI)</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Akidah & Akhlak Mulia</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 2: GAMEPLAY QUIZ -->
+            <div id="screen-quiz" class="hidden space-y-6">
+                <!-- Quiz Header Info & Tombol Berhenti -->
+                <div class="flex items-center justify-between bg-slate-100 p-3 rounded-2xl">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-purple-600 text-white font-playful text-xs px-3 py-1 rounded-full" id="quiz-category-badge">Matematika</span>
+                        <span class="text-xs font-bold text-slate-500">Soal <span id="current-q-num">1</span>/<span id="total-q-num">20</span></span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="flex items-center text-amber-500 font-playful text-xs sm:text-sm bg-white px-2.5 py-1 rounded-full shadow-sm">
+                            <i class="fa-solid fa-star mr-1"></i> <span id="current-score">0</span>
+                        </div>
+                        <div id="timer-box" class="flex items-center text-rose-500 font-playful text-xs sm:text-sm bg-white px-2.5 py-1 rounded-full shadow-sm">
+                            <i class="fa-solid fa-clock mr-1"></i> <span id="time-left">30</span>s
+                        </div>
+                        <!-- Tombol Berhenti / Keluar Permainan -->
+                        <button onclick="openQuitModal()" class="pulse-btn bg-rose-100 hover:bg-rose-200 text-rose-600 px-3 py-1 rounded-full text-xs font-playful flex items-center shadow-xs transition" title="Berhenti Main">
+                            <i class="fa-solid fa-power-off"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-pink-500 to-purple-600 h-full w-0 transition-all duration-300"></div>
+                </div>
+
+                <!-- Question Card -->
+                <div class="bg-slate-50 border-2 border-slate-200 p-6 rounded-2xl text-center space-y-3">
+                    <div id="mascot-emoji" class="text-4xl bouncing-toy">🦊</div>
+                    <h3 id="question-text" class="text-lg sm:text-xl font-bold text-slate-800">Memuat soal dari Supabase...</h3>
+                </div>
+
+                <!-- Options List -->
+                <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Options injected dynamically -->
+                </div>
+            </div>
+
+            <!-- SCREEN 3: GAME OVER / RESULT -->
+            <div id="screen-result" class="hidden text-center space-y-6">
+                <div class="text-6xl bouncing-toy" id="result-emoji">🎉</div>
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-playful text-slate-800" id="result-title">Hebat Sekali!</h2>
+                    <p class="text-slate-500" id="result-subtitle">Kamu berhasil menyelesaikan kuis dengan luar biasa.</p>
+                </div>
+
+                <!-- Score Summary Box -->
+                <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-100 p-6 rounded-2xl max-w-sm mx-auto space-y-4">
+                    <div>
+                        <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Skor Akhir Kamu</span>
+                        <div class="text-5xl font-playful text-purple-700 mt-1" id="final-score">100</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-purple-200/60 text-sm">
+                        <div class="text-slate-600">Benar: <span class="font-bold text-emerald-600" id="stat-correct">10</span></div>
+                        <div class="text-slate-600">Salah: <span class="font-bold text-rose-500" id="stat-wrong">0</span></div>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-center space-x-3">
+                    <button onclick="returnHome()" class="pulse-btn bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful px-6 py-3 rounded-xl">
+                        <i class="fa-solid fa-house mr-2"></i> Menu Utama
+                    </button>
+                    <button onclick="restartGame()" class="pulse-btn bg-purple-600 hover:bg-purple-700 text-white font-playful px-6 py-3 rounded-xl shadow">
+                        <i class="fa-solid fa-rotate-right mr-2"></i> Main Lagi
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 4: LEADERBOARD -->
+            <div id="screen-leaderboard" class="hidden space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-2xl font-playful text-slate-700 flex items-center">
+                        <i class="fa-solid fa-trophy text-yellow-500 mr-2"></i> <span id="lb-screen-title">Papan Peringkat</span> <span id="lb-class-badge" class="ml-2 text-sm bg-purple-100 text-purple-700 px-2.5 py-0.5 rounded-full">Kelas 6</span>
+                    </h2>
+                    <button onclick="returnHome()" class="text-slate-400 hover:text-slate-600 text-lg p-2">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Leaderboard Table Container -->
+                <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl overflow-hidden max-h-72 overflow-y-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-200 text-slate-700 text-xs font-playful">
+                                <th class="p-3 text-center w-16">Peringkat</th>
+                                <th class="p-3">Nama Pemain</th>
+                                <th class="p-3 text-right">Kategori</th>
+                                <th class="p-3 text-right">Skor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-table-body" class="divide-y divide-slate-200 text-sm">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tombol Lihat Semua -->
+                <div id="lb-toggle-container" class="text-center">
+                    <button id="lb-toggle-btn" onclick="toggleLeaderboardView()" class="pulse-btn w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-playful py-2.5 rounded-xl shadow-xs border border-purple-200 text-sm transition">
+                        Lihat Semua Peringkat
+                    </button>
+                </div>
+
+                <!-- Tombol Kembali ke Beranda -->
+                <div class="text-center pt-1">
+                    <button onclick="returnHome()" class="pulse-btn w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl shadow-sm">
+                        <i class="fa-solid fa-house mr-2"></i> Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC & SUPABASE INTEGRATION -->
+    <script>
+        // --- SUPABASE CONFIGURATION ---
+        const SUPABASE_URL = 'https://jifspbgocimkqqzgplta.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppZnNwYmdvY2lta3FxemdwbHRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NTA5MjIsImV4cCI6MjEwODUyNjkyMn0.lBY-htX9zKp205orTD4xjvob4LP4CA9QGzI6wdi_gaE';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const tableNameMap = {
+            matematika: 'k6_questions_matematika',
+            umum: 'k6_questions_ipas',
+            indonesian: 'k6_questions_indonesian',
+            pancasila: 'k6_questions_pancasila',
+            pai: 'k6_questions_agama'
+        };
+
+        // --- USER PROFILE & STORAGE MANAGEMENT ---
+        let userProfile = JSON.parse(localStorage.getItem('quiz_user_profile_sd')) || null;
+        let isFullLeaderboardView = false;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!userProfile) {
+                openProfileModal();
+            } else {
+                updateHeaderUI();
+            }
+        });
+
+        function openProfileModal() {
+            if (userProfile) {
+                document.getElementById('modal-name-input').value = userProfile.name;
+                document.getElementById('modal-class-input').value = userProfile.className;
+            }
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+
+        function saveProfile() {
+            const nameInput = document.getElementById('modal-name-input').value.trim();
+            const classInput = document.getElementById('modal-class-input').value;
+
+            if (!nameInput) {
+                alert('Tulis nama panggilanmu dulu ya!');
+                return;
+            }
+
+            userProfile = {
+                name: nameInput,
+                className: classInput
+            };
+
+            localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+            document.getElementById('profile-modal').classList.add('hidden');
+            updateHeaderUI();
+        }
+
+        function updateHeaderUI() {
+            if (userProfile) {
+                document.getElementById('header-user-tag').innerText = `Halo, ${userProfile.name} (${userProfile.className})`;
+                document.getElementById('welcome-greeting').innerText = `Halo, ${userProfile.name}! ✨`;
+                document.getElementById('lb-class-badge').innerText = userProfile.className;
+            }
+        }
+
+        // --- WEB AUDIO API SYNTHESIZER ---
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'correct') {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                        gain.gain.setValueAtTime(0.15, now + i * 0.08);
+                        gain.gain.linearRampToValueAtTime(0.01, now + i * 0.08 + 0.15);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + i * 0.08);
+                        osc.stop(now + i * 0.08 + 0.15);
+                    });
+                } else if (type === 'wrong') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'victory') {
+                    const notes = [440, 554.37, 659.25, 880];
+                    notes.forEach((freq, i) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.12);
+                        gain.gain.setValueAtTime(0.2, now + i * 0.12);
+                        gain.gain.linearRampToValueAtTime(0.01, now + i * 0.12 + 0.3);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + i * 0.12);
+                        osc.stop(now + i * 0.12 + 0.3);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio not allowed yet");
+            }
+        }
+
+        // --- GAME STATE ---
+        let currentCategory = '';
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let timer = null;
+        let timeLeft = 30; // Diubah menjadi 30 detik per soal
+        let isAnswerLocked = false;
+
+        // --- NAVIGATION & SCREENS ---
+        function switchScreen(screenId) {
+            playSound('click');
+            ['screen-home', 'screen-quiz', 'screen-result', 'screen-leaderboard'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function returnHome() {
+            clearInterval(timer);
+            isFullLeaderboardView = false;
+            switchScreen('screen-home');
+        }
+
+        // --- KONTROL TOMBOL BERHENTI (QUIT GAME) ---
+        function openQuitModal() {
+            clearInterval(timer); // Jeda timer saat modal konfirmasi muncul
+            document.getElementById('quit-confirm-modal').classList.remove('hidden');
+        }
+
+        function closeQuitModal() {
+            document.getElementById('quit-confirm-modal').classList.add('hidden');
+            // Lanjutkan timer jika game belum selesai
+            if (currentIndex < currentQuestions.length) {
+                startTimer();
+            }
+        }
+
+        function confirmQuitGame() {
+            document.getElementById('quit-confirm-modal').classList.add('hidden');
+            // Skor dibuang/tidak dihitung, langsung kembali ke beranda
+            returnHome();
+        }
+
+        // --- START GAME & FETCH WITH SMART POOL (0% REPETITION) ---
+        async function startGame(categoryKey) {
+            if (!userProfile) {
+                openProfileModal();
+                return;
+            }
+
+            currentCategory = categoryKey;
+            switchScreen('screen-quiz');
+            
+            document.getElementById('question-text').innerText = "Mengambil soal cerdas dari Supabase...";
+            document.getElementById('options-container').innerHTML = '';
+
+            try {
+                const tableName = tableNameMap[categoryKey];
+                
+                const { data, error } = await supabaseClient
+                    .from(tableName)
+                    .select('*');
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    alert('Belum ada soal di tabel database ini!');
+                    returnHome();
+                    return;
+                }
+
+                // Smart Pool: Filter soal yang belum pernah dikerjakan oleh user ini
+                const storageKey = `answered_questions_${userProfile.name}_${categoryKey}`;
+                let answeredIds = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+                let availableQuestions = data.filter(item => !answeredIds.includes(item.id));
+
+                if (availableQuestions.length === 0) {
+                    localStorage.removeItem(storageKey);
+                    availableQuestions = data;
+                }
+
+                const batchSize = 20;
+                currentQuestions = availableQuestions.sort(() => Math.random() - 0.5).slice(0, batchSize).map(item => {
+                    let ansIndex = 0;
+                    const correctStr = (item.correct_answer || '').trim().toUpperCase();
+                    if (correctStr === 'B') ansIndex = 1;
+                    else if (correctStr === 'C') ansIndex = 2;
+                    else if (correctStr === 'D') ansIndex = 3;
+
+                    return {
+                        id: item.id,
+                        q: item.question_text,
+                        options: [item.option_a, item.option_b, item.option_c, item.option_d],
+                        answer: ansIndex,
+                        mascot: "🎒"
+                    };
+                });
+
+                document.getElementById('total-q-num').innerText = currentQuestions.length;
+                currentIndex = 0;
+                score = 0;
+                correctCount = 0;
+                wrongCount = 0;
+
+                const categoryNames = { 
+                    matematika: 'Matematika Dasar', 
+                    umum: 'IPAS (Sains & Sosial)', 
+                    indonesian: 'Bahasa Indonesia',
+                    pancasila: 'Pendidikan Pancasila',
+                    pai: 'Agama Islam (PAI)' 
+                };
+                document.getElementById('quiz-category-badge').innerText = categoryNames[categoryKey];
+
+                loadQuestion();
+
+            } catch (err) {
+                console.error("Gagal memuat soal:", err);
+                alert("Gagal terhubung ke Supabase. Periksa kembali koneksi internet Anda.");
+                returnHome();
+            }
+        }
+
+        // --- LOAD QUESTION ---
+        function loadQuestion() {
+            if (currentIndex >= currentQuestions.length) {
+                endGame();
+                return;
+            }
+
+            isAnswerLocked = false;
+            const qData = currentQuestions[currentIndex];
+
+            // Catat ID soal ke riwayat agar tidak muncul lagi di sesi berikutnya
+            const storageKey = `answered_questions_${userProfile.name}_${currentCategory}`;
+            let answeredIds = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            if (!answeredIds.includes(qData.id)) {
+                answeredIds.push(qData.id);
+                localStorage.setItem(storageKey, JSON.stringify(answeredIds));
+            }
+
+            document.getElementById('current-q-num').innerText = currentIndex + 1;
+            document.getElementById('current-score').innerText = score;
+            document.getElementById('question-text').innerText = qData.q;
+            document.getElementById('mascot-emoji').innerText = qData.mascot;
+
+            const progressPercent = ((currentIndex) / currentQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            qData.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "pulse-btn bg-white hover:bg-purple-50 text-slate-700 font-bold p-4 rounded-2xl shadow-md border-2 border-slate-200 text-left transition flex items-center justify-between group";
+                btn.innerHTML = `
+                    <span class="flex items-center space-x-3">
+                        <span class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 font-playful flex items-center justify-center text-sm group-hover:bg-purple-600 group-hover:text-white transition">${String.fromCharCode(65 + idx)}</span>
+                        <span class="text-base">${opt}</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-purple-600"></i>
+                `;
+                btn.onclick = () => selectOption(idx, btn);
+                container.appendChild(btn);
+            });
+
+            startTimer();
+        }
+
+        // --- TIMER LOGIC (30 DETIK) ---
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 30; // 30 detik sesuai permintaan
+            document.getElementById('time-left').innerText = timeLeft;
+            const timerBox = document.getElementById('timer-box');
+            timerBox.classList.remove('animate-pulse', 'text-rose-600');
+
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time-left').innerText = timeLeft;
+                if (timeLeft <= 8) {
+                    timerBox.classList.add('animate-pulse', 'text-rose-600');
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            if (isAnswerLocked) return;
+            isAnswerLocked = true;
+            wrongCount++;
+            playSound('wrong');
+
+            const qData = currentQuestions[currentIndex];
+            const buttons = document.getElementById('options-container').children;
+            if (buttons[qData.answer]) {
+                buttons[qData.answer].classList.remove('bg-white', 'border-slate-200');
+                buttons[qData.answer].classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
+            }
+
+            setTimeout(nextQuestion, 1500);
+        }
+
+        // --- SELECT OPTION ---
+        function selectOption(selectedIndex, btnElement) {
+            if (isAnswerLocked) return;
+            isAnswerLocked = true;
+            clearInterval(timer);
+
+            const qData = currentQuestions[currentIndex];
+            const buttons = document.getElementById('options-container').children;
+
+            if (selectedIndex === qData.answer) {
+                correctCount++;
+                score += 10 + (timeLeft * 2);
+                playSound('correct');
+                btnElement.classList.remove('bg-white', 'border-slate-200');
+                btnElement.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800', 'scale-[1.02]');
+                document.getElementById('current-score').innerText = score;
+            } else {
+                wrongCount++;
+                playSound('wrong');
+                btnElement.classList.remove('bg-white', 'border-slate-200');
+                btnElement.classList.add('bg-rose-100', 'border-rose-500', 'text-rose-800');
+
+                if (buttons[qData.answer]) {
+                    buttons[qData.answer].classList.remove('bg-white', 'border-slate-200');
+                    buttons[qData.answer].classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
+                }
+            }
+
+            setTimeout(nextQuestion, 1500);
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            loadQuestion();
+        }
+
+        // --- END GAME & AUTO SAVE SCORE ---
+        function endGame() {
+            playSound('victory');
+            switchScreen('screen-result');
+
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('stat-correct').innerText = correctCount;
+            document.getElementById('stat-wrong').innerText = wrongCount;
+
+            const emojiEl = document.getElementById('result-emoji');
+            const titleEl = document.getElementById('result-title');
+            const subtitleEl = document.getElementById('result-subtitle');
+
+            if (score >= 250) {
+                emojiEl.innerText = "👑";
+                titleEl.innerText = "Luar Biasa, Jenius!";
+                subtitleEl.innerText = "Kamu benar-benar bintang kelas hari ini!";
+            } else if (score >= 150) {
+                emojiEl.innerText = "🌟";
+                titleEl.innerText = "Hebat Sekali!";
+                subtitleEl.innerText = "Usaha yang sangat bagus, pertahankan!";
+            } else {
+                emojiEl.innerText = "💪";
+                titleEl.innerText = "Tetap Semangat!";
+                subtitleEl.innerText = "Ayo coba lagi supaya skornya makin tinggi!";
+            }
+
+            saveHighScoreToStorage();
+        }
+
+        // --- LOCAL STORAGE LEADERBOARD & RENDER LOGIC ---
+        function saveHighScoreToStorage() {
+            if (!userProfile) return;
+
+            const categoryNames = { 
+                matematika: 'Matematika', 
+                umum: 'IPAS', 
+                indonesian: 'B. Indonesia',
+                pancasila: 'Pancasila',
+                pai: 'PAI' 
+            };
+            let leaderboard = JSON.parse(localStorage.getItem('quiz_leaderboard_sd') || '[]');
+
+            const existingIndex = leaderboard.findIndex(item => 
+                item.name.toLowerCase() === userProfile.name.toLowerCase() && item.className === userProfile.className
+            );
+
+            if (existingIndex !== -1) {
+                if (score > leaderboard[existingIndex].score) {
+                    leaderboard[existingIndex].score = score;
+                    leaderboard[existingIndex].category = categoryNames[currentCategory] || 'Umum';
+                    leaderboard[existingIndex].date = new Date().toLocaleDateString('id-ID');
+                }
+            } else {
+                leaderboard.push({
+                    name: userProfile.name,
+                    className: userProfile.className,
+                    score: score,
+                    category: categoryNames[currentCategory] || 'Umum',
+                    date: new Date().toLocaleDateString('id-ID')
+                });
+            }
+
+            localStorage.setItem('quiz_leaderboard_sd', JSON.stringify(leaderboard));
+        }
+
+        function openLeaderboardPreview() {
+            if (!userProfile) return;
+            isFullLeaderboardView = false;
+            switchScreen('screen-leaderboard');
+            renderLeaderboardTable();
+        }
+
+        function toggleLeaderboardView() {
+            isFullLeaderboardView = !isFullLeaderboardView;
+            renderLeaderboardTable();
+        }
+
+        function renderLeaderboardTable() {
+            const tbody = document.getElementById('leaderboard-table-body');
+            const titleEl = document.getElementById('lb-screen-title');
+            const toggleBtn = document.getElementById('lb-toggle-btn');
+            const toggleContainer = document.getElementById('lb-toggle-container');
+            tbody.innerHTML = '';
+
+            let leaderboard = JSON.parse(localStorage.getItem('quiz_leaderboard_sd') || '[]');
+            const filteredByClass = leaderboard.filter(item => item.className === userProfile.className);
+            filteredByClass.sort((a, b) => b.score - a.score);
+
+            if (filteredByClass.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 italic">Belum ada skor tercatat di ${userProfile.className}.</td></tr>`;
+                toggleContainer.classList.add('hidden');
+                return;
+            }
+
+            toggleContainer.classList.remove('hidden');
+
+            if (isFullLeaderboardView) {
+                titleEl.innerText = "Semua Peringkat";
+                toggleBtn.innerText = "Tampilkan 10 Besar Saja";
+
+                filteredByClass.forEach((item, index) => {
+                    const row = createLeaderboardRow(item, index + 1);
+                    tbody.appendChild(row);
+                });
+            } else {
+                titleEl.innerText = "Papan Peringkat";
+                toggleBtn.innerText = "Lihat Semua Peringkat";
+
+                const top10 = filteredByClass.slice(0, 10);
+                top10.forEach((item, index) => {
+                    const row = createLeaderboardRow(item, index + 1);
+                    tbody.appendChild(row);
+                });
+
+                const userIndex = filteredByClass.findIndex(item => 
+                    item.name.toLowerCase() === userProfile.name.toLowerCase()
+                );
+
+                if (userIndex >= 10) {
+                    const sepRow = document.createElement('tr');
+                    sepRow.innerHTML = `<td colspan="4" class="p-2 text-center text-slate-400 font-bold bg-slate-100">. . .</td>`;
+                    tbody.appendChild(sepRow);
+
+                    const userRow = createLeaderboardRow(filteredByClass[userIndex], userIndex + 1);
+                    userRow.classList.add('bg-purple-50', 'font-bold');
+                    tbody.appendChild(userRow);
+                }
+            }
+        }
+
+        function createLeaderboardRow(item, rankNum) {
+            const row = document.createElement('tr');
+            let badgeColor = "bg-slate-200 text-slate-700";
+            if (rankNum === 1) badgeColor = "bg-yellow-400 text-yellow-900 font-bold";
+            else if (rankNum === 2) badgeColor = "bg-slate-300 text-slate-800 font-bold";
+            else if (rankNum === 3) badgeColor = "bg-amber-600 text-white font-bold";
+
+            const isCurrentStudent = userProfile && item.name.toLowerCase() === userProfile.name.toLowerCase();
+            const nameDisplay = isCurrentStudent ? `${escapeHtml(item.name)} (Kamu)` : escapeHtml(item.name);
+
+            row.innerHTML = `
+                <td class="p-3 text-center"><span class="inline-block w-7 h-7 rounded-full ${badgeColor} text-xs flex items-center justify-center mx-auto">${rankNum}</span></td>
+                <td class="p-3 font-bold text-slate-700">${nameDisplay}</td>
+                <td class="p-3 text-right text-xs text-slate-500">${item.category}</td>
+                <td class="p-3 text-right font-playful text-purple-600">${item.score}</td>
+            `;
+            return row;
+        }
+
+        function restartGame() {
+            startGame(currentCategory);
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
