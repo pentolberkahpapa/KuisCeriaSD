@@ -110,7 +110,13 @@
         
         <!-- HEADER -->
         <header class="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 p-6 text-white text-center relative">
-            <div class="absolute top-2 left-4 text-2xl bouncing-toy">⭐</div>
+            <div class="absolute top-2 left-4 flex items-center space-x-2">
+                <span class="text-2xl bouncing-toy">⭐</span>
+                <!-- Tombol Musik On/Off -->
+                <button onclick="toggleBGM()" id="bgm-toggle-btn" class="bg-white/20 hover:bg-white/30 backdrop-blur-md w-9 h-9 rounded-full flex items-center justify-center text-sm transition shadow-sm" title="Musik Nyala/Mati">
+                    <i id="bgm-icon" class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
             <div class="absolute bottom-2 right-4 text-2xl bouncing-toy" style="animation-delay: 1s;">🎈</div>
             
             <h1 class="text-3xl sm:text-4xl font-playful tracking-wide drop-shadow-md">Kuis Ceria SD 🎒</h1>
@@ -143,8 +149,8 @@
                         🏆
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h3 class="font-playful text-slate-800 text-base group-hover:text-purple-700 transition truncate">Peringkat Kelas</h3>
-                        <p class="text-xs text-slate-500 truncate">Klik melihat skor tertinggi.</p>
+                        <h3 class="font-playful text-slate-800 text-base group-hover:text-purple-700 transition truncate">Papan Peringkat</h3>
+                        <p class="text-xs text-slate-500 truncate">klik tuk melihat peringkat kamu</p>
                     </div>
                 </div>
 
@@ -254,22 +260,46 @@
             <!-- SCREEN 4: LEADERBOARD -->
             <div id="screen-leaderboard" class="hidden space-y-4">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-2xl font-playful text-slate-700 flex items-center">
-                        <i class="fa-solid fa-trophy text-yellow-500 mr-2"></i> <span id="lb-screen-title">Papan Peringkat</span> <span id="lb-class-badge" class="ml-2 text-sm bg-purple-100 text-purple-700 px-2.5 py-0.5 rounded-full">Kelas 6</span>
+                    <h2 class="text-xl sm:text-2xl font-playful text-slate-700 flex items-center">
+                        <i class="fa-solid fa-trophy text-yellow-500 mr-2"></i> Papan Peringkat Online <span id="lb-class-badge" class="ml-2 text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">Kelas 6</span>
                     </h2>
                     <button onclick="returnHome()" class="text-slate-400 hover:text-slate-600 text-lg p-2">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
+                <!-- Panduan Anak -->
+                <p class="text-xs text-slate-500 font-bold text-center">Mau lihat jagoan di mata pelajaran apa nih? Silahkan Pilih Pelajaran di bawah ya! 👇</p>
+
+                <!-- Category Tabs (Pill Buttons) -->
+                <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none" id="leaderboard-tabs">
+                    <button onclick="switchLeaderboardCategory('total')" id="tab-total" class="pulse-btn shrink-0 px-3.5 py-1.5 rounded-full text-xs font-playful bg-amber-400 text-amber-900 shadow-sm border-2 border-amber-500 flex items-center space-x-1">
+                        <span>🌟 Juara Umum</span>
+                    </button>
+                    <button onclick="switchLeaderboardCategory('matematika')" id="tab-matematika" class="pulse-btn shrink-0 px-3.5 py-1.5 rounded-full text-xs font-playful bg-slate-100 text-slate-600 border-2 border-slate-200 flex items-center space-x-1">
+                        <span>📐 Matematika</span>
+                    </button>
+                    <button onclick="switchLeaderboardCategory('umum')" id="tab-umum" class="pulse-btn shrink-0 px-3.5 py-1.5 rounded-full text-xs font-playful bg-slate-100 text-slate-600 border-2 border-slate-200 flex items-center space-x-1">
+                        <span>🌍 IPAS</span>
+                    </button>
+                    <button onclick="switchLeaderboardCategory('indonesian')" id="tab-indonesian" class="pulse-btn shrink-0 px-3.5 py-1.5 rounded-full text-xs font-playful bg-slate-100 text-slate-600 border-2 border-slate-200 flex items-center space-x-1">
+                        <span>📖 B. Indo</span>
+                    </button>
+                    <button onclick="switchLeaderboardCategory('pancasila')" id="tab-pancasila" class="pulse-btn shrink-0 px-3.5 py-1.5 rounded-full text-xs font-playful bg-slate-100 text-slate-600 border-2 border-slate-200 flex items-center space-x-1">
+                        <span>🛡️ Pancasila</span>
+                    </button>
+                    <button onclick="switchLeaderboardCategory('pai')" id="tab-pai" class="pulse-btn shrink-0 px-3.5 py-1.5 rounded-full text-xs font-playful bg-slate-100 text-slate-600 border-2 border-slate-200 flex items-center space-x-1">
+                        <span>🕌 PAI</span>
+                    </button>
+                </div>
+
                 <!-- Leaderboard Table Container -->
-                <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl overflow-hidden max-h-72 overflow-y-auto">
+                <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl overflow-hidden max-h-64 overflow-y-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-200 text-slate-700 text-xs font-playful">
                                 <th class="p-3 text-center w-16">Peringkat</th>
                                 <th class="p-3">Nama Pemain</th>
-                                <th class="p-3 text-right">Kategori</th>
                                 <th class="p-3 text-right">Skor</th>
                             </tr>
                         </thead>
@@ -277,13 +307,6 @@
                             <!-- Populated via JS -->
                         </tbody>
                     </table>
-                </div>
-
-                <!-- Tombol Lihat Semua -->
-                <div id="lb-toggle-container" class="text-center">
-                    <button id="lb-toggle-btn" onclick="toggleLeaderboardView()" class="pulse-btn w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-playful py-2.5 rounded-xl shadow-xs border border-purple-200 text-sm transition">
-                        Lihat Semua Peringkat
-                    </button>
                 </div>
 
                 <!-- Tombol Kembali ke Beranda -->
@@ -314,7 +337,7 @@
 
         // --- USER PROFILE & STORAGE MANAGEMENT ---
         let userProfile = JSON.parse(localStorage.getItem('quiz_user_profile_sd')) || null;
-        let isFullLeaderboardView = false;
+        let currentLbCategory = 'total'; // Default tab peringkat: Juara Umum
 
         window.addEventListener('DOMContentLoaded', () => {
             if (!userProfile) {
@@ -349,6 +372,9 @@
             localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
             document.getElementById('profile-modal').classList.add('hidden');
             updateHeaderUI();
+            
+            // Nyalakan musik otomatis saat pertama kali masuk beranda setelah simpan profil
+            startBGM();
         }
 
         function updateHeaderUI() {
@@ -359,12 +385,69 @@
             }
         }
 
-        // --- WEB AUDIO API SYNTHESIZER ---
+        // --- WEB AUDIO API & BGM SYNTHESIZER ---
         let audioCtx = null;
+        let bgmTimer = null;
+        let isBgmPlaying = false;
 
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleBGM() {
+            const icon = document.getElementById('bgm-icon');
+            if (isBgmPlaying) {
+                stopBGM();
+                icon.className = "fa-solid fa-volume-xmark";
+            } else {
+                startBGM();
+                icon.className = "fa-solid fa-volume-high";
+            }
+        }
+
+        function startBGM() {
+            initAudio();
+            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            if (isBgmPlaying) return;
+            isBgmPlaying = true;
+            document.getElementById('bgm-icon').className = "fa-solid fa-volume-high";
+
+            // Melodi ceria beranda (Looping riang)
+            const melody = [523.25, 587.33, 659.25, 698.46, 783.99, 659.25, 587.33, 523.25];
+            let noteIndex = 0;
+
+            bgmTimer = setInterval(() => {
+                if (!isBgmPlaying) return;
+                try {
+                    const now = audioCtx.currentTime;
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(melody[noteIndex], now);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+
+                    noteIndex = (noteIndex + 1) % melody.length;
+                } catch (e) {
+                    console.log("BGM Error:", e);
+                }
+            }, 350);
+        }
+
+        function stopBGM() {
+            isBgmPlaying = false;
+            if (bgmTimer) {
+                clearInterval(bgmTimer);
+                bgmTimer = null;
             }
         }
 
@@ -439,7 +522,7 @@
         let correctCount = 0;
         let wrongCount = 0;
         let timer = null;
-        let timeLeft = 30; // Diubah menjadi 30 detik per soal
+        let timeLeft = 30;
         let isAnswerLocked = false;
 
         // --- NAVIGATION & SCREENS ---
@@ -453,19 +536,17 @@
 
         function returnHome() {
             clearInterval(timer);
-            isFullLeaderboardView = false;
             switchScreen('screen-home');
         }
 
         // --- KONTROL TOMBOL BERHENTI (QUIT GAME) ---
         function openQuitModal() {
-            clearInterval(timer); // Jeda timer saat modal konfirmasi muncul
+            clearInterval(timer);
             document.getElementById('quit-confirm-modal').classList.remove('hidden');
         }
 
         function closeQuitModal() {
             document.getElementById('quit-confirm-modal').classList.add('hidden');
-            // Lanjutkan timer jika game belum selesai
             if (currentIndex < currentQuestions.length) {
                 startTimer();
             }
@@ -473,7 +554,6 @@
 
         function confirmQuitGame() {
             document.getElementById('quit-confirm-modal').classList.add('hidden');
-            // Skor dibuang/tidak dihitung, langsung kembali ke beranda
             returnHome();
         }
 
@@ -505,7 +585,6 @@
                     return;
                 }
 
-                // Smart Pool: Filter soal yang belum pernah dikerjakan oleh user ini
                 const storageKey = `answered_questions_${userProfile.name}_${categoryKey}`;
                 let answeredIds = JSON.parse(localStorage.getItem(storageKey) || '[]');
 
@@ -567,7 +646,6 @@
             isAnswerLocked = false;
             const qData = currentQuestions[currentIndex];
 
-            // Catat ID soal ke riwayat agar tidak muncul lagi di sesi berikutnya
             const storageKey = `answered_questions_${userProfile.name}_${currentCategory}`;
             let answeredIds = JSON.parse(localStorage.getItem(storageKey) || '[]');
             if (!answeredIds.includes(qData.id)) {
@@ -603,10 +681,10 @@
             startTimer();
         }
 
-        // --- TIMER LOGIC (30 DETIK) ---
+        // --- TIMER LOGIC ---
         function startTimer() {
             clearInterval(timer);
-            timeLeft = 30; // 30 detik sesuai permintaan
+            timeLeft = 30;
             document.getElementById('time-left').innerText = timeLeft;
             const timerBox = document.getElementById('timer-box');
             timerBox.classList.remove('animate-pulse', 'text-rose-600');
@@ -676,8 +754,8 @@
             loadQuestion();
         }
 
-        // --- END GAME & AUTO SAVE SCORE ---
-        function endGame() {
+        // --- END GAME & ONLINE SUPABASE SCORE SYNC ---
+        async function endGame() {
             playSound('victory');
             switchScreen('screen-result');
 
@@ -703,127 +781,150 @@
                 subtitleEl.innerText = "Ayo coba lagi supaya skornya makin tinggi!";
             }
 
-            saveHighScoreToStorage();
+            await saveScoreToSupabase();
         }
 
-        // --- LOCAL STORAGE LEADERBOARD & RENDER LOGIC ---
-        function saveHighScoreToStorage() {
+        async function saveScoreToSupabase() {
             if (!userProfile) return;
 
-            const categoryNames = { 
-                matematika: 'Matematika', 
-                umum: 'IPAS', 
-                indonesian: 'B. Indonesia',
-                pancasila: 'Pancasila',
-                pai: 'PAI' 
-            };
-            let leaderboard = JSON.parse(localStorage.getItem('quiz_leaderboard_sd') || '[]');
+            try {
+                // 1. Simpan/Update skor mata pelajaran saat ini
+                await upsertScoreRecord(currentCategory, score);
 
-            const existingIndex = leaderboard.findIndex(item => 
-                item.name.toLowerCase() === userProfile.name.toLowerCase() && item.className === userProfile.className
-            );
+                // 2. Hitung dan perbarui skor Juara Umum (Total ke-5 mapel)
+                await calculateAndUpdateTotalScore();
 
-            if (existingIndex !== -1) {
-                if (score > leaderboard[existingIndex].score) {
-                    leaderboard[existingIndex].score = score;
-                    leaderboard[existingIndex].category = categoryNames[currentCategory] || 'Umum';
-                    leaderboard[existingIndex].date = new Date().toLocaleDateString('id-ID');
-                }
-            } else {
-                leaderboard.push({
-                    name: userProfile.name,
-                    className: userProfile.className,
-                    score: score,
-                    category: categoryNames[currentCategory] || 'Umum',
-                    date: new Date().toLocaleDateString('id-ID')
-                });
+            } catch (err) {
+                console.error("Gagal menyimpan skor ke Supabase:", err);
             }
-
-            localStorage.setItem('quiz_leaderboard_sd', JSON.stringify(leaderboard));
         }
 
+        async function upsertScoreRecord(category, newScore) {
+            // Cek apakah data user untuk kategori ini sudah ada di Supabase
+            const { data: existing, error: fetchErr } = await supabaseClient
+                .from('k6_leaderboard_sd')
+                .select('*')
+                .eq('name', userProfile.name)
+                .eq('class_name', userProfile.className)
+                .eq('category', category)
+                .maybeSingle();
+
+            if (fetchErr) throw fetchErr;
+
+            if (existing) {
+                // Jika skor baru lebih besar, update
+                if (newScore > existing.score) {
+                    await supabaseClient
+                        .from('k6_leaderboard_sd')
+                        .update({ score: newScore, updated_at: new Date() })
+                        .eq('id', existing.id);
+                }
+            } else {
+                // Jika belum ada, insert baru
+                await supabaseClient
+                    .from('k6_leaderboard_sd')
+                    .insert([{
+                        name: userProfile.name,
+                        class_name: userProfile.className,
+                        category: category,
+                        score: newScore,
+                        updated_at: new Date()
+                    }]);
+            }
+        }
+
+        async function calculateAndUpdateTotalScore() {
+            // Ambil seluruh skor mapel anak ini dari Supabase
+            const { data: userScores, error } = await supabaseClient
+                .from('k6_leaderboard_sd')
+                .select('category, score')
+                .eq('name', userProfile.name)
+                .eq('class_name', userProfile.className)
+                .neq('category', 'total');
+
+            if (error) throw error;
+            if (!userScores || userScores.length === 0) return;
+
+            // Jumlahkan semua skor mapel untuk mendapatkan total Juara Umum
+            let totalSum = userScores.reduce((sum, item) => sum + item.score, 0);
+
+            // Simpan total ke kategori 'total'
+            await upsertScoreRecord('total', totalSum);
+        }
+
+        // --- ONLINE LEADERBOARD & TABS RENDER LOGIC ---
         function openLeaderboardPreview() {
             if (!userProfile) return;
-            isFullLeaderboardView = false;
+            currentLbCategory = 'total'; // Default tab saat dibuka
             switchScreen('screen-leaderboard');
-            renderLeaderboardTable();
+            fetchAndRenderLeaderboard();
         }
 
-        function toggleLeaderboardView() {
-            isFullLeaderboardView = !isFullLeaderboardView;
-            renderLeaderboardTable();
-        }
-
-        function renderLeaderboardTable() {
-            const tbody = document.getElementById('leaderboard-table-body');
-            const titleEl = document.getElementById('lb-screen-title');
-            const toggleBtn = document.getElementById('lb-toggle-btn');
-            const toggleContainer = document.getElementById('lb-toggle-container');
-            tbody.innerHTML = '';
-
-            let leaderboard = JSON.parse(localStorage.getItem('quiz_leaderboard_sd') || '[]');
-            const filteredByClass = leaderboard.filter(item => item.className === userProfile.className);
-            filteredByClass.sort((a, b) => b.score - a.score);
-
-            if (filteredByClass.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 italic">Belum ada skor tercatat di ${userProfile.className}.</td></tr>`;
-                toggleContainer.classList.add('hidden');
-                return;
-            }
-
-            toggleContainer.classList.remove('hidden');
-
-            if (isFullLeaderboardView) {
-                titleEl.innerText = "Semua Peringkat";
-                toggleBtn.innerText = "Tampilkan 10 Besar Saja";
-
-                filteredByClass.forEach((item, index) => {
-                    const row = createLeaderboardRow(item, index + 1);
-                    tbody.appendChild(row);
-                });
-            } else {
-                titleEl.innerText = "Papan Peringkat";
-                toggleBtn.innerText = "Lihat Semua Peringkat";
-
-                const top10 = filteredByClass.slice(0, 10);
-                top10.forEach((item, index) => {
-                    const row = createLeaderboardRow(item, index + 1);
-                    tbody.appendChild(row);
-                });
-
-                const userIndex = filteredByClass.findIndex(item => 
-                    item.name.toLowerCase() === userProfile.name.toLowerCase()
-                );
-
-                if (userIndex >= 10) {
-                    const sepRow = document.createElement('tr');
-                    sepRow.innerHTML = `<td colspan="4" class="p-2 text-center text-slate-400 font-bold bg-slate-100">. . .</td>`;
-                    tbody.appendChild(sepRow);
-
-                    const userRow = createLeaderboardRow(filteredByClass[userIndex], userIndex + 1);
-                    userRow.classList.add('bg-purple-50', 'font-bold');
-                    tbody.appendChild(userRow);
+        function switchLeaderboardCategory(category) {
+            currentLbCategory = category;
+            
+            // Update style tombol tab aktif
+            const tabs = ['total', 'matematika', 'umum', 'indonesian', 'pancasila', 'pai'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === category) {
+                    btn.className = "pulse-btn shrink-0 px-3.5 py-1.5 rounded-full text-xs font-playful bg-amber-400 text-amber-900 shadow-sm border-2 border-amber-500 flex items-center space-x-1";
+                } else {
+                    btn.className = "pulse-btn shrink-0 px-3.5 py-1.5 rounded-full text-xs font-playful bg-slate-100 text-slate-600 border-2 border-slate-200 flex items-center space-x-1";
                 }
-            }
+            });
+
+            fetchAndRenderLeaderboard();
         }
 
-        function createLeaderboardRow(item, rankNum) {
-            const row = document.createElement('tr');
-            let badgeColor = "bg-slate-200 text-slate-700";
-            if (rankNum === 1) badgeColor = "bg-yellow-400 text-yellow-900 font-bold";
-            else if (rankNum === 2) badgeColor = "bg-slate-300 text-slate-800 font-bold";
-            else if (rankNum === 3) badgeColor = "bg-amber-600 text-white font-bold";
+        async function fetchAndRenderLeaderboard() {
+            const tbody = document.getElementById('leaderboard-table-body');
+            tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-400 italic">Mengambil data peringkat online...</td></tr>`;
 
-            const isCurrentStudent = userProfile && item.name.toLowerCase() === userProfile.name.toLowerCase();
-            const nameDisplay = isCurrentStudent ? `${escapeHtml(item.name)} (Kamu)` : escapeHtml(item.name);
+            try {
+                // Ambil data dari tabel k6_leaderboard_sd khusus kelas siswa ini dan kategori terpilih
+                const { data, error } = await supabaseClient
+                    .from('k6_leaderboard_sd')
+                    .select('*')
+                    .eq('class_name', userProfile.className)
+                    .eq('category', currentLbCategory)
+                    .order('score', { ascending: false });
 
-            row.innerHTML = `
-                <td class="p-3 text-center"><span class="inline-block w-7 h-7 rounded-full ${badgeColor} text-xs flex items-center justify-center mx-auto">${rankNum}</span></td>
-                <td class="p-3 font-bold text-slate-700">${nameDisplay}</td>
-                <td class="p-3 text-right text-xs text-slate-500">${item.category}</td>
-                <td class="p-3 text-right font-playful text-purple-600">${item.score}</td>
-            `;
-            return row;
+                if (error) throw error;
+
+                tbody.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-400 italic">Belum ada skor tercatat untuk kategori ini.</td></tr>`;
+                    return;
+                }
+
+                data.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    let badgeColor = "bg-slate-200 text-slate-700";
+                    if (index === 0) badgeColor = "bg-yellow-400 text-yellow-900 font-bold";
+                    else if (index === 1) badgeColor = "bg-slate-300 text-slate-800 font-bold";
+                    else if (index === 2) badgeColor = "bg-amber-600 text-white font-bold";
+
+                    const isCurrentStudent = userProfile && item.name.toLowerCase() === userProfile.name.toLowerCase();
+                    const nameDisplay = isCurrentStudent ? `${escapeHtml(item.name)} (Kamu)` : escapeHtml(item.name);
+
+                    if (isCurrentStudent) {
+                        row.classList.add('bg-purple-50', 'font-bold');
+                    }
+
+                    row.innerHTML = `
+                        <td class="p-3 text-center"><span class="inline-block w-7 h-7 rounded-full ${badgeColor} text-xs flex items-center justify-center mx-auto">${index + 1}</span></td>
+                        <td class="p-3 font-bold text-slate-700">${nameDisplay}</td>
+                        <td class="p-3 text-right font-playful text-purple-600">${item.score}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+            } catch (err) {
+                console.error("Gagal memuat leaderboard:", err);
+                tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-rose-500 italic">Gagal memuat data online.</td></tr>`;
+            }
         }
 
         function restartGame() {
