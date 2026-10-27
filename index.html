@@ -86,6 +86,25 @@
         </div>
     </div>
 
+    <!-- MODAL POP-UP KONFIRMASI KESIAPAN BELAJAR -->
+    <div id="ready-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-6 border-4 border-purple-200 animate-[bounce_0.3s_ease-out]">
+            <div class="text-5xl bouncing-toy" id="ready-modal-icon">🎯</div>
+            <div class="space-y-2">
+                <h3 class="text-xl font-playful text-slate-800" id="ready-modal-title">Siap Berpetualang?</h3>
+                <p class="text-slate-500 text-sm" id="ready-modal-desc">Tarik napas dulu, kumpulkan fokus, dan tunjukkan skor terbaikmu!</p>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="closeReadyModal()" class="pulse-btn flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl text-sm">
+                    Belum Dulu
+                </button>
+                <button onclick="confirmStartGame()" class="pulse-btn flex-1 bg-purple-600 hover:bg-purple-700 text-white font-playful py-3 rounded-xl shadow text-sm">
+                    Siap, Ayo! 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL KONFIRMASI BERHENTI BERMAIN -->
     <div id="quit-confirm-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-6 border-4 border-rose-200">
@@ -149,38 +168,38 @@
                         🏆
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h3 class="font-playful text-slate-800 text-base group-hover:text-purple-700 transition truncate">Papan Peringkat</h3>
-                        <p class="text-xs text-slate-500 truncate">klik tuk melihat peringkat kamu</p>
+                        <h3 class="font-playful text-slate-800 text-base group-hover:text-purple-700 transition truncate">Papan Peringkat Online</h3>
+                        <p class="text-xs text-slate-500 truncate">Lihat juara umum dan peringkat per mata pelajaran.</p>
                     </div>
                 </div>
 
                 <!-- Category Cards (5 Mata Pelajaran Utama Kelas 6) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button onclick="startGame('matematika')" class="pulse-btn bg-gradient-to-br from-blue-400 to-indigo-600 hover:from-blue-500 hover:to-indigo-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-indigo-800">
+                    <button onclick="promptStartGame('matematika')" class="pulse-btn bg-gradient-to-br from-blue-400 to-indigo-600 hover:from-blue-500 hover:to-indigo-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-indigo-800">
                         <i class="fa-solid fa-calculator text-3xl"></i>
                         <span class="font-playful text-lg text-center">Matematika Dasar</span>
                         <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Berhitung & Logika Asyik</span>
                     </button>
 
-                    <button onclick="startGame('umum')" class="pulse-btn bg-gradient-to-br from-emerald-400 to-teal-600 hover:from-emerald-500 hover:to-teal-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-teal-800">
+                    <button onclick="promptStartGame('umum')" class="pulse-btn bg-gradient-to-br from-emerald-400 to-teal-600 hover:from-emerald-500 hover:to-teal-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-teal-800">
                         <i class="fa-solid fa-earth-americas text-3xl"></i>
                         <span class="font-playful text-lg text-center">IPAS (Sains & Sosial)</span>
                         <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Dunia & Alam Sekitar</span>
                     </button>
 
-                    <button onclick="startGame('indonesian')" class="pulse-btn bg-gradient-to-br from-pink-400 to-rose-600 hover:from-pink-500 hover:to-rose-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-rose-800">
+                    <button onclick="promptStartGame('indonesian')" class="pulse-btn bg-gradient-to-br from-pink-400 to-rose-600 hover:from-pink-500 hover:to-rose-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-rose-800">
                         <i class="fa-solid fa-book-open text-3xl"></i>
                         <span class="font-playful text-lg text-center">Bahasa Indonesia</span>
                         <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Membaca & Tata Bahasa</span>
                     </button>
 
-                    <button onclick="startGame('pancasila')" class="pulse-btn bg-gradient-to-br from-violet-400 to-purple-600 hover:from-violet-500 hover:to-purple-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-purple-800">
+                    <button onclick="promptStartGame('pancasila')" class="pulse-btn bg-gradient-to-br from-violet-400 to-purple-600 hover:from-violet-500 hover:to-purple-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-purple-800">
                         <i class="fa-solid fa-flag text-3xl"></i>
                         <span class="font-playful text-lg text-center">Pendidikan Pancasila</span>
                         <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Karakter & Wawasan</span>
                     </button>
 
-                    <button onclick="startGame('pai')" class="pulse-btn sm:col-span-2 bg-gradient-to-br from-amber-400 to-orange-600 hover:from-amber-500 hover:to-orange-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-orange-800">
+                    <button onclick="promptStartGame('pai')" class="pulse-btn sm:col-span-2 bg-gradient-to-br from-amber-400 to-orange-600 hover:from-amber-500 hover:to-orange-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-orange-800">
                         <i class="fa-solid fa-book-quran text-3xl"></i>
                         <span class="font-playful text-lg text-center">Agama Islam (PAI)</span>
                         <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Akidah & Akhlak Mulia</span>
@@ -201,7 +220,7 @@
                             <i class="fa-solid fa-star mr-1"></i> <span id="current-score">0</span>
                         </div>
                         <div id="timer-box" class="flex items-center text-rose-500 font-playful text-xs sm:text-sm bg-white px-2.5 py-1 rounded-full shadow-sm">
-                            <i class="fa-solid fa-clock mr-1"></i> <span id="time-left">30</span>s
+                            <i class="fa-solid fa-clock mr-1"></i> <span id="time-left">60</span>s
                         </div>
                         <!-- Tombol Berhenti / Keluar Permainan -->
                         <button onclick="openQuitModal()" class="pulse-btn bg-rose-100 hover:bg-rose-200 text-rose-600 px-3 py-1 rounded-full text-xs font-playful flex items-center shadow-xs transition" title="Berhenti Main">
@@ -269,7 +288,7 @@
                 </div>
 
                 <!-- Panduan Anak -->
-                <p class="text-xs text-slate-500 font-bold text-center">Mau lihat jagoan di mata pelajaran apa nih? Silahkan Pilih Pelajaran di bawah ya! 👇</p>
+                <p class="text-xs text-slate-500 font-bold text-center">Mau lihat jagoan di mata pelajaran apa nih? Pilih di bawah ya! 👇</p>
 
                 <!-- Category Tabs (Pill Buttons) -->
                 <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none" id="leaderboard-tabs">
@@ -335,9 +354,18 @@
             pai: 'k6_questions_agama'
         };
 
+        const categoryMeta = {
+            matematika: { name: 'Matematika Dasar', icon: '📐' },
+            umum: { name: 'IPAS (Sains & Sosial)', icon: '🌍' },
+            indonesian: { name: 'Bahasa Indonesia', icon: '📖' },
+            pancasila: { name: 'Pendidikan Pancasila', icon: '🛡️' },
+            pai: { name: 'Agama Islam (PAI)', icon: '🕌' }
+        };
+
         // --- USER PROFILE & STORAGE MANAGEMENT ---
         let userProfile = JSON.parse(localStorage.getItem('quiz_user_profile_sd')) || null;
-        let currentLbCategory = 'total'; // Default tab peringkat: Juara Umum
+        let currentLbCategory = 'total';
+        let pendingCategory = ''; // Untuk menyimpan pilihan mapel sebelum diklik "Siap"
 
         window.addEventListener('DOMContentLoaded', () => {
             if (!userProfile) {
@@ -372,8 +400,6 @@
             localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
             document.getElementById('profile-modal').classList.add('hidden');
             updateHeaderUI();
-            
-            // Nyalakan musik otomatis saat pertama kali masuk beranda setelah simpan profil
             startBGM();
         }
 
@@ -382,6 +408,34 @@
                 document.getElementById('header-user-tag').innerText = `Halo, ${userProfile.name} (${userProfile.className})`;
                 document.getElementById('welcome-greeting').innerText = `Halo, ${userProfile.name}! ✨`;
                 document.getElementById('lb-class-badge').innerText = userProfile.className;
+            }
+        }
+
+        // --- POP-UP KONFIRMASI KESIAPAN ---
+        function promptStartGame(categoryKey) {
+            if (!userProfile) {
+                openProfileModal();
+                return;
+            }
+            pendingCategory = categoryKey;
+            const meta = categoryMeta[categoryKey];
+
+            document.getElementById('ready-modal-icon').innerText = meta.icon;
+            document.getElementById('ready-modal-title').innerText = `Siap Berpetualang di ${meta.name}?`;
+            document.getElementById('ready-modal-desc').innerText = `Tarik napas dulu, kumpulkan fokus, dan jawab soal dengan teliti ya! 🚀`;
+            document.getElementById('ready-modal').classList.remove('hidden');
+            playSound('click');
+        }
+
+        function closeReadyModal() {
+            document.getElementById('ready-modal').classList.add('hidden');
+            pendingCategory = '';
+        }
+
+        function confirmStartGame() {
+            document.getElementById('ready-modal').classList.add('hidden');
+            if (pendingCategory) {
+                startGame(pendingCategory);
             }
         }
 
@@ -417,7 +471,6 @@
             isBgmPlaying = true;
             document.getElementById('bgm-icon').className = "fa-solid fa-volume-high";
 
-            // Melodi ceria beranda (Looping riang)
             const melody = [523.25, 587.33, 659.25, 698.46, 783.99, 659.25, 587.33, 523.25];
             let noteIndex = 0;
 
@@ -522,7 +575,7 @@
         let correctCount = 0;
         let wrongCount = 0;
         let timer = null;
-        let timeLeft = 30;
+        let timeLeft = 60; // Diubah menjadi 60 detik per soal
         let isAnswerLocked = false;
 
         // --- NAVIGATION & SCREENS ---
@@ -559,11 +612,6 @@
 
         // --- START GAME & FETCH WITH SMART POOL (0% REPETITION) ---
         async function startGame(categoryKey) {
-            if (!userProfile) {
-                openProfileModal();
-                return;
-            }
-
             currentCategory = categoryKey;
             switchScreen('screen-quiz');
             
@@ -618,14 +666,7 @@
                 correctCount = 0;
                 wrongCount = 0;
 
-                const categoryNames = { 
-                    matematika: 'Matematika Dasar', 
-                    umum: 'IPAS (Sains & Sosial)', 
-                    indonesian: 'Bahasa Indonesia',
-                    pancasila: 'Pendidikan Pancasila',
-                    pai: 'Agama Islam (PAI)' 
-                };
-                document.getElementById('quiz-category-badge').innerText = categoryNames[categoryKey];
+                document.getElementById('quiz-category-badge').innerText = categoryMeta[categoryKey].name;
 
                 loadQuestion();
 
@@ -681,10 +722,10 @@
             startTimer();
         }
 
-        // --- TIMER LOGIC ---
+        // --- TIMER LOGIC (60 DETIK) ---
         function startTimer() {
             clearInterval(timer);
-            timeLeft = 30;
+            timeLeft = 60; // 60 detik
             document.getElementById('time-left').innerText = timeLeft;
             const timerBox = document.getElementById('timer-box');
             timerBox.classList.remove('animate-pulse', 'text-rose-600');
@@ -692,7 +733,7 @@
             timer = setInterval(() => {
                 timeLeft--;
                 document.getElementById('time-left').innerText = timeLeft;
-                if (timeLeft <= 8) {
+                if (timeLeft <= 10) {
                     timerBox.classList.add('animate-pulse', 'text-rose-600');
                 }
                 if (timeLeft <= 0) {
@@ -788,19 +829,14 @@
             if (!userProfile) return;
 
             try {
-                // 1. Simpan/Update skor mata pelajaran saat ini
                 await upsertScoreRecord(currentCategory, score);
-
-                // 2. Hitung dan perbarui skor Juara Umum (Total ke-5 mapel)
                 await calculateAndUpdateTotalScore();
-
             } catch (err) {
                 console.error("Gagal menyimpan skor ke Supabase:", err);
             }
         }
 
         async function upsertScoreRecord(category, newScore) {
-            // Cek apakah data user untuk kategori ini sudah ada di Supabase
             const { data: existing, error: fetchErr } = await supabaseClient
                 .from('k6_leaderboard_sd')
                 .select('*')
@@ -812,7 +848,6 @@
             if (fetchErr) throw fetchErr;
 
             if (existing) {
-                // Jika skor baru lebih besar, update
                 if (newScore > existing.score) {
                     await supabaseClient
                         .from('k6_leaderboard_sd')
@@ -820,7 +855,6 @@
                         .eq('id', existing.id);
                 }
             } else {
-                // Jika belum ada, insert baru
                 await supabaseClient
                     .from('k6_leaderboard_sd')
                     .insert([{
@@ -834,7 +868,6 @@
         }
 
         async function calculateAndUpdateTotalScore() {
-            // Ambil seluruh skor mapel anak ini dari Supabase
             const { data: userScores, error } = await supabaseClient
                 .from('k6_leaderboard_sd')
                 .select('category, score')
@@ -845,17 +878,14 @@
             if (error) throw error;
             if (!userScores || userScores.length === 0) return;
 
-            // Jumlahkan semua skor mapel untuk mendapatkan total Juara Umum
             let totalSum = userScores.reduce((sum, item) => sum + item.score, 0);
-
-            // Simpan total ke kategori 'total'
             await upsertScoreRecord('total', totalSum);
         }
 
         // --- ONLINE LEADERBOARD & TABS RENDER LOGIC ---
         function openLeaderboardPreview() {
             if (!userProfile) return;
-            currentLbCategory = 'total'; // Default tab saat dibuka
+            currentLbCategory = 'total';
             switchScreen('screen-leaderboard');
             fetchAndRenderLeaderboard();
         }
@@ -863,7 +893,6 @@
         function switchLeaderboardCategory(category) {
             currentLbCategory = category;
             
-            // Update style tombol tab aktif
             const tabs = ['total', 'matematika', 'umum', 'indonesian', 'pancasila', 'pai'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
@@ -882,7 +911,6 @@
             tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-400 italic">Mengambil data peringkat online...</td></tr>`;
 
             try {
-                // Ambil data dari tabel k6_leaderboard_sd khusus kelas siswa ini dan kategori terpilih
                 const { data, error } = await supabaseClient
                     .from('k6_leaderboard_sd')
                     .select('*')
@@ -928,7 +956,7 @@
         }
 
         function restartGame() {
-            startGame(currentCategory);
+            promptStartGame(currentCategory);
         }
 
         function escapeHtml(text) {
