@@ -153,10 +153,16 @@
             <h1 class="text-3xl sm:text-4xl font-playful tracking-wide drop-shadow-md">Amelia Games 🎒</h1>
             <p class="text-sm sm:text-base font-bold opacity-90 mt-1">Belajar Seru, Main Asyik!</p>
             
-            <!-- Center Profile Tag -->
-            <div class="mt-3 inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold cursor-pointer hover:bg-white/30 transition shadow-sm" onclick="openProfileModal()" title="Ubah Profil">
-                <i class="fa-solid fa-user-pen"></i>
-                <span id="header-user-tag">Halo, Siswa (Kelas 6)</span>
+            <!-- Center Profile Tag & Koin -->
+            <div class="mt-3 flex justify-center space-x-2">
+                <div class="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold cursor-pointer hover:bg-white/30 transition shadow-sm" onclick="openProfileModal()" title="Ubah Profil">
+                    <i class="fa-solid fa-user-pen"></i>
+                    <span id="header-user-tag">Halo, Siswa (Kelas 6)</span>
+                </div>
+                <div class="inline-flex items-center space-x-1 bg-yellow-400 text-yellow-900 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-sm border-2 border-yellow-500" title="Koin Bantuan">
+                    <i class="fa-solid fa-coins"></i>
+                    <span id="header-coin-tag">0</span>
+                </div>
             </div>
         </header>
 
@@ -171,11 +177,11 @@
                         Pilih Tantanganmu!
                     </div>
                     <h2 class="text-2xl font-playful text-slate-700" id="welcome-greeting">Halo, Bintang Kelas! ✨</h2>
-                    <p class="text-slate-500 text-sm">Pilih mata pelajaran favoritmu dan kumpulkan skor tertinggi!</p>
+                    <p class="text-slate-500 text-sm mb-4">Pilih mata pelajaran favoritmu dan kumpulkan skor tertinggi!</p>
                 </div>
 
                 <!-- LEADERBOARD CARD -->
-                <div onclick="openLeaderboardPreview()" class="pulse-btn bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-purple-400 transition">
+                <button onclick="openLeaderboardPreview()" class="w-full text-left pulse-btn bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-purple-400 hover:border-b-4 transition">
                     <div class="w-12 h-12 rounded-2xl bg-yellow-400 text-yellow-900 flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-105 transition">
                         🏆
                     </div>
@@ -183,10 +189,10 @@
                         <h3 class="font-playful text-slate-800 text-base group-hover:text-purple-700 transition truncate">Papan Peringkat</h3>
                         <p class="text-xs text-slate-500 truncate">Klik tuk Lihat juara peringkat .</p>
                     </div>
-                </div>
+                </button>
 
                 <!-- RINGKASAN MATERI PELAJARAN -->
-                <div onclick="switchScreen('screen-ringkasan')" class="select-none pulse-btn bg-gradient-to-r from-pink-50 to-rose-50 border-2 border-pink-200 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-pink-400 transition duration-200">
+                <button onclick="switchScreen('screen-ringkasan')" class="w-full text-left select-none pulse-btn bg-gradient-to-r from-pink-50 to-rose-50 border-2 border-pink-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-pink-400 hover:border-b-4 transition duration-200">
                     <div class="w-12 h-12 rounded-2xl bg-pink-400 text-white flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-105 transition">
                         📚
                     </div>
@@ -194,8 +200,34 @@
                         <h3 class="font-playful text-slate-800 text-base group-hover:text-pink-600 transition truncate">Ringkasan Pelajaran</h3>
                         <p class="text-xs text-slate-500 truncate">Rumus & materi seru klik disini!</p>
                     </div>
-                </div>
+                </button>
 
+                <!-- KOTAK MISI HARIAN (DAILY QUEST) BARU -->
+                <div id="daily-quest-box" class="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 p-4 rounded-2xl shadow-sm relative overflow-hidden group">
+                    <div class="absolute -right-4 -top-4 text-6xl opacity-10 group-hover:rotate-12 transition">🎯</div>
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-bold text-emerald-700 uppercase tracking-widest flex items-center"><i class="fa-solid fa-calendar-check mr-1"></i> Misi Hari Ini</span>
+                        <div class="flex items-center space-x-1 bg-white px-2 py-0.5 rounded-full border border-orange-200 shadow-sm" title="Streak Beruntun">
+                            <span class="text-sm">🔥</span>
+                            <span id="streak-count" class="text-xs font-bold text-orange-600 font-playful">0/7 Hari</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Keterangan Tambahan Sesuai Permintaan -->
+                    <p class="text-[10px] text-emerald-600 font-bold mb-2 leading-tight">✨ Selesaikan misi 7 hari berturut-turut untuk mendapatkan Gelar "Bintang Teladan"!</p>
+                    
+                    <h3 id="quest-title" class="font-playful text-slate-800 text-base leading-tight mb-3 pr-8">Selesaikan 1 Kuis Matematika</h3>
+                    
+                    <button id="btn-claim-quest" onclick="claimQuestReward()" class="pulse-btn w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-sm shadow-sm transition hidden">
+                        Klaim Hadiah! 🎁
+                    </button>
+                    
+                    <div id="quest-progress-box" class="w-full bg-emerald-100 h-2.5 rounded-full overflow-hidden">
+                        <div id="quest-progress-bar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                    <p id="quest-status-text" class="text-[10px] font-bold text-emerald-600 mt-1.5 text-center">Belum Selesai (0/1)</p>
+                </div>
+              
                 <!-- Category Cards (5 Mata Pelajaran Utama Kelas 6) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <button onclick="promptStartGame('matematika')" class="pulse-btn bg-gradient-to-br from-blue-400 to-indigo-600 hover:from-blue-500 hover:to-indigo-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-indigo-800">
@@ -316,20 +348,25 @@
             <!-- SCREEN 2: GAMEPLAY QUIZ -->
             <div id="screen-quiz" class="hidden space-y-6">
                 <!-- Quiz Header Info & Tombol Berhenti -->
-                <div class="flex items-center justify-between bg-slate-100 p-3 rounded-2xl">
-                    <div class="flex items-center space-x-2">
-                        <span class="bg-purple-600 text-white font-playful text-xs px-3 py-1 rounded-full" id="quiz-category-badge">Matematika</span>
-                        <span class="text-xs font-bold text-slate-500">Soal <span id="current-q-num">1</span>/<span id="total-q-num">20</span></span>
+                <div class="flex flex-col sm:flex-row gap-2 items-center justify-between bg-slate-100 p-2 sm:p-3 rounded-2xl">
+                    <!-- Kiri/Atas: Kategori & Info Soal -->
+                    <div class="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-start">
+                        <span class="bg-purple-600 text-white font-playful text-[10px] sm:text-xs px-3 py-1 rounded-full" id="quiz-category-badge">Matematika</span>
+                        <span class="text-[10px] sm:text-xs font-bold text-slate-500">Soal <span id="current-q-num">1</span>/<span id="total-q-num">20</span></span>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="flex items-center text-amber-500 font-playful text-xs sm:text-sm bg-white px-2.5 py-1 rounded-full shadow-sm">
-                            <i class="fa-solid fa-star mr-1"></i> <span id="current-score">0</span>
+                    
+                    <!-- Kanan/Bawah: Indikator Nyawa, Skor, Waktu, Berhenti -->
+                    <div class="flex items-center space-x-1.5 w-full sm:w-auto justify-between sm:justify-end">
+                        <div id="lives-box" class="flex items-center text-rose-500 text-[10px] sm:text-xs bg-white px-2 py-1 rounded-full shadow-sm tracking-widest" title="Sisa Nyawa">
+                            ❤️❤️❤️
                         </div>
-                        <div id="timer-box" class="flex items-center text-rose-500 font-playful text-xs sm:text-sm bg-white px-2.5 py-1 rounded-full shadow-sm">
-                            <i class="fa-solid fa-clock mr-1"></i> <span id="time-left">60</span>s
+                        <div class="flex items-center text-amber-500 font-playful text-[10px] sm:text-xs bg-white px-2 py-1 rounded-full shadow-sm">
+                            <i class="fa-solid fa-star mr-0.5"></i> <span id="current-score">0</span>
                         </div>
-                        <!-- Tombol Berhenti / Keluar Permainan -->
-                        <button onclick="openQuitModal()" class="pulse-btn bg-rose-100 hover:bg-rose-200 text-rose-600 px-3 py-1 rounded-full text-xs font-playful flex items-center shadow-xs transition" title="Berhenti Main">
+                        <div id="timer-box" class="flex items-center text-rose-500 font-playful text-[10px] sm:text-xs bg-white px-2 py-1 rounded-full shadow-sm">
+                            <i class="fa-solid fa-clock mr-0.5"></i> <span id="time-left">60</span>s
+                        </div>
+                        <button onclick="openQuitModal()" class="pulse-btn bg-rose-100 hover:bg-rose-200 text-rose-600 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-playful flex items-center shadow-sm transition" title="Berhenti Main">
                             <i class="fa-solid fa-power-off"></i>
                         </button>
                     </div>
@@ -344,6 +381,24 @@
                 <div class="bg-slate-50 border-2 border-slate-200 p-6 rounded-2xl text-center space-y-3">
                     <div id="mascot-emoji" class="text-4xl bouncing-toy">🦊</div>
                     <h3 id="question-text" class="text-lg sm:text-xl font-bold text-slate-800">Memuat soal dari Supabase...</h3>
+                </div>
+
+                <!-- KOTAK BANTUAN AJAIB (LIFELINES) -->
+                <div class="bg-white border-2 border-slate-200 p-3 rounded-2xl shadow-sm">
+                    <div class="mb-2 text-center">
+                        <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">✨ Kotak Bantuan Ajaib ✨</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-center space-x-3">
+                        <button id="btn-life-5050" onclick="useFiftyFifty()" class="pulse-btn flex-1 justify-center bg-gradient-to-b from-purple-400 to-purple-600 hover:from-purple-500 hover:to-purple-700 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-md flex items-center space-x-1 border-b-4 border-purple-800 transition">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> <span>50:50 (1 🪙)</span>
+                        </button>
+                        <button id="btn-life-time" onclick="useExtraTime()" class="pulse-btn flex-1 justify-center bg-gradient-to-b from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-md flex items-center space-x-1 border-b-4 border-blue-800 transition">
+                            <i class="fa-solid fa-hourglass-half"></i> <span>+30s (1 🪙)</span>
+                        </button>
+                    </div>
+                    
+                    <p class="text-[9px] font-bold text-slate-400 text-center mt-2 leading-tight">Gunakan saat kamu butuh pertolongan! </p>
                 </div>
 
                 <!-- Options List -->
@@ -477,6 +532,7 @@
                 openProfileModal();
             } else {
                 updateHeaderUI();
+                initDailyQuest(); // Jalankan Sistem Misi Harian saat aplikasi dibuka
             }
         });
 
@@ -497,9 +553,13 @@
                 return;
             }
 
+            // Pertahankan koin lama, atau beri modal awal 10 koin jika pengguna baru
+            const currentCoins = userProfile && userProfile.coins !== undefined ? userProfile.coins : 10;
+
             userProfile = {
                 name: nameInput,
-                className: classInput
+                className: classInput,
+                coins: currentCoins
             };
 
             localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
@@ -510,9 +570,14 @@
 
         function updateHeaderUI() {
             if (userProfile) {
+                if (userProfile.coins === undefined) {
+                    userProfile.coins = 10; // Beri modal 10 koin untuk pemain lama di aplikasi
+                    localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+                }
                 document.getElementById('header-user-tag').innerText = `Halo, ${userProfile.name} (${userProfile.className})`;
                 document.getElementById('welcome-greeting').innerText = `Halo, ${userProfile.name}! ✨`;
                 document.getElementById('lb-class-badge').innerText = userProfile.className;
+                document.getElementById('header-coin-tag').innerText = userProfile.coins;
             }
         }
 
@@ -1410,7 +1475,16 @@
                 
                 btnPrev.classList.toggle('hidden', currentEbookPage === 0);
                 
-                if (currentEbookPage === currentEbookData.length - 1) {
+                    if (currentEbookPage === currentEbookData.length - 1) {
+                    // Cek Misi E-Book saat sampai di halaman terakhir
+                    let currentBookId = '';
+                    if (currentEbookData === ebookMathPages) currentBookId = 'math';
+                    if (currentEbookData === ebookIpasPages) currentBookId = 'ipas';
+                    if (currentEbookData === ebookIndonesianPages) currentBookId = 'indonesian';
+                    if (currentEbookData === ebookPancasilaPages) currentBookId = 'pancasila';
+                    if (currentEbookData === ebookPaiPages) currentBookId = 'pai';
+                    triggerQuestEvent('read', currentBookId);
+
                     btnNext.innerHTML = 'Selesai <i class="fa-solid fa-check ml-1"></i>';
                     btnNext.classList.replace('bg-indigo-500', 'bg-emerald-500');
                     btnNext.classList.replace('border-indigo-700', 'border-emerald-700');
@@ -1453,6 +1527,80 @@
         let timer = null;
         let timeLeft = 60; // Diubah menjadi 60 detik per soal
         let isAnswerLocked = false;
+        let lives = 3; // Nyawa awal pemain
+        
+        let lifeline5050Used = false;
+        let lifelineTimeUsed = false;
+
+        function updateLivesUI() {
+            const livesBox = document.getElementById('lives-box');
+            if (lives === 3) livesBox.innerText = '❤️❤️❤️';
+            else if (lives === 2) livesBox.innerText = '❤️❤️🖤';
+            else if (lives === 1) livesBox.innerText = '❤️🖤🖤';
+            else livesBox.innerText = '🖤🖤🖤';
+        }
+
+        function updateLifelineUI() {
+            const btn5050 = document.getElementById('btn-life-5050');
+            const btnTime = document.getElementById('btn-life-time');
+            
+            // Buat abu-abu kalau sudah terpakai
+            if (lifeline5050Used) btn5050.classList.add('opacity-40', 'cursor-not-allowed', 'grayscale');
+            else btn5050.classList.remove('opacity-40', 'cursor-not-allowed', 'grayscale');
+
+            if (lifelineTimeUsed) btnTime.classList.add('opacity-40', 'cursor-not-allowed', 'grayscale');
+            else btnTime.classList.remove('opacity-40', 'cursor-not-allowed', 'grayscale');
+        }
+
+        function useFiftyFifty() {
+            if (lifeline5050Used || !userProfile || isAnswerLocked) return;
+            if (userProfile.coins < 1) {
+                alert("Koin kamu habis! Selesaikan kuis dengan nilai 100 untuk dapat koin gratis.");
+                return;
+            }
+            
+            userProfile.coins -= 1;
+            localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+            updateHeaderUI();
+            
+            lifeline5050Used = true;
+            updateLifelineUI();
+            playSound('correct'); 
+
+            const qData = currentQuestions[currentIndex];
+            const buttons = document.getElementById('options-container').children;
+            
+            let hiddenCount = 0;
+            // Acak pilihan mana yang akan dihilangkan
+            let indices = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
+            
+            for (let i of indices) {
+                if (i !== qData.answer && hiddenCount < 2) {
+                    buttons[i].style.visibility = 'hidden'; 
+                    hiddenCount++;
+                }
+            }
+        }
+
+        function useExtraTime() {
+            if (lifelineTimeUsed || !userProfile || isAnswerLocked) return;
+            if (userProfile.coins < 1) {
+                alert("Koin kamu habis! Selesaikan kuis dengan nilai 100 untuk dapat koin gratis.");
+                return;
+            }
+            
+            userProfile.coins -= 1;
+            localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+            updateHeaderUI();
+            
+            lifelineTimeUsed = true;
+            updateLifelineUI();
+            playSound('correct'); 
+            
+            timeLeft += 30;
+            document.getElementById('time-left').innerText = timeLeft;
+            document.getElementById('timer-box').classList.remove('animate-pulse', 'text-rose-600');
+        }
 
             // --- NAVIGATION & SCREENS ---
         function switchScreen(screenId) {
@@ -1570,6 +1718,11 @@
                 score = 0;
                 correctCount = 0;
                 wrongCount = 0;
+                lives = 3; // Reset nyawa menjadi penuh
+                updateLivesUI();
+                lifeline5050Used = false; // Reset tombol penyihir
+                lifelineTimeUsed = false; // Reset tombol jam pasir
+                updateLifelineUI();
 
                 document.getElementById('quiz-category-badge').innerText = categoryMeta[categoryKey].name;
 
@@ -1652,6 +1805,8 @@
             if (isAnswerLocked) return;
             isAnswerLocked = true;
             wrongCount++;
+            lives--; // Kurangi nyawa karena kehabisan waktu
+            updateLivesUI();
             playSound('wrong');
 
             const qData = currentQuestions[currentIndex];
@@ -1661,7 +1816,11 @@
                 buttons[qData.answer].classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
             }
 
-            setTimeout(nextQuestion, 1500);
+            if (lives <= 0) {
+                setTimeout(endGame, 1500); // Game Over karena nyawa habis
+            } else {
+                setTimeout(nextQuestion, 1500); // Lanjut ke soal berikutnya
+            }
         }
 
         // --- SELECT OPTION ---
@@ -1678,8 +1837,12 @@
                 score += 5; // Skor pasti 5 per soal, 20 soal x 5 = 100 poin
                 playSound('correct');
                 btnElement.classList.remove('bg-white', 'border-slate-200');
+                btnElement.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800', 'scale-[1.02]');
+                document.getElementById('current-score').innerText = score;
             } else {
                 wrongCount++;
+                lives--; // Kurangi nyawa karena salah menjawab
+                updateLivesUI();
                 playSound('wrong');
                 btnElement.classList.remove('bg-white', 'border-slate-200');
                 btnElement.classList.add('bg-rose-100', 'border-rose-500', 'text-rose-800');
@@ -1690,7 +1853,11 @@
                 }
             }
 
-            setTimeout(nextQuestion, 1500);
+            if (lives <= 0) {
+                setTimeout(endGame, 1500); // Game Over karena nyawa habis
+            } else {
+                setTimeout(nextQuestion, 1500); // Lanjut ke soal berikutnya
+            }
         }
 
         function nextQuestion() {
@@ -1700,7 +1867,11 @@
 
         // --- END GAME & ONLINE SUPABASE SCORE SYNC ---
         async function endGame() {
-            playSound('victory');
+            if (lives <= 0) {
+                playSound('wrong'); // Mainkan suara gagal
+            } else {
+                playSound('victory');
+            }
             switchScreen('screen-result');
 
             document.getElementById('final-score').innerText = score;
@@ -1711,21 +1882,40 @@
             const titleEl = document.getElementById('result-title');
             const subtitleEl = document.getElementById('result-subtitle');
 
-            if (score === 100) {
+            let coinReward = 0;
+            if (lives <= 0) {
+                emojiEl.innerText = "💔";
+                titleEl.innerText = "Game Over!";
+                subtitleEl.innerText = "Nyawa kamu habis sebelum kuis selesai. Yuk coba lagi dan lebih hati-hati!";
+            } else if (score === 100) {
+                coinReward = 2;
                 emojiEl.innerText = "👑";
                 titleEl.innerText = "Luar Biasa, Jenius!";
-                subtitleEl.innerText = "Nilai sempurna 100! Kamu benar-benar bintang kelas hari ini!";
+                subtitleEl.innerText = "Nilai 100! Kamu dapat hadiah tambahan 2 Koin Bantuan 🪙!";
             } else if (score >= 75) {
+                coinReward = 1;
                 emojiEl.innerText = "🌟";
                 titleEl.innerText = "Hebat Sekali!";
-                subtitleEl.innerText = "Nilaimu sangat bagus, pertahankan prestasimu!";
+                subtitleEl.innerText = "Nilaimu bagus, kamu dapat hadiah tambahan 1 Koin Bantuan 🪙!";
             } else {
                 emojiEl.innerText = "💪";
                 titleEl.innerText = "Tetap Semangat!";
-                subtitleEl.innerText = "Ayo baca bukunya lagi supaya nilaimu bisa 100!";
+                subtitleEl.innerText = "Ayo baca bukunya lagi supaya nilaimu bisa 100 dan dapat Koin!";
+            }
+
+            // Tambahkan koin ke profil
+            if (coinReward > 0 && userProfile) {
+                userProfile.coins += coinReward;
+                localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+                updateHeaderUI();
             }
 
             await saveScoreToSupabase();
+            
+            // Trigger misi hanya jika kuis diselesaikan sampai akhir (tidak game over)
+            if (lives > 0) {
+                triggerQuestEvent('quiz', currentCategory); 
+            }
         }
 
         async function saveScoreToSupabase() {
@@ -1860,6 +2050,118 @@
 
         function restartGame() {
             promptStartGame(currentCategory);
+        }
+
+        // --- SISTEM MISI HARIAN (DAILY QUEST & WEEKLY STREAK) ---
+        const questDatabase = [
+            { id: 'math_quiz', title: 'Main 1x Kuis Matematika 📐', type: 'quiz', target: 'matematika' },
+            { id: 'read_ipas', title: 'Baca E-Book IPAS sampai selesai 🌍', type: 'read', target: 'ipas' },
+            { id: 'indo_quiz', title: 'Main 1x Kuis B. Indonesia 📖', type: 'quiz', target: 'indonesian' },
+            { id: 'read_pancasila', title: 'Baca E-Book Pancasila sampai selesai 🛡️', type: 'read', target: 'pancasila' },
+            { id: 'pai_quiz', title: 'Main 1x Kuis PAI 🕌', type: 'quiz', target: 'pai' },
+            { id: 'read_math', title: 'Baca E-Book Matematika sampai selesai 📐', type: 'read', target: 'math' },
+            { id: 'umum_quiz', title: 'Main 1x Kuis IPAS 🌍', type: 'quiz', target: 'umum' }
+        ];
+
+        let userQuestData = JSON.parse(localStorage.getItem('quiz_quest_data')) || null;
+
+        function initDailyQuest() {
+            const todayDate = new Date().toDateString(); // Contoh: "Wed Nov 04 2026"
+            
+            // Jika belum ada data atau data sudah beda hari
+            if (!userQuestData || userQuestData.date !== todayDate) {
+                let currentStreak = userQuestData ? userQuestData.streak : 0;
+                
+                // Cek apakah bolong sehari (reset streak jika iya)
+                if (userQuestData) {
+                    const lastDate = new Date(userQuestData.date);
+                    const today = new Date();
+                    const diffTime = Math.abs(today - lastDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    
+                    if (diffDays > 1) currentStreak = 0; // Bolong, reset ke 0
+                }
+
+                // Jika sudah 7 hari dan diklaim, reset ke 0 untuk minggu baru
+                if (currentStreak >= 7 && userQuestData?.claimed) currentStreak = 0; 
+
+                // Pilih misi acak
+                const randomQuest = questDatabase[Math.floor(Math.random() * questDatabase.length)];
+                
+                userQuestData = {
+                    date: todayDate,
+                    questId: randomQuest.id,
+                    type: randomQuest.type,
+                    target: randomQuest.target,
+                    title: randomQuest.title,
+                    completed: false,
+                    claimed: false,
+                    streak: currentStreak
+                };
+                saveQuestData();
+            }
+            renderQuestUI();
+        }
+
+        function saveQuestData() {
+            localStorage.setItem('quiz_quest_data', JSON.stringify(userQuestData));
+        }
+
+        function renderQuestUI() {
+            if (!userQuestData) return;
+            
+            document.getElementById('quest-title').innerText = userQuestData.title;
+            document.getElementById('streak-count').innerText = `${userQuestData.streak}/7 Hari`;
+
+            const btnClaim = document.getElementById('btn-claim-quest');
+            const progressBox = document.getElementById('quest-progress-box');
+            const progressBar = document.getElementById('quest-progress-bar');
+            const statusText = document.getElementById('quest-status-text');
+
+            if (userQuestData.claimed) {
+                btnClaim.classList.add('hidden');
+                progressBox.classList.remove('hidden');
+                progressBar.style.width = '100%';
+                statusText.innerText = "Selesai! Besok kembali lagi ya! ✨";
+                statusText.className = "text-[10px] font-bold text-slate-400 mt-1.5 text-center";
+                progressBar.classList.replace('bg-emerald-500', 'bg-slate-300');
+            } else if (userQuestData.completed) {
+                progressBox.classList.add('hidden');
+                statusText.classList.add('hidden');
+                btnClaim.classList.remove('hidden');
+            } else {
+                btnClaim.classList.add('hidden');
+                progressBox.classList.remove('hidden');
+                statusText.classList.remove('hidden');
+                progressBar.style.width = '0%';
+                statusText.innerText = "Belum Selesai (0/1)";
+                progressBar.classList.replace('bg-slate-300', 'bg-emerald-500');
+            }
+        }
+
+        function triggerQuestEvent(type, target) {
+            if (userQuestData && !userQuestData.completed && userQuestData.type === type && userQuestData.target === target) {
+                userQuestData.completed = true;
+                saveQuestData();
+                playSound('correct');
+                // Beri tahu user kalau misinya selesai
+                setTimeout(() => alert("🎉 Misi Harian Selesai! Jangan lupa Klaim Hadiahnya di Beranda!"), 500);
+            }
+        }
+
+        function claimQuestReward() {
+            playSound('victory');
+            userQuestData.streak += 1;
+            userQuestData.claimed = true;
+            saveQuestData();
+            renderQuestUI();
+
+            if (userQuestData.streak === 7) {
+                alert("🏆 LUAR BIASA! Kamu menyelesaikan misi 7 hari beruntun! Kamu mendapatkan Gelar 'Bintang Teladan'!");
+                // Opsional: Anda bisa tambahkan logika simpan badge ini ke Supabase nanti
+            } else {
+                alert(`🎁 Mantap! Misi hari ini diklaim. Kamu sudah beruntun ${userQuestData.streak} hari!`);
+            }
         }
 
         function escapeHtml(text) {
