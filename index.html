@@ -96,6 +96,38 @@
         .animate-combo-pop {
             animation: comboPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
+      
+      /* Tambahan Animasi Suit Modern */
+        @keyframes popUpModern {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop-modern {
+            animation: popUpModern 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Animasi Kocok Tangan Suit Kiri & Kanan */
+        @keyframes shakeHandLeft {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(-15deg); }
+            75% { transform: translateY(-5px) rotate(10deg); }
+        }
+        @keyframes shakeHandRight {
+            0%, 100% { transform: translateY(0) rotate(0deg) scaleX(-1); }
+            25% { transform: translateY(-20px) rotate(-15deg) scaleX(-1); }
+            75% { transform: translateY(-5px) rotate(10deg) scaleX(-1); }
+        }
+        .animate-shake-left {
+            animation: shakeHandLeft 0.5s infinite ease-in-out;
+            display: inline-block;
+        }
+        .animate-shake-right {
+            animation: shakeHandRight 0.5s infinite ease-in-out;
+            display: inline-block;
+            transform: scaleX(-1);
+        }
+      
     </style>
 </head>
 <body class="flex flex-col items-center justify-center p-4 selection:bg-yellow-300 selection:text-purple-900">
@@ -286,6 +318,41 @@
         </div>
     </div>
 
+        <!-- MODAL CARI LAWAN GLOBAL SUIT -->
+    <div id="suit-global-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 border-4 border-blue-200 animate-pop-modern">
+            <div class="flex justify-between items-center border-b border-blue-100 pb-2">
+                <h3 class="text-lg font-playful text-slate-800">Lawan Global! 🌐</h3>
+                <button onclick="closeGlobalSuitModal()" class="text-slate-400 hover:text-rose-500 transition pulse-btn w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 shadow-sm text-left">
+                <label class="block text-[10px] font-extrabold text-blue-600 uppercase tracking-widest mb-1">Seting Taruhan Koin 🪙</label>
+                <input type="number" id="suit-coin-global" placeholder="Kosongkan jika main santai" min="0" class="w-full px-3 py-2 rounded-xl border-2 border-blue-200 focus:border-blue-500 focus:outline-none font-bold text-slate-700">
+            </div>
+            <button onclick="startSuitGameGlobal()" class="pulse-btn w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-playful py-3 rounded-xl shadow border-b-4 border-blue-800 text-sm">
+                Mulai Cari Lawan! 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL PILIH LAWAN SUIT (TEMAN) -->
+    <div id="suit-invite-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 border-4 border-pink-200 animate-pop-modern">
+            <div class="flex justify-between items-center border-b border-pink-100 pb-2">
+                <h3 class="text-lg font-playful text-slate-800">Tantang Teman Suit! ✌️</h3>
+                <button onclick="closeInviteFriendSuitModal()" class="text-slate-400 hover:text-rose-500 transition pulse-btn w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="bg-pink-50 p-3 rounded-xl border border-pink-100 shadow-sm text-left">
+                <label class="block text-[10px] font-extrabold text-pink-600 uppercase tracking-widest mb-1">Seting Taruhan Koin 🪙</label>
+                <input type="number" id="suit-coin-friend" placeholder="Kosongkan jika main santai" min="0" class="w-full px-3 py-2 rounded-xl border-2 border-pink-200 focus:border-pink-500 focus:outline-none font-bold text-slate-700">
+            </div>
+            <p class="text-xs text-slate-500 font-bold border-t border-pink-100 pt-2">Pilih teman dari kontakmu:</p>
+            <div id="suit-friends-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                <!-- Teman akan diload lewat JS -->
+            </div>
+        </div>
+    </div>
+
     <!-- Main Container -->
     <div id="app-container" class="w-full max-w-xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border-4 border-white my-auto">
         
@@ -359,33 +426,26 @@
               <!-- CARD MENU BARU: CHAT & BATTLE -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- Teman & Chat -->
-                    <button onclick="switchScreen('screen-friends')" class="pulse-btn bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-200 border-b-4 rounded-2xl p-4 shadow-sm flex items-center space-x-3 group hover:border-cyan-400 hover:border-b-4 transition">
-                        <div class="w-10 h-10 rounded-xl bg-cyan-400 text-white flex items-center justify-center text-xl shadow-sm shrink-0 group-hover:scale-110 transition">💬</div>
-                        <div class="text-left flex-1 min-w-0">
-                            <h3 class="font-playful text-slate-800 text-sm group-hover:text-cyan-700 transition truncate">Teman & Chat</h3>
-                            <p class="text-[10px] text-slate-500 leading-tight truncate">Cari teman & ngobrol</p>
+                    <button onclick="switchScreen('screen-friends')" class="w-full text-left select-none pulse-btn bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-cyan-400 hover:border-b-4 transition duration-200">
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-400 text-white flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-105 transition">💬</div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-playful text-slate-800 text-base group-hover:text-cyan-700 transition">Teman & Chat</h3>
+                            <p class="text-xs text-slate-500 leading-tight">Cari teman & ngobrol</p>
                         </div>
+                        <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-cyan-500 text-lg mr-1"></i>
                     </button>
               
-                <!-- LEADERBOARD CARD -->
-                <button onclick="openLeaderboardPreview()" class="w-full text-left pulse-btn bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-purple-400 hover:border-b-4 transition">
+                  <!-- LEADERBOARD CARD -->
+                <button onclick="openLeaderboardPreview()" class="w-full text-left select-none pulse-btn bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-purple-400 hover:border-b-4 transition duration-200">
                     <div class="w-12 h-12 rounded-2xl bg-yellow-400 text-yellow-900 flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-105 transition">
                         🏆
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h3 class="font-playful text-slate-800 text-base group-hover:text-purple-700 transition truncate">Papan Peringkat</h3>
-                        <p class="text-xs text-slate-500 truncate">Klik tuk Lihat juara peringkat .</p>
+                        <h3 class="font-playful text-slate-800 text-base group-hover:text-purple-700 transition">Papan Peringkat</h3>
+                        <p class="text-xs text-slate-500 leading-tight">Klik aja disini tuk lihat juara peringkat.</p>
                     </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-purple-600 text-lg mr-1"></i>
                 </button>
-                  
-                  <!-- Battle 1vs1 -->
-                    <button onclick="switchScreen('screen-battle-setup')" class="pulse-btn bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 border-b-4 rounded-2xl p-4 shadow-sm flex items-center space-x-3 group hover:border-orange-400 hover:border-b-4 transition">
-                        <div class="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center text-xl shadow-sm shrink-0 group-hover:scale-110 transition">⚔️</div>
-                        <div class="text-left flex-1 min-w-0">
-                            <h3 class="font-playful text-slate-800 text-sm group-hover:text-orange-700 transition truncate">Battle 1vs1 Online</h3>
-                            <p class="text-[10px] text-slate-500 leading-tight truncate">Taruhan poin & tanding!</p>
-                        </div>
-                    </button>
 
                 <!-- RINGKASAN MATERI PELAJARAN -->
                 <button onclick="switchScreen('screen-ringkasan')" class="w-full text-left select-none pulse-btn bg-gradient-to-r from-pink-50 to-rose-50 border-2 border-pink-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-pink-400 hover:border-b-4 transition duration-200">
@@ -393,44 +453,34 @@
                         📚
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h3 class="font-playful text-slate-800 text-base group-hover:text-pink-600 transition truncate">Ringkasan Pelajaran</h3>
-                        <p class="text-xs text-slate-500 truncate">Rumus & materi seru klik disini!</p>
+                        <h3 class="font-playful text-slate-800 text-sm sm:text-base group-hover:text-pink-600 transition leading-snug">Ringkasan Pelajaran</h3>
+                        <p class="text-[11px] sm:text-xs text-slate-500 leading-tight mt-0.5">Rumus & materi seru disini!</p>
                     </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-pink-500 text-lg mr-1 shrink-0"></i>
                 </button>
+                  
+                    <!-- Battle 1vs1 (Kini menjadi Game Hub / Menu Pilihan) -->
+                    <button onclick="switchScreen('screen-battle-hub')" class="w-full text-left select-none pulse-btn bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-orange-400 hover:border-b-4 transition duration-200">
+                        <div class="w-12 h-12 rounded-2xl bg-orange-500 text-white flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-105 transition">⚔️</div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-playful text-slate-800 text-base group-hover:text-orange-700 transition">Battle 1vs1 Online</h3>
+                            <p class="text-xs text-slate-500 leading-tight">Pilih game seru & mabar</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-orange-500 text-lg mr-1"></i>
+                    </button>
                 </div>
               
-                <!-- Category Cards (5 Mata Pelajaran Utama Kelas 6) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button onclick="promptStartGame('matematika')" class="pulse-btn bg-gradient-to-br from-blue-400 to-indigo-600 hover:from-blue-500 hover:to-indigo-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-indigo-800">
-                        <i class="fa-solid fa-calculator text-3xl"></i>
-                        <span class="font-playful text-lg text-center">Matematika Dasar</span>
-                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Berhitung & Logika Asyik</span>
-                    </button>
-
-                    <button onclick="promptStartGame('umum')" class="pulse-btn bg-gradient-to-br from-emerald-400 to-teal-600 hover:from-emerald-500 hover:to-teal-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-teal-800">
-                        <i class="fa-solid fa-earth-americas text-3xl"></i>
-                        <span class="font-playful text-lg text-center">IPAS (Sains & Sosial)</span>
-                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Dunia & Alam Sekitar</span>
-                    </button>
-
-                    <button onclick="promptStartGame('indonesian')" class="pulse-btn bg-gradient-to-br from-pink-400 to-rose-600 hover:from-pink-500 hover:to-rose-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-rose-800">
-                        <i class="fa-solid fa-book-open text-3xl"></i>
-                        <span class="font-playful text-lg text-center">Bahasa Indonesia</span>
-                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Membaca & Tata Bahasa</span>
-                    </button>
-
-                    <button onclick="promptStartGame('pancasila')" class="pulse-btn bg-gradient-to-br from-violet-400 to-purple-600 hover:from-violet-500 hover:to-purple-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-purple-800">
-                        <i class="fa-solid fa-flag text-3xl"></i>
-                        <span class="font-playful text-lg text-center">Pendidikan Pancasila</span>
-                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Karakter & Wawasan</span>
-                    </button>
-
-                    <button onclick="promptStartGame('pai')" class="pulse-btn sm:col-span-2 bg-gradient-to-br from-amber-400 to-orange-600 hover:from-amber-500 hover:to-orange-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-orange-800">
-                        <i class="fa-solid fa-book-quran text-3xl"></i>
-                        <span class="font-playful text-lg text-center">Agama Islam (PAI)</span>
-                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Akidah & Akhlak Mulia</span>
-                    </button>
-                </div>
+                <!-- CARD HUB UTAMA: ARENA KUIS PINTAR -->
+                <button onclick="switchScreen('screen-arena-kuis')" class="w-full text-left select-none pulse-btn bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-purple-400 hover:border-b-4 transition duration-200">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-500 text-white flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-105 transition">
+                        👑
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-playful text-slate-800 text-base group-hover:text-purple-700 transition">Arena Kuis Pintar</h3>
+                        <p class="text-xs text-slate-500 leading-tight">Pusat Tantangan Kuis Mata Pelajaran Utama</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-purple-600 text-lg mr-1"></i>
+                </button>
             </div>
              
              <!-- SCREEN TEMAN & CHAT -->
@@ -510,6 +560,44 @@
                 </div>
             </div>
 
+            <!-- SCREEN BATTLE HUB / PILIHAN MINI GAME -->
+            <div id="screen-battle-hub" class="hidden space-y-4">
+                <div class="flex items-center justify-between bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-playful text-slate-700 flex items-center">
+                        <i class="fa-solid fa-gamepad text-orange-500 mr-2"></i> Arena Battle Online
+                    </h2>
+                    <button onclick="returnHome()" class="pulse-btn bg-slate-100 hover:bg-slate-200 text-slate-500 w-8 h-8 rounded-full flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <p class="text-xs text-slate-500 font-bold text-center">Pilih mode permainan seru untuk ditantang bersama temanmu! 👇</p>
+
+                <!-- Pilihan Mode Game -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Mode 1: Cerdas Cermat Online -->
+                    <button onclick="switchScreen('screen-battle-setup')" class="pulse-btn bg-gradient-to-br from-amber-400 to-orange-600 hover:from-amber-500 hover:to-orange-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-orange-800">
+                        <i class="fa-solid fa-brain text-3xl"></i>
+                        <span class="font-playful text-lg text-center">Cerdas Cermat Online</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Soal Campuran & Poin Rank</span>
+                    </button>
+
+                  <!-- Mode 2: Game Suit Online -->
+                    <button onclick="switchScreen('screen-suit-lobby'); fetchOnlinePlayers();" class="pulse-btn bg-gradient-to-br from-emerald-400 to-teal-600 hover:from-emerald-500 hover:to-teal-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-teal-800">
+                        <i class="fa-solid fa-hand-scissors text-3xl"></i>
+                        <span class="font-playful text-lg text-center">Game Suit Online</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Batu Gunting Kertas Seru!</span>
+                    </button>
+                </div>
+                
+                <!-- Tombol Kembali ke Beranda -->
+                <div class="text-center pt-2">
+                    <button onclick="returnHome()" class="pulse-btn w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl shadow-sm">
+                        <i class="fa-solid fa-house mr-2"></i> Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+
             <!-- SCREEN BATTLE 1VS1 SETUP -->
             <div id="screen-battle-setup" class="hidden space-y-4">
                 <div class="flex items-center justify-between bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
@@ -532,18 +620,183 @@
                     </div>
 
                     <button onclick="openInviteFriendModal()" class="pulse-btn w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-playful py-3.5 rounded-xl shadow-lg border-b-4 border-red-700 relative z-10 text-lg">
-                        Pilih Lawan & Tantang! 🚀
+                        Lawan Teman! 🚀
+                    </button>
+                  <!-- Tombol Kembali -->
+                <div class="text-center pt-2">
+                    <button onclick="returnHome()" class="pulse-btn w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl shadow-sm">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Beranda
+                    </button>
+                </div>
+              </div>
+            </div>
+
+                       <!-- SCREEN SUIT LOBBY -->
+            <div id="screen-suit-lobby" class="hidden space-y-5">
+                <div class="flex items-center justify-between bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-playful text-slate-700 flex items-center">
+                        <i class="fa-solid fa-hand-peace text-purple-500 mr-2"></i> Mode Game Suit
+                    </h2>
+                    <button onclick="switchScreen('screen-battle-hub')" class="pulse-btn bg-slate-100 hover:bg-slate-200 text-slate-500 w-8 h-8 rounded-full flex items-center justify-center transition">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+
+                <div class="text-center space-y-1 mt-2">
+                    <div class="text-5xl bouncing-toy">✊✌️✋</div>
+                    <p class="text-slate-500 text-xs font-bold">Pilih cara bertanding dan rebut koin lawan!</p>
+                </div>
+
+                <!-- Pilihan Mode Card Berjejer ke Bawah -->
+                <div class="space-y-3">
+                    
+                    <!-- Cari Lawan Cepat -->
+                    <button onclick="openGlobalSuitModal()" class="pulse-btn w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-2xl shadow-lg border-b-4 border-blue-800 p-4 text-white flex items-center justify-between text-left transition">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl shrink-0">🌐</div>
+                            <div>
+                                <h3 class="font-playful text-base">Cari Lawan Cepat</h3>
+                                <p class="text-[10px] opacity-90">Tantang pemain global secara acak!</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right opacity-70 text-lg"></i>
+                    </button>
+
+                    <!-- Tantang Teman -->
+                    <button onclick="openInviteFriendSuitModal()" class="pulse-btn w-full bg-gradient-to-r from-orange-400 to-pink-500 hover:from-orange-500 hover:to-pink-600 rounded-2xl shadow-lg border-b-4 border-pink-700 p-4 text-white flex items-center justify-between text-left transition">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl shrink-0">⚔️</div>
+                            <div>
+                                <h3 class="font-playful text-base">Tantang Teman</h3>
+                                <p class="text-[10px] opacity-90">Kirim tantangan ke daftar temanmu!</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right opacity-70 text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Daftar Pemain Online (Di Bawah) -->
+                <div class="bg-white border-2 border-slate-200 rounded-2xl p-3 shadow-sm mt-4">
+                    <h3 class="text-xs font-extrabold text-slate-500 uppercase tracking-widest mb-2 flex items-center"><i class="fa-solid fa-globe text-cyan-500 mr-1"></i> Pemain Online Saat Ini</h3>
+                    <div id="suit-online-players" class="flex space-x-3 overflow-x-auto pb-2 scrollbar-none">
+                        <!-- Disuntik melalui JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN SUIT ARENA (Tampilan Interaktif Modern) -->
+            <div id="screen-suit-arena" class="hidden space-y-4">
+                
+                <!-- Header Arena dengan Tombol Berhenti -->
+                <div class="flex items-center justify-between bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-hand-back-fist text-teal-500 text-lg"></i>
+                        <h2 class="text-base font-playful text-slate-700">Arena Suit</h2>
+                    </div>
+                    <button onclick="returnHome()" class="pulse-btn bg-rose-100 hover:bg-rose-200 text-rose-600 px-3 py-1.5 rounded-full text-[10px] font-bold border border-rose-200 flex items-center shadow-sm transition" title="Berhenti Main">
+                        <i class="fa-solid fa-power-off mr-1"></i> Keluar
+                    </button>
+                </div>
+
+                <!-- Papan Skor (Atas) -->
+                <div class="flex justify-between items-center bg-slate-100 p-3 rounded-2xl border-2 border-slate-200 shadow-inner">
+                    <div class="text-center flex-1">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Kamu</span>
+                        <span class="font-playful text-sm text-purple-700" id="suit-my-name-display">Pemain 1</span>
+                    </div>
+                    <div class="bg-orange-500 text-white font-playful px-3 py-1 rounded-full text-xs shadow-sm">VS</div>
+                    <div class="text-center flex-1">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Lawan</span>
+                        <span class="font-playful text-sm text-rose-600" id="suit-opponent-name-display">Lawan</span>
+                    </div>
+                </div>
+
+                <!-- Area Animasi Utama (Layout Diperbaiki agar Presisi) -->
+                <div class="bg-gradient-to-b from-purple-50 to-pink-50 border-2 border-purple-200 p-4 rounded-3xl text-center relative overflow-hidden h-48 flex flex-col justify-center items-center shadow-inner">
+                    <div class="absolute top-4 w-full text-center">
+                        <div class="text-sm font-playful text-purple-500 bg-white/60 px-4 py-1 rounded-full inline-block border border-purple-100 shadow-sm animate-pulse" id="suit-status-text">Pilih Gerakan!</div>
+                    </div>
+                    
+                    <div id="arena-animation-box" class="flex justify-between items-center w-full px-6 mt-4">
+                        <div class="text-[70px] transform origin-bottom" id="suit-hands-left">✊</div>
+                        <div class="text-[70px] transform origin-bottom scale-x-[-1]" id="suit-hands-right">✊</div>
+                    </div>
+                </div>
+
+                <!-- Tombol Pilihan (Modern) -->
+                <div class="bg-white border-2 border-slate-200 p-3 rounded-2xl shadow-sm space-y-2">
+                    <p class="text-[10px] font-extrabold text-slate-400 text-center uppercase tracking-wider">Senjatamu:</p>
+                    <div id="suit-choices-container" class="grid grid-cols-3 gap-3">
+                        <button onclick="makeSuitChoice('batu')" class="pulse-btn bg-slate-50 hover:bg-purple-50 border-2 border-slate-200 hover:border-purple-400 p-4 rounded-2xl flex flex-col items-center justify-center space-y-1 transition">
+                            <span class="text-4xl">🪨</span>
+                            <span class="text-[10px] font-bold text-slate-600">Batu</span>
+                        </button>
+                        <button onclick="makeSuitChoice('gunting')" class="pulse-btn bg-slate-50 hover:bg-purple-50 border-2 border-slate-200 hover:border-purple-400 p-4 rounded-2xl flex flex-col items-center justify-center space-y-1 transition">
+                            <span class="text-4xl">✂️</span>
+                            <span class="text-[10px] font-bold text-slate-600">Gunting</span>
+                        </button>
+                        <button onclick="makeSuitChoice('kertas')" class="pulse-btn bg-slate-50 hover:bg-purple-50 border-2 border-slate-200 hover:border-purple-400 p-4 rounded-2xl flex flex-col items-center justify-center space-y-1 transition">
+                            <span class="text-4xl">📄</span>
+                            <span class="text-[10px] font-bold text-slate-600">Kertas</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+                         <!-- SCREEN ARENA KUIS PINTAR (HUB 5 MAPEL) -->
+            <div id="screen-arena-kuis" class="hidden space-y-6">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl sm:text-2xl font-playful text-slate-700 flex items-center">
+                        <i class="fa-solid fa-crown text-purple-500 mr-2"></i> Arena Kuis Pintar
+                    </h2>
+                    <button onclick="returnHome()" class="text-slate-400 hover:text-slate-600 text-lg p-2 transition pulse-btn">
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
                 
-                <!-- Tombol Kembali ke Beranda -->
-                <div class="text-center pt-1">
+                <p class="text-sm text-slate-500 text-center font-bold">Pilih mata pelajaran favoritmu dan kumpulkan skor tertinggi! 🚀</p>
+
+                <!-- 5 Card Mata Pelajaran (Sistem kuis asli tetap terpanggil) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="promptStartGame('matematika')" class="pulse-btn bg-gradient-to-br from-blue-400 to-indigo-600 hover:from-blue-500 hover:to-indigo-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-indigo-800">
+                        <i class="fa-solid fa-calculator text-3xl"></i>
+                        <span class="font-playful text-lg text-center">Matematika Dasar</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Berhitung & Logika Asyik</span>
+                    </button>
+
+                    <button onclick="promptStartGame('umum')" class="pulse-btn bg-gradient-to-br from-emerald-400 to-teal-600 hover:from-emerald-500 hover:to-teal-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-teal-800">
+                        <i class="fa-solid fa-earth-americas text-3xl"></i>
+                        <span class="font-playful text-lg text-center">IPAS (Sains & Sosial)</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Dunia & Alam Sekitar</span>
+                    </button>
+
+                    <button onclick="promptStartGame('indonesian')" class="pulse-btn bg-gradient-to-br from-pink-400 to-rose-600 hover:from-pink-500 hover:to-rose-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-rose-800">
+                        <i class="fa-solid fa-book-open text-3xl"></i>
+                        <span class="font-playful text-lg text-center">Bahasa Indonesia</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Membaca & Tata Bahasa</span>
+                    </button>
+
+                    <button onclick="promptStartGame('pancasila')" class="pulse-btn bg-gradient-to-br from-violet-400 to-purple-600 hover:from-violet-500 hover:to-purple-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-purple-800">
+                        <i class="fa-solid fa-flag text-3xl"></i>
+                        <span class="font-playful text-lg text-center">Pendidikan Pancasila</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Karakter & Wawasan</span>
+                    </button>
+
+                    <button onclick="promptStartGame('pai')" class="pulse-btn sm:col-span-2 bg-gradient-to-br from-amber-400 to-orange-600 hover:from-amber-500 hover:to-orange-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-orange-800">
+                        <i class="fa-solid fa-book-quran text-3xl"></i>
+                        <span class="font-playful text-lg text-center">Agama Islam (PAI)</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Akidah & Akhlak Mulia</span>
+                    </button>
+                </div>
+
+                <!-- Tombol Kembali -->
+                <div class="text-center pt-2">
                     <button onclick="returnHome()" class="pulse-btn w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl shadow-sm">
-                        <i class="fa-solid fa-house mr-2"></i> Kembali ke Beranda
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Beranda
                     </button>
                 </div>
             </div>
-            
+          
              <!-- SCREEN RINGKASAN PELAJARAN -->
             <div id="screen-ringkasan" class="hidden space-y-6">
                 <div class="flex items-center justify-between">
@@ -905,7 +1158,7 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </>
     </div>
 
     <!-- SCRIPT LOGIC & SUPABASE INTEGRATION -->
@@ -2240,8 +2493,8 @@
             // Daftar semua layar agar otomatis ditutup saat pindah menu
             const allScreens = [
                 'screen-home', 'screen-quiz', 'screen-result', 
-                'screen-leaderboard', 'screen-ringkasan', 'screen-ebook-math', 
-                'screen-profile', 'screen-friends', 'screen-battle-setup', 'screen-chat'
+                'screen-leaderboard', 'screen-arena-kuis', 'screen-ringkasan', 'screen-ebook-math', 
+                'screen-profile', 'screen-friends', 'screen-battle-setup', 'screen-chat', 'screen-battle-hub', 'screen-suit-lobby', 'screen-suit-arena'
             ];
             
             allScreens.forEach(id => {
@@ -2490,6 +2743,7 @@
         }
 
         // --- FUNGSI MUNCULKAN COMBO ---
+        let comboTimeout; // Variabel global untuk mencegah race condition timer
         function checkComboStreak() {
             const alertEl = document.getElementById('combo-alert');
             if (currentCombo === 3 || currentCombo === 5 || currentCombo === 10) {
@@ -2498,8 +2752,11 @@
                 alertEl.classList.remove('hidden');
                 alertEl.classList.add('animate-combo-pop');
                 
+                // Bersihkan timer lama jika pengguna menjawab soal baru dengan sangat cepat
+                if (comboTimeout) clearTimeout(comboTimeout);
+                
                 // Hilangkan popup setelah 2 detik
-                setTimeout(() => { 
+                comboTimeout = setTimeout(() => { 
                     alertEl.classList.add('hidden'); 
                     alertEl.classList.remove('animate-combo-pop'); 
                 }, 2000);
@@ -3495,7 +3752,7 @@
 
                         container.innerHTML += `
                             <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-slate-100 shadow-sm mb-2">
-                                <div class="flex items-center space-x-2 cursor-pointer w-[55%]" onclick="openPlayerProfile('${friend.friend_name}')">
+                                <div class="flex items-center space-x-2 cursor-pointer w-[55%]" onclick="openPlayerProfile('${friend.friend_name.replace(/'/g, "\\'")}')">
                                     <div class="w-8 h-8 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center text-sm font-bold shrink-0">
                                         <i class="fa-solid fa-user"></i>
                                     </div>
@@ -3799,7 +4056,7 @@
                             <span class="text-xs font-bold text-slate-700 truncate w-3/4 text-left">
                                 <i class="fa-solid fa-user-ninja text-orange-400 mr-1"></i> ${escapeHtml(friend.friend_name)}
                             </span>
-                            <button onclick="sendBattleInvite('${friend.friend_user_id}', '${friend.friend_name}')" class="pulse-btn shrink-0 bg-orange-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow border-b-2 border-orange-700 transition hover:bg-orange-600">
+                            <button onclick="sendBattleInvite('${friend.friend_user_id}', '${friend.friend_name.replace(/'/g, "\\'")}')" class="pulse-btn shrink-0 bg-orange-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow border-b-2 border-orange-700 transition hover:bg-orange-600">
                                 Tantang!
                             </button>
                         </div>
@@ -3894,6 +4151,204 @@
             // Di Tahap 4 (Opsional), skor mereka berdua saat main kuis bisa diadu secara realtime!
             startGame('umum'); 
         }
+
+        // --- LOGIKA MINI GAME SUIT 1VS1 ONLINE ---
+        let currentSuitCoinSetting = 0;
+
+        async function fetchOnlinePlayers() {
+            const container = document.getElementById('suit-online-players');
+            container.innerHTML = '<div class="text-xs font-bold text-slate-400 italic py-2">Memuat pemain global...</div>';
+            try {
+                // Ambil daftar pemain yang online (last_seen dalam 5 menit terakhir)
+                const { data, error } = await supabaseClient
+                    .from('k6_leaderboard_sd')
+                    .select('name, avatar, last_seen')
+                    .neq('name', userProfile.name)
+                    .order('last_seen', { ascending: false })
+                    .limit(15);
+                
+                if (error) throw error;
+
+                const now = new Date();
+                const onlinePlayers = data.filter(p => p.last_seen && ((now - new Date(p.last_seen)) / 1000 / 60) <= 5);
+
+                if (onlinePlayers.length === 0) {
+                    container.innerHTML = '<div class="text-xs font-bold text-slate-400 italic py-2">Sedang sepi. Belum ada pemain lain yang online.</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                onlinePlayers.forEach(p => {
+                    const avatarSrc = p.avatar && p.avatar.startsWith('http') ? `<img src="${p.avatar}" class="w-8 h-8 rounded-full object-cover">` : `<div class="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-sm">${p.avatar || '👤'}</div>`;
+                    container.innerHTML += `
+                        <div class="flex flex-col items-center shrink-0 w-12 cursor-pointer hover:scale-105 transition" onclick="openPlayerProfile('${p.name}')">
+                            <div class="relative">
+                                ${avatarSrc}
+                                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+                            </div>
+                            <span class="text-[9px] font-bold text-slate-600 mt-1 truncate w-full text-center">${escapeHtml(p.name)}</span>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                container.innerHTML = '<div class="text-xs font-bold text-rose-400 italic py-2">Gagal memuat pemain.</div>';
+            }
+        }
+
+        function openGlobalSuitModal() {
+            document.getElementById('suit-global-modal').classList.remove('hidden');
+        }
+
+        function closeGlobalSuitModal() {
+            document.getElementById('suit-global-modal').classList.add('hidden');
+        }
+
+        function startSuitGameGlobal() {
+            const coinInput = document.getElementById('suit-coin-global').value;
+            currentSuitCoinSetting = coinInput ? parseInt(coinInput) : 0;
+
+            if (currentSuitCoinSetting > 0 && userProfile.coins < currentSuitCoinSetting) {
+                alert(`Koin kamu tidak cukup! Kamu cuma punya ${userProfile.coins} 🪙.`);
+                return;
+            }
+            closeGlobalSuitModal();
+            prepareSuitArena();
+        }
+
+        function openInviteFriendSuitModal() {
+            document.getElementById('suit-invite-modal').classList.remove('hidden');
+            populateSuitFriends();
+        }
+
+        function closeInviteFriendSuitModal() {
+            document.getElementById('suit-invite-modal').classList.add('hidden');
+        }
+
+        async function populateSuitFriends() {
+            const container = document.getElementById('suit-friends-list');
+            container.innerHTML = '<div class="text-xs text-slate-400 italic py-4"><i class="fa-solid fa-spinner fa-spin"></i> Memuat daftar kontak...</div>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('k6_friends_sd')
+                    .select('*')
+                    .eq('user_id', userProfile.userId)
+                    .eq('status', 'accepted');
+                
+                if (error) throw error;
+
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="text-xs text-slate-400 italic py-4">Kamu belum punya teman.</div>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                data.forEach(friend => {
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-100 mb-2 hover:border-blue-200 transition">
+                            <span class="text-xs font-bold text-slate-700 truncate w-3/4 text-left">
+                                <i class="fa-solid fa-user-group text-blue-400 mr-1"></i> ${escapeHtml(friend.friend_name)}
+                            </span>
+                            <button onclick="startSuitFriendGame('${friend.friend_name}')" class="pulse-btn shrink-0 bg-blue-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow border-b-2 border-blue-700 transition hover:bg-blue-600">
+                                Tantang!
+                            </button>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                container.innerHTML = '<div class="text-xs text-rose-500 italic py-4">Gagal memuat kontak teman.</div>';
+            }
+        }
+
+        function startSuitFriendGame(friendName) {
+            closeInviteFriendSuitModal();
+            alert(`Sistem sedang mengirim notifikasi dan menunggu ${friendName} masuk...`);
+            prepareSuitArena();
+        }
+
+        function prepareSuitArena() {
+            playSound('click');
+            switchScreen('screen-suit-arena');
+            document.getElementById('suit-status-text').innerText = "Pilih Gerakanmu!";
+            document.getElementById('suit-my-name-display').innerText = userProfile.name;
+            
+            const handLeft = document.getElementById('suit-hands-left');
+            const handRight = document.getElementById('suit-hands-right');
+            
+            // Reset Tampilan ke Tangan Mengepal Normal
+            handLeft.innerText = "✊";
+            handRight.innerText = "✊";
+            handLeft.className = "text-[70px] transform origin-bottom";
+            handRight.className = "text-[70px] transform origin-bottom scale-x-[-1]";
+            
+            document.getElementById('suit-choices-container').classList.remove('hidden');
+        }
+
+        function makeSuitChoice(playerChoice) {
+            playSound('click');
+            document.getElementById('suit-choices-container').classList.add('hidden');
+            
+            const handLeft = document.getElementById('suit-hands-left');
+            const handRight = document.getElementById('suit-hands-right');
+            const statusText = document.getElementById('suit-status-text');
+
+            // 1. Fase Persiapan (Mulai Animasi Kocok Tangan!)
+            handLeft.innerText = "✊";
+            handRight.innerText = "✊";
+            handLeft.className = "text-[70px] origin-bottom animate-shake-left";
+            handRight.className = "text-[70px] origin-bottom animate-shake-right";
+            
+            statusText.innerText = "Suit.. Suit.. Suit..";
+
+            // 2. Tunda 1.8 Detik untuk efek animasi guncang sebelum menentukan senjata
+            setTimeout(() => {
+                const choices = ['batu', 'gunting', 'kertas'];
+                const opponentChoice = choices[Math.floor(Math.random() * choices.length)];
+                const emojiMap = { batu: '🪨', gunting: '✂️', kertas: '📄' };
+                
+                // Hentikan Animasi Goyang dan munculkan Tangan (Efek Pop-up)
+                handLeft.className = "text-[70px] transform origin-bottom animate-pop-modern";
+                handRight.className = "text-[70px] transform origin-bottom scale-x-[-1] animate-pop-modern";
+                
+                handLeft.innerText = emojiMap[playerChoice];
+                handRight.innerText = emojiMap[opponentChoice];
+
+                // 3. Kalkulasi Menang / Kalah
+                let resultMsg = "";
+                if (playerChoice === opponentChoice) {
+                    resultMsg = "SERI! 🤝";
+                    playSound('click');
+                } else if (
+                    (playerChoice === 'batu' && opponentChoice === 'gunting') ||
+                    (playerChoice === 'gunting' && opponentChoice === 'kertas') ||
+                    (playerChoice === 'kertas' && opponentChoice === 'batu')
+                ) {
+                    resultMsg = "KAMU MENANG! 🎉";
+                    playSound('victory');
+                    if (currentSuitCoinSetting > 0) {
+                        userProfile.coins += currentSuitCoinSetting;
+                        localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+                        updateHeaderUI();
+                    }
+                } else {
+                    resultMsg = "KAMU KALAH! 😢";
+                    playSound('wrong');
+                    if (currentSuitCoinSetting > 0) {
+                        userProfile.coins = Math.max(0, userProfile.coins - currentSuitCoinSetting);
+                        localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+                        updateHeaderUI();
+                    }
+                }
+
+                statusText.innerText = resultMsg;
+                
+                // 4. Munculkan kembali tombol main setelah 3 detik
+                setTimeout(() => {
+                    prepareSuitArena();
+                }, 3000);
+
+            }, 1800); 
+        }
+
     </script>
 </body>
 </html>
