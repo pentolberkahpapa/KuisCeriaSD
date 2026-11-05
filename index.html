@@ -133,20 +133,34 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-extrabold text-purple-700 uppercase tracking-wider mb-1">Nama Panggilan</label>
-                    <input type="text" id="modal-name-input" placeholder="Contoh: Budi Cerdas" maxlength="15" class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none font-bold text-slate-700">
+                <!-- Daftar Akun Tersimpan (Account Switcher) -->
+                <div id="account-switcher-container" class="hidden space-y-2 mb-4">
+                    <label class="block text-xs font-extrabold text-purple-700 uppercase tracking-wider text-center">Pilih Akun Kamu:</label>
+                    <div id="saved-accounts-list" class="grid grid-cols-2 gap-2"></div>
+                    <button onclick="showNewAccountForm()" class="w-full mt-2 text-xs font-bold text-purple-600 border border-purple-200 py-2.5 rounded-xl hover:bg-purple-50 transition">+ Buat Akun Baru / Login HP Lain</button>
                 </div>
-                <div>
-                    <label class="block text-xs font-extrabold text-purple-700 uppercase tracking-wider mb-1">Pilih Kelas</label>
-                    <select id="modal-class-input" class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none font-bold text-slate-700 bg-white">
-                        <option value="Kelas 1">Kelas 1 SD</option>
-                        <option value="Kelas 2">Kelas 2 SD</option>
-                        <option value="Kelas 3">Kelas 3 SD</option>
-                        <option value="Kelas 4">Kelas 4 SD</option>
-                        <option value="Kelas 5">Kelas 5 SD</option>
-                        <option value="Kelas 6" selected>Kelas 6 SD</option>
-                    </select>
+
+                <!-- Form Akun / Profil -->
+                <div id="new-account-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-extrabold text-purple-700 uppercase tracking-wider mb-1">Nama Tampilan</label>
+                        <input type="text" id="modal-name-input" placeholder="Contoh: Amelia" maxlength="15" class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none font-bold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold text-purple-700 uppercase tracking-wider mb-1">Buat PIN (4 Angka)</label>
+                        <input type="password" id="modal-pin-input" placeholder="Contoh: 1234" maxlength="4" pattern="[0-9]*" inputmode="numeric" class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none font-bold text-slate-700 text-center tracking-[0.5em]">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold text-purple-700 uppercase tracking-wider mb-1">Pilih Kelas</label>
+                        <select id="modal-class-input" class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none font-bold text-slate-700 bg-white">
+                            <option value="Kelas 1">Kelas 1 SD</option>
+                            <option value="Kelas 2">Kelas 2 SD</option>
+                            <option value="Kelas 3">Kelas 3 SD</option>
+                            <option value="Kelas 4">Kelas 4 SD</option>
+                            <option value="Kelas 5">Kelas 5 SD</option>
+                            <option value="Kelas 6" selected>Kelas 6 SD</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -194,6 +208,84 @@
         </div>
     </div>
 
+    <!-- MODAL KONFIRMASI LOGOUT -->
+    <div id="logout-confirm-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-6 border-4 border-indigo-200 animate-[bounce_0.3s_ease-out]">
+            <div class="text-5xl">👋</div>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-playful text-slate-800">Mau Keluar?</h3>
+                <p class="text-slate-600 text-sm">Sebelum keluar, pastikan kamu mengingat <b>ID Login</b> dan <b>PIN</b> kamu ya, agar nanti bisa masuk lagi dengan mudah!</p>
+                <div class="bg-indigo-50 border border-indigo-100 p-2 rounded-lg text-center mt-2">
+                    <span class="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest block">ID Login Kamu</span>
+                    <span id="logout-user-id" class="text-sm font-bold text-indigo-700 tracking-wider">...</span>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="closeLogoutModal()" class="pulse-btn flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl text-sm">
+                    Batal
+                </button>
+                <button onclick="confirmLogout()" class="pulse-btn flex-1 bg-rose-500 hover:bg-rose-600 text-white font-playful py-3 rounded-xl shadow text-sm">
+                    Ya, Keluar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GANTI PIN -->
+    <div id="change-pin-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-6 border-4 border-purple-200 animate-[bounce_0.3s_ease-out]">
+            <div class="text-5xl">🔑</div>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-playful text-slate-800">Ganti PIN</h3>
+                <p class="text-slate-500 text-sm">Masukkan PIN barumu (4 angka) di bawah ini.</p>
+            </div>
+            <div>
+                <input type="password" id="new-pin-input" placeholder="Contoh: 1234" maxlength="4" pattern="[0-9]*" inputmode="numeric" class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none font-bold text-slate-700 text-center tracking-[0.5em]">
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="closeChangePinModal()" class="pulse-btn flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl text-sm">
+                    Batal
+                </button>
+                <button onclick="saveNewPin()" class="pulse-btn flex-1 bg-purple-600 hover:bg-purple-700 text-white font-playful py-3 rounded-xl shadow text-sm">
+                    Simpan PIN
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI HAPUS TEMAN -->
+    <div id="remove-friend-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-6 border-4 border-rose-200 animate-[bounce_0.3s_ease-out]">
+            <div class="text-5xl">💔</div>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-playful text-slate-800">Hapus Teman?</h3>
+                <p class="text-slate-600 text-sm">Apakah kamu yakin ingin menghapus <b id="remove-friend-name" class="text-rose-500">Teman</b> dari daftar temanmu?</p>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="closeRemoveFriendModal()" class="pulse-btn flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl text-sm transition">
+                    Tidak, Batal
+                </button>
+                <button id="btn-confirm-remove" onclick="confirmRemoveFriend()" class="pulse-btn flex-1 bg-rose-500 hover:bg-rose-600 text-white font-playful py-3 rounded-xl shadow border-b-4 border-rose-700 text-sm transition">
+                    Ya, Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PILIH LAWAN BATTLE -->
+    <div id="battle-invite-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 border-4 border-orange-200 animate-[comboPop_0.3s_ease-out]">
+            <div class="flex justify-between items-center border-b border-orange-100 pb-2">
+                <h3 class="text-lg font-playful text-slate-800">Pilih Lawanmu! ⚔️</h3>
+                <button onclick="closeInviteFriendModal()" class="text-slate-400 hover:text-rose-500 transition pulse-btn w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-xs text-slate-500 font-bold">Kirim tantangan ke teman di bawah ini:</p>
+            <div id="battle-friends-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                <!-- Teman akan diload lewat JS -->
+            </div>
+        </div>
+    </div>
+
     <!-- Main Container -->
     <div id="app-container" class="w-full max-w-xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border-4 border-white my-auto">
         
@@ -213,8 +305,8 @@
             
             <!-- Center Profile Tag & Koin -->
             <div class="mt-3 flex justify-center space-x-2">
-                <div class="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold cursor-pointer hover:bg-white/30 transition shadow-sm" onclick="openProfileModal()" title="Ubah Profil">
-                    <i class="fa-solid fa-user-pen"></i>
+                <div class="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold cursor-pointer hover:bg-white/30 transition shadow-sm" onclick="openMyProfile()" title="Lihat Profil Saya">
+                    <i class="fa-solid fa-user"></i>
                     <span id="header-user-tag">Halo, Siswa (Kelas 6)</span>
                 </div>
                 <div class="inline-flex items-center space-x-1 bg-yellow-400 text-yellow-900 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-sm border-2 border-yellow-500" title="Koin Bantuan">
@@ -237,30 +329,8 @@
                     <h2 class="text-2xl font-playful text-slate-700" id="welcome-greeting">Halo, Bintang Kelas! ✨</h2>
                     <p class="text-slate-500 text-sm mb-4">Pilih mata pelajaran favoritmu dan kumpulkan skor tertinggi!</p>
                 </div>
-
-                <!-- LEADERBOARD CARD -->
-                <button onclick="openLeaderboardPreview()" class="w-full text-left pulse-btn bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-purple-400 hover:border-b-4 transition">
-                    <div class="w-12 h-12 rounded-2xl bg-yellow-400 text-yellow-900 flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-105 transition">
-                        🏆
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h3 class="font-playful text-slate-800 text-base group-hover:text-purple-700 transition truncate">Papan Peringkat</h3>
-                        <p class="text-xs text-slate-500 truncate">Klik tuk Lihat juara peringkat .</p>
-                    </div>
-                </button>
-
-                <!-- RINGKASAN MATERI PELAJARAN -->
-                <button onclick="switchScreen('screen-ringkasan')" class="w-full text-left select-none pulse-btn bg-gradient-to-r from-pink-50 to-rose-50 border-2 border-pink-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-pink-400 hover:border-b-4 transition duration-200">
-                    <div class="w-12 h-12 rounded-2xl bg-pink-400 text-white flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-105 transition">
-                        📚
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h3 class="font-playful text-slate-800 text-base group-hover:text-pink-600 transition truncate">Ringkasan Pelajaran</h3>
-                        <p class="text-xs text-slate-500 truncate">Rumus & materi seru klik disini!</p>
-                    </div>
-                </button>
-
-                <!-- KOTAK MISI HARIAN (DAILY QUEST) BARU -->
+              
+              <!-- KOTAK MISI HARIAN (DAILY QUEST) BARU -->
                 <div id="daily-quest-box" class="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 p-4 rounded-2xl shadow-sm relative overflow-hidden group">
                     <div class="absolute -right-4 -top-4 text-6xl opacity-10 group-hover:rotate-12 transition">🎯</div>
                     <div class="flex items-center justify-between mb-1">
@@ -284,6 +354,49 @@
                         <div id="quest-progress-bar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
                     </div>
                     <p id="quest-status-text" class="text-[10px] font-bold text-emerald-600 mt-1.5 text-center">Belum Selesai (0/1)</p>
+                </div>
+              
+              <!-- CARD MENU BARU: CHAT & BATTLE -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Teman & Chat -->
+                    <button onclick="switchScreen('screen-friends')" class="pulse-btn bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-200 border-b-4 rounded-2xl p-4 shadow-sm flex items-center space-x-3 group hover:border-cyan-400 hover:border-b-4 transition">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-400 text-white flex items-center justify-center text-xl shadow-sm shrink-0 group-hover:scale-110 transition">💬</div>
+                        <div class="text-left flex-1 min-w-0">
+                            <h3 class="font-playful text-slate-800 text-sm group-hover:text-cyan-700 transition truncate">Teman & Chat</h3>
+                            <p class="text-[10px] text-slate-500 leading-tight truncate">Cari teman & ngobrol</p>
+                        </div>
+                    </button>
+              
+                <!-- LEADERBOARD CARD -->
+                <button onclick="openLeaderboardPreview()" class="w-full text-left pulse-btn bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-purple-400 hover:border-b-4 transition">
+                    <div class="w-12 h-12 rounded-2xl bg-yellow-400 text-yellow-900 flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-105 transition">
+                        🏆
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-playful text-slate-800 text-base group-hover:text-purple-700 transition truncate">Papan Peringkat</h3>
+                        <p class="text-xs text-slate-500 truncate">Klik tuk Lihat juara peringkat .</p>
+                    </div>
+                </button>
+                  
+                  <!-- Battle 1vs1 -->
+                    <button onclick="switchScreen('screen-battle-setup')" class="pulse-btn bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 border-b-4 rounded-2xl p-4 shadow-sm flex items-center space-x-3 group hover:border-orange-400 hover:border-b-4 transition">
+                        <div class="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center text-xl shadow-sm shrink-0 group-hover:scale-110 transition">⚔️</div>
+                        <div class="text-left flex-1 min-w-0">
+                            <h3 class="font-playful text-slate-800 text-sm group-hover:text-orange-700 transition truncate">Battle 1vs1 Online</h3>
+                            <p class="text-[10px] text-slate-500 leading-tight truncate">Taruhan poin & tanding!</p>
+                        </div>
+                    </button>
+
+                <!-- RINGKASAN MATERI PELAJARAN -->
+                <button onclick="switchScreen('screen-ringkasan')" class="w-full text-left select-none pulse-btn bg-gradient-to-r from-pink-50 to-rose-50 border-2 border-pink-200 border-b-4 rounded-2xl p-4 shadow-sm cursor-pointer flex items-center space-x-4 group hover:border-pink-400 hover:border-b-4 transition duration-200">
+                    <div class="w-12 h-12 rounded-2xl bg-pink-400 text-white flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-105 transition">
+                        📚
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-playful text-slate-800 text-base group-hover:text-pink-600 transition truncate">Ringkasan Pelajaran</h3>
+                        <p class="text-xs text-slate-500 truncate">Rumus & materi seru klik disini!</p>
+                    </div>
+                </button>
                 </div>
               
                 <!-- Category Cards (5 Mata Pelajaran Utama Kelas 6) -->
@@ -319,7 +432,118 @@
                     </button>
                 </div>
             </div>
+             
+             <!-- SCREEN TEMAN & CHAT -->
+            <div id="screen-friends" class="hidden space-y-4">
+                <div class="flex items-center justify-between bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-playful text-slate-700 flex items-center">
+                        <i class="fa-solid fa-users text-cyan-500 mr-2"></i> Teman & Chat
+                    </h2>
+                    <button onclick="returnHome()" class="pulse-btn bg-slate-100 hover:bg-slate-200 text-slate-500 w-8 h-8 rounded-full flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
 
+                <div class="bg-white border-2 border-slate-200 p-3 rounded-2xl flex space-x-2 shadow-sm">
+                    <input type="text" id="friend-id-input" placeholder="Masukkan ID Login Teman (Cth: budi1234)" class="flex-1 px-3 py-2 rounded-xl border-2 border-cyan-100 focus:border-cyan-400 focus:outline-none text-xs font-bold text-slate-700">
+                    <button onclick="searchFriendProfile()" class="pulse-btn bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow border-b-4 border-cyan-700 flex items-center">
+                        <i class="fa-solid fa-magnifying-glass mr-1"></i> Cari
+                    </button>
+                </div>
+
+                <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-3 min-h-[250px]">
+                    
+                    <!-- SEKSI 1: PERMINTAAN PERTEMANAN -->
+                    <div id="friend-requests-section" class="hidden mb-4">
+                        <div class="text-[10px] font-extrabold text-orange-500 uppercase tracking-widest mb-2 border-b border-orange-200 pb-1 flex justify-between items-center">
+                            <span>Permintaan Pertemanan</span>
+                            <span id="request-count-badge" class="bg-orange-500 text-white px-2 py-0.5 rounded-full text-[9px]">0</span>
+                        </div>
+                        <div id="friend-requests-container" class="space-y-2">
+                            <!-- Permintaan masuk muncul di sini -->
+                        </div>
+                    </div>
+
+                    <!-- SEKSI 2: DAFTAR TEMAN -->
+                    <div class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-200 pb-1 flex justify-between items-center">
+                        <span>Daftar Teman Kamu</span>
+                        <span id="friend-count-badge" class="bg-slate-400 text-white px-2 py-0.5 rounded-full text-[9px]">0</span>
+                    </div>
+                    <div id="friends-list-container" class="space-y-2">
+                        <div class="text-center p-4 text-xs font-bold text-slate-400 italic">Daftar teman sedang disiapkan...</div>
+                    </div>
+                </div>
+                
+                <!-- Tombol Kembali ke Beranda -->
+                <div class="text-center pt-1">
+                    <button onclick="returnHome()" class="pulse-btn w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl shadow-sm">
+                        <i class="fa-solid fa-house mr-2"></i> Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN CHAT ROOM -->
+            <div id="screen-chat" class="hidden space-y-4">
+                <div class="flex items-center justify-between bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="switchScreen('screen-friends')" class="pulse-btn w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-cyan-600 transition">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                        <h2 class="text-base font-playful text-slate-700 truncate w-32">Chat: <span id="chat-friend-name" class="text-cyan-600">Teman</span></h2>
+                    </div>
+                    <button onclick="switchScreen('screen-battle-setup')" class="pulse-btn bg-orange-100 text-orange-600 px-3 py-1.5 rounded-full text-[10px] font-bold border border-orange-200 flex items-center shadow-sm transition">
+                        <i class="fa-solid fa-bolt mr-1"></i> Battle
+                    </button>
+                </div>
+                
+                <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl flex flex-col h-[380px] shadow-sm overflow-hidden">
+                    <div id="chat-messages-container" class="flex-1 overflow-y-auto p-3 space-y-3">
+                        <!-- Chat masuk ke sini secara realtime -->
+                    </div>
+                    
+                    <div class="p-2 bg-white border-t-2 border-slate-100 flex items-center space-x-2">
+                        <input type="text" id="chat-message-input" placeholder="Ketik pesan..." onkeypress="if(event.key === 'Enter') sendChatMessage()" class="flex-1 px-3 py-2 rounded-xl border-2 border-cyan-100 focus:border-cyan-400 focus:outline-none text-xs font-bold text-slate-700">
+                        <button onclick="sendChatMessage()" class="pulse-btn bg-cyan-500 hover:bg-cyan-600 text-white w-10 h-10 rounded-xl flex items-center justify-center text-sm shadow border-b-4 border-cyan-700">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN BATTLE 1VS1 SETUP -->
+            <div id="screen-battle-setup" class="hidden space-y-4">
+                <div class="flex items-center justify-between bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-playful text-slate-700 flex items-center">
+                        <i class="fa-solid fa-bolt text-orange-500 mr-2"></i> Arena Battle
+                    </h2>
+                    <button onclick="returnHome()" class="pulse-btn bg-slate-100 hover:bg-slate-200 text-slate-500 w-8 h-8 rounded-full flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="bg-gradient-to-b from-orange-50 to-red-50 border-2 border-orange-200 p-5 rounded-2xl text-center space-y-4 shadow-sm relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 text-6xl opacity-10">⚔️</div>
+                    <div class="text-5xl bouncing-toy">🔥</div>
+                    <p class="text-xs font-bold text-slate-600">Tantang temanmu menjawab 10 soal acak dari semua mapel. Pemenang ambil semua taruhan!</p>
+                    
+                    <div class="bg-white p-3 rounded-xl border border-orange-100 shadow-sm">
+                        <label class="block text-[10px] font-extrabold text-orange-600 uppercase tracking-widest mb-1">Taruhan Poin 🪙 (Opsional)</label>
+                        <input type="number" id="battle-wager-input" placeholder="Kosongkan jika santai (Min. 1)" min="0" max="500" class="w-full px-3 py-2 rounded-xl border-2 border-orange-200 focus:border-orange-500 focus:outline-none text-center font-bold text-slate-700 text-xl">
+                    </div>
+
+                    <button onclick="openInviteFriendModal()" class="pulse-btn w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-playful py-3.5 rounded-xl shadow-lg border-b-4 border-red-700 relative z-10 text-lg">
+                        Pilih Lawan & Tantang! 🚀
+                    </button>
+                </div>
+                
+                <!-- Tombol Kembali ke Beranda -->
+                <div class="text-center pt-1">
+                    <button onclick="returnHome()" class="pulse-btn w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl shadow-sm">
+                        <i class="fa-solid fa-house mr-2"></i> Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+            
              <!-- SCREEN RINGKASAN PELAJARAN -->
             <div id="screen-ringkasan" class="hidden space-y-6">
                 <div class="flex items-center justify-between">
@@ -498,6 +722,127 @@
                 </div>
             </div>
 
+          <!-- SCREEN PROFIL & RUANG GANTI (BARU) -->
+            <div id="screen-profile" class="hidden space-y-4">
+                <!-- Header Profil -->
+                <div class="flex items-center justify-between bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-6xl opacity-5">🏆</div>
+                    <div>
+                        <h2 id="prof-name-title" class="text-xl font-playful text-slate-800 flex items-center">
+                            Nama Pemain <span id="prof-class-badge" class="ml-2 text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">Kelas</span>
+                        </h2>
+                            <div class="flex items-center space-x-2 mt-1">
+                            <span class="text-xs font-bold text-slate-500"><i class="fa-solid fa-star text-yellow-400"></i> Skor Total: <span id="prof-total-score" class="text-purple-600">0</span></span>
+                            <span class="text-xs font-bold text-slate-500">| <i class="fa-solid fa-trophy text-orange-400"></i> Poin Rank: <span id="prof-battle-points" class="text-orange-600">0</span></span>
+                        </div>
+                        <!-- Gelar Top Global Sederhana -->
+                        <div id="prof-top-titles" class="mt-1 flex flex-wrap gap-1">
+                             <span class="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold border border-slate-200">Pelajar Pemula</span>
+                        </div>
+                    </div>
+                    <button onclick="returnHome()" class="pulse-btn bg-slate-100 hover:bg-slate-200 text-slate-500 w-8 h-8 rounded-full flex items-center justify-center transition z-10">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Area Grid: Foto & Lencana -->
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- Sisi Kiri: Foto Profil & Tombol Edit -->
+                    <div class="bg-white border-2 border-slate-200 rounded-2xl p-2 flex flex-col relative group">
+                        <div class="aspect-square w-full rounded-xl bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden relative">
+                            <!-- Tempat Tampil Foto -->
+                            <img id="prof-photo-img" src="" class="w-full h-full object-cover hidden" alt="Foto Profil">
+                            
+                            <!-- Placeholder jika belum ada foto -->
+                            <div id="prof-photo-placeholder" class="text-center">
+                                <div class="text-4xl mb-1">👤</div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase">Belum ada foto</div>
+                            </div>
+                            
+                            <!-- Overlay Loading Upload -->
+                            <div id="prof-photo-loading" class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center hidden">
+                                <i class="fa-solid fa-spinner fa-spin text-purple-500 text-2xl mb-1"></i>
+                                <span class="text-[10px] font-bold text-slate-500">Mengunggah...</span>
+                            </div>
+                        </div>
+
+                            <!-- Area Khusus Pemilik: Tombol Upload Foto & Logout -->
+                        <div id="prof-owner-controls" class="mt-2 space-y-2 hidden">
+                            <div class="bg-indigo-50 border border-indigo-100 p-2 rounded-lg text-center">
+                                <span class="text-[9px] font-extrabold text-indigo-400 uppercase tracking-widest block">ID Login Kamu</span>
+                                <span id="prof-user-id" class="text-xs font-bold text-indigo-700 tracking-wider">user1234</span>
+                            </div>
+                            <label class="pulse-btn w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-1.5 rounded-lg text-xs flex items-center justify-center cursor-pointer transition border border-purple-200">
+                                <i class="fa-solid fa-camera mr-1"></i> Ganti Foto
+                                <input type="file" id="prof-upload-input" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
+                            </label>
+                            <div class="flex space-x-2">
+                                <button onclick="openChangePinModal()" class="pulse-btn flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-1.5 rounded-lg text-xs flex items-center justify-center transition border border-slate-200">
+                                    <i class="fa-solid fa-key mr-1"></i> Ganti PIN
+                                </button>
+                                <button onclick="openLogoutModal()" class="pulse-btn flex-1 bg-rose-100 hover:bg-rose-200 text-rose-600 font-bold py-1.5 rounded-lg text-xs flex items-center justify-center transition border border-rose-200" title="Keluar Akun">
+                                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Area Pengunjung (Tamu): Tombol Tambah Teman & Keterangan -->
+                        <div id="prof-guest-badge-info" class="mt-2 flex-1 flex flex-col space-y-2 hidden">
+                            <div class="flex-1 bg-slate-50 border border-slate-200 rounded-lg flex flex-col items-center justify-center p-2">
+                                <i class="fa-solid fa-medal text-slate-400 text-lg mb-1"></i>
+                                <span class="text-[9px] font-bold text-slate-500 text-center leading-tight">Pemain Hebat<br>Amelia Games</span>
+                            </div>
+                          <button id="btn-add-friend" onclick="sendFriendRequest()" class="pulse-btn w-full bg-cyan-100 hover:bg-cyan-200 text-cyan-700 font-bold py-1.5 rounded-lg text-xs flex items-center justify-center transition border border-cyan-200 shadow-sm">
+                                <i class="fa-solid fa-user-plus mr-1"></i> Tambah Teman
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sisi Kanan: Rak Lencana -->
+                    <div class="bg-gradient-to-b from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-3 flex flex-col">
+                        <div class="text-[10px] font-extrabold text-amber-700 uppercase tracking-widest text-center mb-2 border-b border-amber-200 pb-1">
+                            Rak Piala 🏆
+                        </div>
+                        <!-- Grid 2x3 untuk 6 Lencana -->
+                        <div class="grid grid-cols-2 gap-2 flex-1 items-center" id="prof-badges-grid">
+                            <!-- Akan diisi oleh JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Area Bawah: Dinding Sorakan -->
+                <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <h3 class="font-playful text-slate-700 text-sm"><i class="fa-solid fa-comment-dots text-pink-500 mr-1"></i> Dinding Sorakan</h3>
+                        <span id="prof-sorakan-count" class="text-xs font-bold bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full">0 Pesan</span>
+                    </div>
+
+                    <!-- Area Input Pesan (Hanya muncul jika profil orang lain) -->
+                    <div id="prof-guest-controls" class="hidden space-y-2 pb-3 border-b border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-500 text-center">Beri semangat untuk temanmu!</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="sendSorakan('Wah, kamu keren banget! 🌟')" class="pulse-btn bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 p-2 rounded-xl text-xs font-bold text-center transition">Wah, kamu keren banget! 🌟</button>
+                            <button onclick="sendSorakan('Ajarin aku dong! 📚')" class="pulse-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 p-2 rounded-xl text-xs font-bold text-center transition">Ajarin aku dong! 📚</button>
+                            <button onclick="sendSorakan('Skormu tinggi sekali! 🚀')" class="pulse-btn bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 p-2 rounded-xl text-xs font-bold text-center transition">Skormu tinggi sekali! 🚀</button>
+                            <button onclick="sendSorakan('Terus semangat belajarnya! 🔥')" class="pulse-btn bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 p-2 rounded-xl text-xs font-bold text-center transition">Terus semangat belajarnya! 🔥</button>
+                        </div>
+                    </div>
+
+                        <!-- Daftar Pesan Sorakan -->
+                    <div id="prof-sorakan-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        <!-- Akan diisi oleh JavaScript -->
+                        <div class="text-center p-4 text-xs font-bold text-slate-400 italic">Memuat sorakan...</div>
+                    </div>
+                </div>
+                
+                <!-- Tombol Kembali ke Beranda -->
+                <div class="text-center pt-1">
+                    <button onclick="returnHome()" class="pulse-btn w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl shadow-sm border border-slate-300">
+                        <i class="fa-solid fa-house mr-2"></i> Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+          
             <!-- SCREEN 4: LEADERBOARD -->
             <div id="screen-leaderboard" class="hidden space-y-4">
                 <div class="flex items-center justify-between">
@@ -514,6 +859,9 @@
 
                 <!-- Category Tabs (Pill Buttons) -->
                 <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none" id="leaderboard-tabs">
+                    <button onclick="switchLeaderboardCategory('battle')" id="tab-battle" class="pulse-btn shrink-0 px-3.5 py-1.5 rounded-full text-xs font-playful bg-slate-100 text-slate-600 border-2 border-slate-200 flex items-center space-x-1">
+                        <span>⚔️ Arena 1vs1</span>
+                    </button>
                     <button onclick="switchLeaderboardCategory('total')" id="tab-total" class="pulse-btn shrink-0 px-3.5 py-1.5 rounded-full text-xs font-playful bg-amber-400 text-amber-900 shadow-sm border-2 border-amber-500 flex items-center space-x-1">
                         <span>🌟 Juara Umum</span>
                     </button>
@@ -586,55 +934,203 @@
 
         // --- USER PROFILE & STORAGE MANAGEMENT ---
         let userProfile = JSON.parse(localStorage.getItem('quiz_user_profile_sd')) || null;
+        let savedAccounts = JSON.parse(localStorage.getItem('quiz_saved_accounts_sd')) || [];
         let currentLbCategory = 'total';
-        let pendingCategory = ''; // Untuk menyimpan pilihan mapel sebelum diklik "Siap"
+        let pendingCategory = ''; 
 
         window.addEventListener('DOMContentLoaded', () => {
             if (!userProfile) {
                 openProfileModal();
             } else {
                 updateHeaderUI();
-                initDailyQuest(); // Jalankan Sistem Misi Harian saat aplikasi dibuka
+                initDailyQuest(); 
+                startOnlineHeartbeat(); // Mulai deteksi online
             }
         });
 
+        function showNewAccountForm() {
+            document.getElementById('account-switcher-container').classList.add('hidden');
+            document.getElementById('new-account-form').classList.remove('hidden');
+            document.getElementById('modal-name-input').value = '';
+            document.getElementById('modal-pin-input').value = '';
+        }
+
+        function switchAccount(userId) {
+            const acc = savedAccounts.find(a => a.userId === userId);
+            if (acc) {
+                userProfile = acc;
+                localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+            document.getElementById('profile-modal').classList.add('hidden');
+            updateHeaderUI();
+            initDailyQuest();
+            startBGM();
+            startOnlineHeartbeat(); // Aktifkan jika dia baru bikin profil
+                initDailyQuest();
+                switchScreen('screen-home');
+            }
+        }
+
         function openProfileModal() {
+            const switcher = document.getElementById('account-switcher-container');
+            const form = document.getElementById('new-account-form');
+            const list = document.getElementById('saved-accounts-list');
+            
             if (userProfile) {
+                // Mode Edit Profil Aktif
+                switcher.classList.add('hidden');
+                form.classList.remove('hidden');
                 document.getElementById('modal-name-input').value = userProfile.name;
+                document.getElementById('modal-pin-input').value = userProfile.pin || '';
                 document.getElementById('modal-class-input').value = userProfile.className;
-                // Pilih kembali avatar yang sebelumnya digunakan
                 if (userProfile.avatar) {
                     const radio = document.querySelector(`input[name="avatar"][value="${userProfile.avatar}"]`);
                     if (radio) radio.checked = true;
                 }
+            } else if (savedAccounts.length > 0) {
+                // Mode Account Switcher (Tinggal Tap)
+                switcher.classList.remove('hidden');
+                form.classList.add('hidden');
+                list.innerHTML = '';
+                savedAccounts.forEach(acc => {
+                    list.innerHTML += `
+                        <button onclick="switchAccount('${acc.userId}')" class="flex flex-col items-center justify-center p-3 bg-purple-50 hover:bg-purple-100 border-2 border-purple-200 rounded-xl transition shadow-sm">
+                            <span class="text-3xl mb-1">${acc.avatar && !acc.avatar.startsWith('http') ? acc.avatar : '👤'}</span>
+                            <span class="text-xs font-bold text-purple-700 truncate w-full text-center">${acc.name}</span>
+                        </button>
+                    `;
+                });
+            } else {
+                // Pemain Baru Sama Sekali
+                switcher.classList.add('hidden');
+                form.classList.remove('hidden');
             }
             document.getElementById('profile-modal').classList.remove('hidden');
         }
 
-        function saveProfile() {
+        function openLogoutModal() {
+            document.getElementById('logout-user-id').innerText = userProfile.userId || 'Belum ada ID';
+            document.getElementById('logout-confirm-modal').classList.remove('hidden');
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logout-confirm-modal').classList.add('hidden');
+        }
+
+        function confirmLogout() {
+            document.getElementById('logout-confirm-modal').classList.add('hidden');
+            // Hanya hapus sesi profil saat ini, Account Switcher tetap aman di HP
+            localStorage.removeItem('quiz_user_profile_sd');
+            userProfile = null;
+            switchScreen('screen-home');
+            openProfileModal();
+        }
+
+        function openChangePinModal() {
+            document.getElementById('new-pin-input').value = '';
+            document.getElementById('change-pin-modal').classList.remove('hidden');
+        }
+
+        function closeChangePinModal() {
+            document.getElementById('change-pin-modal').classList.add('hidden');
+        }
+
+        function saveNewPin() {
+            const newPin = document.getElementById('new-pin-input').value.trim();
+            if (!newPin || newPin.length < 4) {
+                alert('PIN harus 4 angka ya!');
+                return;
+            }
+            
+            // Update PIN di session aktif
+            userProfile.pin = newPin;
+            localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+            
+            // Update PIN di Account Switcher
+            const accountIndex = savedAccounts.findIndex(acc => acc.userId === userProfile.userId);
+            if (accountIndex !== -1) {
+                savedAccounts[accountIndex].pin = newPin;
+                localStorage.setItem('quiz_saved_accounts_sd', JSON.stringify(savedAccounts));
+            }
+            
+            closeChangePinModal();
+            alert('Mantap! PIN kamu berhasil diubah.');
+        }
+
+        async function saveProfile() {
             const nameInput = document.getElementById('modal-name-input').value.trim();
+            const pinInput = document.getElementById('modal-pin-input').value.trim();
             const classInput = document.getElementById('modal-class-input').value;
-            const avatarInput = document.querySelector('input[name="avatar"]:checked').value; // Tangkap avatar
+            let avatarInput = document.querySelector('input[name="avatar"]:checked') ? document.querySelector('input[name="avatar"]:checked').value : '👤'; 
+
+            if (userProfile && userProfile.avatar) {
+                const checkedRadio = document.querySelector('input[name="avatar"]:checked');
+                if (!checkedRadio || (userProfile.avatar.startsWith('http'))) {
+                    avatarInput = userProfile.avatar;
+                }
+            }
 
             if (!nameInput) {
                 alert('Tulis nama panggilanmu dulu ya!');
                 return;
             }
+            if (!pinInput || pinInput.length < 4) {
+                alert('Tulis PIN 4 angka untuk keamanan akunmu!');
+                return;
+            }
 
-            // Pertahankan koin lama, atau beri modal awal 10 koin jika pengguna baru
-            const currentCoins = userProfile && userProfile.coins !== undefined ? userProfile.coins : 10;
+            let currentCoins = userProfile && userProfile.coins !== undefined ? userProfile.coins : 10;
+            
+            // Cek ke Supabase apakah user ini sudah pernah main (Untuk yang Ganti HP)
+            try {
+                const { data: existingUser } = await supabaseClient
+                    .from('k6_leaderboard_sd')
+                    .select('coins, user_id')
+                    .eq('name', nameInput)
+                    .eq('class_name', classInput)
+                    .eq('category', 'total')
+                    .maybeSingle();
+                
+                if (existingUser) {
+                    currentCoins = existingUser.coins || 0; // Tarik koin lama dari cloud
+                    if (!userProfile) userProfile = { userId: existingUser.user_id };
+                }
+            } catch (e) { console.log("Gagal cek koin cloud"); }
+
+            // Buat ID User unik, jika nama hanya berisi emoji maka pakai kata ganti 'player'
+            let generatedName = nameInput.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (!generatedName) generatedName = 'player';
+            let userId = userProfile && userProfile.userId ? userProfile.userId : generatedName + Math.floor(1000 + Math.random() * 9000);
 
             userProfile = {
+                userId: userId,
+                pin: pinInput,
                 name: nameInput,
                 className: classInput,
                 coins: currentCoins,
-                avatar: avatarInput // Simpan avatar ke profil
+                avatar: avatarInput 
             };
 
+            // Simpan ke sesi aktif
             localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+            
+            // Simpan ke daftar riwayat akun HP (Account Switcher)
+            const accountIndex = savedAccounts.findIndex(acc => acc.userId === userId);
+            if (accountIndex !== -1) {
+                savedAccounts[accountIndex] = userProfile;
+            } else {
+                savedAccounts.push(userProfile);
+            }
+            localStorage.setItem('quiz_saved_accounts_sd', JSON.stringify(savedAccounts));
+
             document.getElementById('profile-modal').classList.add('hidden');
             updateHeaderUI();
+            initDailyQuest();
             startBGM();
+            
+            // Perbarui visual ID jika tombol edit ditekan dari dalam layar profil
+            if (!document.getElementById('screen-profile').classList.contains('hidden')) {
+                openPlayerProfile(userProfile.name);
+            }
         }
 
         function updateHeaderUI() {
@@ -644,11 +1140,19 @@
                     localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
                 }
                 
-                // Gunakan avatar dari profil, atau default '👤' jika pengguna lama belum memilih
-                const userAvatar = userProfile.avatar ? userProfile.avatar : '👤';
+                // Cek apakah avatar berupa link gambar (dari Supabase) atau sekadar emoji
+                let avatarDisplay = '';
+                if (userProfile.avatar && userProfile.avatar.startsWith('http')) {
+                    // Jika berupa URL, render sebagai elemen gambar img bundar kecil
+                    avatarDisplay = `<img src="${userProfile.avatar}" class="w-5 h-5 rounded-full object-cover inline-block mr-1 border border-white/50 shadow-sm" alt="profil">`;
+                } else {
+                    // Jika hanya emoji, tampilkan teks biasa
+                    const userAvatar = userProfile.avatar ? userProfile.avatar : '👤';
+                    avatarDisplay = `<span class="text-sm mr-1">${userAvatar}</span>`;
+                }
                 
                 // Memasukkan avatar ke dalam Header Tag menggunakan innerHTML
-                document.getElementById('header-user-tag').innerHTML = `<span class="text-sm mr-1">${userAvatar}</span> Halo, ${userProfile.name}`;
+                document.getElementById('header-user-tag').innerHTML = `${avatarDisplay} Halo, ${userProfile.name}`;
                 document.getElementById('welcome-greeting').innerText = `Halo, ${userProfile.name}! ✨`;
                 document.getElementById('lb-class-badge').innerText = userProfile.className;
                 document.getElementById('header-coin-tag').innerText = userProfile.coins;
@@ -1689,6 +2193,7 @@
             userProfile.coins -= 1;
             localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
             updateHeaderUI();
+            syncCoinsToSupabase(); // SINKRON KOIN KE CLOUD
             
             lifeline5050Used = true;
             updateLifelineUI();
@@ -1729,19 +2234,36 @@
             document.getElementById('timer-box').classList.remove('animate-pulse', 'text-rose-600');
         }
 
-            // --- NAVIGATION & SCREENS ---
+        // --- NAVIGATION & SCREENS ---
         function switchScreen(screenId) {
             playSound('click');
-            ['screen-home', 'screen-quiz', 'screen-result', 'screen-leaderboard', 'screen-ringkasan', 'screen-ebook-math'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
+            // Daftar semua layar agar otomatis ditutup saat pindah menu
+            const allScreens = [
+                'screen-home', 'screen-quiz', 'screen-result', 
+                'screen-leaderboard', 'screen-ringkasan', 'screen-ebook-math', 
+                'screen-profile', 'screen-friends', 'screen-battle-setup', 'screen-chat'
+            ];
+            
+            allScreens.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
             });
-            document.getElementById(screenId).classList.remove('hidden');
+            
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) targetScreen.classList.remove('hidden');
+
+            // Trigger fetch otomatis saat buka menu teman
+            if (screenId === 'screen-friends') fetchFriendsList();
         }
 
-        // --- SOLUSI 1: FUNGSI KEMBALI KE BERANDA ---
+             // --- SOLUSI 1: FUNGSI KEMBALI KE BERANDA ---
         function returnHome() {
             // Menghentikan timer kuis jika pengguna kembali ke beranda secara paksa
             if (timer) clearInterval(timer); 
+            
+            // Reset state battle jika pengguna membatalkan/keluar di tengah permainan
+            activeBattleId = null;
+            currentBattleWager = 0;
             
             // Kembalikan warna layar ke tema default (Beranda Ungu/Pink)
             document.body.style.background = categoryMeta.default.themeBg;
@@ -1997,6 +2519,7 @@
                 correctCount++;
                 currentCombo++; // Tambah jumlah combo beruntun
                 score += 5; // Skor pasti 5 per soal, 20 soal x 5 = 100 poin
+                userProfile.coins = (userProfile.coins || 0) + 1; // FARMING KOIN: 1 Benar = 1 Koin
                 playSound('correct');
                 checkComboStreak(); // Panggil fungsi cek combo
                 btnElement.classList.remove('bg-white', 'border-slate-200');
@@ -2061,16 +2584,14 @@
                 titleEl.innerText = "Game Over!";
                 subtitleEl.innerText = "Nyawa kamu habis sebelum kuis selesai. Yuk coba lagi dan lebih hati-hati!";
             } else if (score === 100) {
-                coinReward = 2;
                 emojiEl.innerText = "👑";
                 titleEl.innerText = "Luar Biasa, Jenius!";
-                subtitleEl.innerText = "Nilai 100! Kamu dapat hadiah tambahan 2 Koin Bantuan 🪙!";
-                triggerConfetti(); // Panggil Hujan Confetti
+                subtitleEl.innerText = "Nilai 100 Sempurna! Pertahankan prestasimu!";
+                triggerConfetti(); 
             } else if (score >= 75) {
-                coinReward = 1;
                 emojiEl.innerText = "🌟";
                 titleEl.innerText = "Hebat Sekali!";
-                subtitleEl.innerText = "Nilaimu bagus, kamu dapat hadiah tambahan 1 Koin Bantuan 🪙!";
+                subtitleEl.innerText = "Nilaimu bagus, teruslah belajar supaya bisa mencapai 100!";
             } else {
                 emojiEl.innerText = "💪";
                 titleEl.innerText = "Tetap Semangat!";
@@ -2084,14 +2605,120 @@
                 updateHeaderUI();
             }
 
-            await saveScoreToSupabase();
-            
-            // Trigger misi hanya jika kuis diselesaikan sampai akhir (tidak game over)
-            if (lives > 0) {
-                triggerQuestEvent('quiz', currentCategory); 
+            // --- FITUR WASIT BATTLE 1VS1 ---
+            if (activeBattleId) {
+                const battleCat = "BTL_" + activeBattleId;
+                const wager = currentBattleWager;
+                activeBattleId = null; // Reset ID agar tidak looping
+                
+                // Simpan skor khusus battle ke database agar bisa dibaca wasit
+                // Pakai class_name "BATTLE_TEMP" agar tidak merusak papan peringkat utama
+                await supabaseClient.from('k6_leaderboard_sd').insert([{
+                    name: userProfile.name,
+                    class_name: "BATTLE_TEMP", 
+                    category: battleCat,
+                    score: score,
+                    avatar: userProfile.avatar,
+                    user_id: userProfile.userId,
+                    coins: userProfile.coins || 0,
+                    battle_rank_points: -1, 
+                    updated_at: new Date()
+                }]);
+
+                // Jalankan fungsi wasit untuk menunggu skor lawan
+                checkBattleResult(battleCat, wager);
+                
+            } else {
+                // Kuis Normal (Bukan Battle)
+                syncCoinsToSupabase(); 
+                await saveScoreToSupabase();
+                
+                if (lives > 0) triggerQuestEvent('quiz', currentCategory); 
             }
         }
 
+        // --- LOGIKA WASIT BATTLE ---
+        async function checkBattleResult(battleCategory, wager) {
+            // Ubah UI Result menjadi status "Menunggu Lawan"
+            document.getElementById('result-title').innerText = "Menunggu Lawan... ⏳";
+            document.getElementById('result-subtitle').innerText = "Wasit sedang memantau skor lawanmu. Tolong jangan tutup layar ini ya!";
+            document.getElementById('result-emoji').innerText = "⚖️";
+            
+            // Sembunyikan tombol Menu Utama & Main Lagi sementara
+            const buttons = document.querySelectorAll('#screen-result button');
+            buttons.forEach(btn => btn.classList.add('hidden'));
+
+            let attempts = 0;
+            const checkInterval = setInterval(async () => {
+                attempts++;
+                
+                // Cek apakah ada 2 baris skor dengan ID Battle yang sama masuk ke database
+                const { data, error } = await supabaseClient
+                    .from('k6_leaderboard_sd')
+                    .select('user_id, name, score')
+                    .eq('category', battleCategory);
+                
+                if (data && data.length === 2) {
+                    clearInterval(checkInterval); // Wasit menemukan skor keduanya
+                    processBattleWinner(data, wager, buttons);
+                } else if (attempts > 20) { // Timeout setelah 60 detik (20 x 3 detik)
+                    clearInterval(checkInterval);
+                    alert("Lawan sepertinya terputus atau kehabisan waktu. Taruhan koinmu dikembalikan.");
+                    userProfile.coins += wager;
+                    localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+                    syncCoinsToSupabase();
+                    updateHeaderUI();
+                    
+                    document.getElementById('result-title').innerText = "Battle Dibatalkan";
+                    document.getElementById('result-subtitle').innerText = "Lawan tidak menyelesaikan pertandingan tepat waktu.";
+                    buttons.forEach(btn => btn.classList.remove('hidden'));
+                }
+            }, 3000); // Cek setiap 3 detik
+        }
+
+        function processBattleWinner(players, wager, buttons) {
+            const p1 = players[0];
+            const p2 = players[1];
+            
+            let winnerId = null;
+            let isDraw = false;
+
+            // Adu mekanik skor
+            if (p1.score > p2.score) winnerId = p1.user_id;
+            else if (p2.score > p1.score) winnerId = p2.user_id;
+            else isDraw = true;
+
+            const amIWinner = (winnerId === userProfile.userId);
+
+            if (isDraw) {
+                userProfile.coins += wager; // Seri: Modal dikembalikan
+                document.getElementById('result-title').innerText = "SERI! 🤝";
+                document.getElementById('result-subtitle').innerText = `Kalian berdua imbang dengan skor ${p1.score}. Taruhan ${wager} koin dikembalikan.`;
+            } else if (amIWinner) {
+                userProfile.coins += (wager * 2); // Menang: Ambil modal + taruhan lawan
+                userProfile.battle_rank_points = (userProfile.battle_rank_points || 0) + 10; // Bonus Poin Rank 
+                
+                document.getElementById('result-emoji').innerText = "🏆";
+                document.getElementById('result-title').innerText = "KAMU MENANG! 🎉";
+                document.getElementById('result-subtitle').innerText = `Hebat! Skor kamu mengalahkan lawan. Kamu merebut ${wager * 2} Koin & +10 Poin Rank!`;
+                playSound('perfect');
+                triggerConfetti();
+            } else {
+                // Kalah: Koin sudah dipotong di awal, jadi tidak ditambah
+                document.getElementById('result-emoji').innerText = "😭";
+                document.getElementById('result-title').innerText = "KAMU KALAH! 💔";
+                document.getElementById('result-subtitle').innerText = `Skormu belum bisa mengalahkan lawan. Kamu kehilangan ${wager} koin taruhan. Ayo coba lagi nanti!`;
+                playSound('wrong');
+            }
+
+            // Simpan hasil koin dan point rank terbaru ke Local & Cloud
+            localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+            syncCoinsToSupabase();
+            updateHeaderUI();
+            
+            // Tampilkan lagi tombol Menu Utama
+            buttons.forEach(btn => btn.classList.remove('hidden'));
+        }
         async function saveScoreToSupabase() {
             if (!userProfile) return;
 
@@ -2116,7 +2743,7 @@
 
             if (existing) {
                 // Update avatar juga agar selalu sinkron jika user ganti karakter
-                const updatePayload = { updated_at: new Date(), avatar: userProfile.avatar };
+                const updatePayload = { updated_at: new Date(), avatar: userProfile.avatar, user_id: userProfile.userId };
                 if (newScore > existing.score) updatePayload.score = newScore;
                 
                 await supabaseClient
@@ -2131,10 +2758,27 @@
                         class_name: userProfile.className,
                         category: category,
                         score: newScore,
-                        avatar: userProfile.avatar, // Simpan ke database online
+                        avatar: userProfile.avatar, 
+                        user_id: userProfile.userId, 
+                        coins: userProfile.coins || 0,
+                        battle_rank_points: userProfile.battle_rank_points || 0,
                         updated_at: new Date()
                     }]);
             }
+        }
+
+        // Fungsi untuk memastikan koin dan poin rank aman di database (Cloud)
+        async function syncCoinsToSupabase() {
+            if (!userProfile || !userProfile.userId) return;
+            try {
+                await supabaseClient
+                    .from('k6_leaderboard_sd')
+                    .update({ 
+                        coins: userProfile.coins,
+                        battle_rank_points: userProfile.battle_rank_points || 0
+                    })
+                    .eq('user_id', userProfile.userId);
+            } catch(e) { console.error("Gagal sinkron", e); }
         }
 
         async function calculateAndUpdateTotalScore() {
@@ -2163,9 +2807,10 @@
         function switchLeaderboardCategory(category) {
             currentLbCategory = category;
             
-            const tabs = ['total', 'matematika', 'umum', 'indonesian', 'pancasila', 'pai'];
+            const tabs = ['battle', 'total', 'matematika', 'umum', 'indonesian', 'pancasila', 'pai'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
+                if (!btn) return; // Mencegah error jika elemen belum termuat
                 if (t === category) {
                     btn.className = "pulse-btn shrink-0 px-3.5 py-1.5 rounded-full text-xs font-playful bg-amber-400 text-amber-900 shadow-sm border-2 border-amber-500 flex items-center space-x-1";
                 } else {
@@ -2181,12 +2826,22 @@
             tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-400 italic">Mengambil data peringkat online...</td></tr>`;
 
             try {
-                const { data, error } = await supabaseClient
+                // Tentukan kolom nilai berdasarkan kategori yang dipilih
+                let orderColumn = 'score';
+                let queryFilter = supabaseClient
                     .from('k6_leaderboard_sd')
                     .select('*')
-                    .eq('class_name', userProfile.className)
-                    .eq('category', currentLbCategory)
-                    .order('score', { ascending: false });
+                    .eq('class_name', userProfile.className);
+
+                if (currentLbCategory === 'battle') {
+                    orderColumn = 'battle_rank_points';
+                    // Hanya tampilkan yang poin rank-nya lebih besar dari 0 (poin 0 disembunyikan)
+                    queryFilter = queryFilter.gt('battle_rank_points', 0).order('battle_rank_points', { ascending: false });
+                } else {
+                    queryFilter = queryFilter.eq('category', currentLbCategory).order('score', { ascending: false });
+                }
+
+                const { data, error } = await queryFilter;
 
                 if (error) throw error;
 
@@ -2207,30 +2862,172 @@
                     const isCurrentStudent = userProfile && item.name.toLowerCase() === userProfile.name.toLowerCase();
                     const nameDisplay = isCurrentStudent ? `${escapeHtml(item.name)} (Kamu)` : escapeHtml(item.name);
 
-                    // Ambil avatar dari database, jika belum punya (user lama) berikan default 👤
-                    const pAvatar = item.avatar ? item.avatar : '👤';
-
                     if (isCurrentStudent) {
                         row.classList.add('bg-purple-50', 'font-bold');
                     }
 
+                    // Nama pemain dibikin rapi tanpa foto, dan bisa diklik!
+                    const displayScore = currentLbCategory === 'battle' ? `${item.battle_rank_points || 0} 🏆` : item.score;
+
                     row.innerHTML = `
-                        <td class="p-3 text-center"><span class="inline-block w-7 h-7 rounded-full ${badgeColor} text-xs flex items-center justify-center mx-auto">${index + 1}</span></td>
-                        <td class="p-3 font-bold text-slate-700">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-xl bg-white rounded-full shadow-sm px-1 py-0.5">${pAvatar}</span> 
-                                <span class="truncate">${nameDisplay}</span>
-                            </div>
+                        <td class="p-3 text-center whitespace-nowrap"><span class="inline-block w-7 h-7 rounded-full ${badgeColor} text-xs flex items-center justify-center mx-auto">${index + 1}</span></td>
+                        <td class="p-3 whitespace-nowrap">
+                            <button onclick="openPlayerProfile('${item.name}')" class="font-bold text-slate-700 hover:text-purple-600 hover:underline transition truncate text-left w-full">
+                                ${nameDisplay}
+                            </button>
                         </td>
-                        <td class="p-3 text-right font-playful text-purple-600">${item.score}</td>
+                        <td class="p-3 text-right whitespace-nowrap font-playful text-purple-600">${displayScore}</td>
                     `;
+
                     tbody.appendChild(row);
                 });
 
-            } catch (err) {
+        } catch (err) {
                 console.error("Gagal memuat leaderboard:", err);
                 tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-rose-500 italic">Gagal memuat data online.</td></tr>`;
             }
+        }
+
+        // --- DEFINISI LENCANA PENGHARGAAN (BADGES) ---
+        const BADGE_DEFS = [
+            { id: 'bintang_teladan', icon: '🌟', title: 'Bintang Teladan', desc: 'Selesai Misi 7 Hari' },
+            { id: 'si_kilat', icon: '⚡', title: 'Si Kilat', desc: 'Combo Benar x5' },
+            { id: 'jenius_mtk', icon: '📐', title: 'Jenius MTK', desc: 'Skor 100 Matematika' },
+            { id: 'penjelajah', icon: '🌍', title: 'Penjelajah', desc: 'Skor 100 IPAS' },
+            { id: 'pakar_bahasa', icon: '📖', title: 'Pakar Bahasa', desc: 'Skor 100 B. Indo' },
+            { id: 'ahli_ibadah', icon: '🕌', title: 'Ahli Ibadah', desc: 'Skor 100 PAI' }
+        ];
+
+        // Variabel global untuk mengingat profil siapa yang sedang dilihat
+        let currentViewedProfile = ""; 
+
+        // --- FUNGSI KLIK PROFIL DARI BERANDA (PROFIL SENDIRI) ---
+        function openMyProfile() {
+            if (!userProfile) {
+                openProfileModal();
+                return;
+            }
+            openPlayerProfile(userProfile.name);
+        }
+
+        // --- FUNGSI BUKA LAYAR PROFIL (PUBLIK / SENDIRI) ---
+        async function openPlayerProfile(playerName) {
+            currentViewedProfile = playerName;
+            
+            // Siapkan Layar (Bersihkan Data Lama)
+            switchScreen('screen-profile');
+            document.getElementById('prof-name-title').innerHTML = `Memuat...`;
+            document.getElementById('prof-photo-img').classList.add('hidden');
+            document.getElementById('prof-photo-placeholder').classList.remove('hidden');
+            document.getElementById('prof-badges-grid').innerHTML = '';
+            document.getElementById('prof-sorakan-list').innerHTML = `<div class="text-center p-4 text-xs font-bold text-slate-400 italic">Memuat sorakan...</div>`;
+            document.getElementById('prof-sorakan-count').innerText = "0 Pesan";
+
+            // Atur Kontrol Pemilik vs Tamu
+            const isOwner = userProfile && (playerName.toLowerCase() === userProfile.name.toLowerCase());
+            document.getElementById('prof-owner-controls').classList.toggle('hidden', !isOwner);
+            document.getElementById('prof-guest-badge-info').classList.toggle('hidden', isOwner); // Tampilkan info jika tamu
+            document.getElementById('prof-guest-controls').classList.toggle('hidden', isOwner);
+            
+            if (isOwner) {
+                document.getElementById('prof-user-id').innerText = userProfile.userId || 'Belum ada ID';
+            }
+
+            try {
+                // Ambil Data Profil dari Supabase (Cari skor 'total' untuk dapat info dasar)
+                const { data: profileData, error: profErr } = await supabaseClient
+                    .from('k6_leaderboard_sd')
+                    .select('*')
+                    .eq('name', playerName)
+                    .eq('category', 'total')
+                    .maybeSingle();
+
+                if (profErr) throw profErr;
+
+                if (profileData) {
+                    // Update Info Dasar & Tambahkan Ikon Edit Jika Pemilik
+                    const editIconHtml = isOwner ? `<button onclick="openProfileModal()" class="ml-2 text-slate-400 hover:text-purple-600 transition" title="Edit Nama & Profil"><i class="fa-solid fa-pen text-sm bg-slate-100 p-1.5 rounded-full"></i></button>` : '';
+                    document.getElementById('prof-name-title').innerHTML = `${escapeHtml(profileData.name)} <span id="prof-class-badge" class="ml-2 text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">${escapeHtml(profileData.class_name)}</span> ${editIconHtml}`;
+                    document.getElementById('prof-total-score').innerText = profileData.score || 0;
+                    document.getElementById('prof-battle-points').innerText = profileData.battle_rank_points || 0;
+
+                    // Update Foto atau Emoji (Memakai kolom avatar)
+                    if (profileData.avatar && profileData.avatar.startsWith('http')) {
+                        document.getElementById('prof-photo-img').src = profileData.avatar;
+                        document.getElementById('prof-photo-img').classList.remove('hidden');
+                        document.getElementById('prof-photo-placeholder').classList.add('hidden');
+                    } else {
+                        // Jika avatar bukan link http (berarti emoji atau kosong)
+                        const avatarToDisplay = profileData.avatar ? profileData.avatar : (isOwner && userProfile.avatar ? userProfile.avatar : '👤');
+                        document.getElementById('prof-photo-img').classList.add('hidden');
+                        document.getElementById('prof-photo-placeholder').classList.remove('hidden');
+                        document.getElementById('prof-photo-placeholder').innerHTML = `
+                            <div class="text-5xl mb-1 bouncing-toy">${avatarToDisplay}</div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase">Belum ada foto</div>
+                        `;
+                    }
+                } else {
+                    // Kasus untuk pemain baru yang belum punya skor 'total' di database
+                    const avatarToDisplay = (isOwner && userProfile && userProfile.avatar) ? (userProfile.avatar.startsWith('http') ? 'foto' : userProfile.avatar) : '👤';
+                    
+                    const editIconHtml = isOwner ? `<button onclick="openProfileModal()" class="ml-2 text-slate-400 hover:text-purple-600 transition" title="Edit Nama & Profil"><i class="fa-solid fa-pen text-sm bg-slate-100 p-1.5 rounded-full"></i></button>` : '';
+                    document.getElementById('prof-name-title').innerHTML = `${escapeHtml(playerName)} <span class="ml-2 text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold">Pemain Baru</span> ${editIconHtml}`;
+                    
+                    if (avatarToDisplay === 'foto' && userProfile.avatar) {
+                        document.getElementById('prof-photo-img').src = userProfile.avatar;
+                        document.getElementById('prof-photo-img').classList.remove('hidden');
+                        document.getElementById('prof-photo-placeholder').classList.add('hidden');
+                    } else {
+                        document.getElementById('prof-photo-img').classList.add('hidden');
+                        document.getElementById('prof-photo-placeholder').classList.remove('hidden');
+                        document.getElementById('prof-photo-placeholder').innerHTML = `
+                            <div class="text-5xl mb-1 bouncing-toy">${avatarToDisplay}</div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase">Belum ada foto</div>
+                        `;
+                    }
+                }
+
+                // Render Rak Lencana (Untuk sekarang kita beri contoh data acak, nanti bisa disinkron ke database)
+                renderBadges([]); 
+
+                // Ambil Daftar Sorakan
+                fetchSorakan(playerName);
+
+            } catch (err) {
+                console.error("Gagal memuat profil:", err);
+                alert("Terjadi kesalahan saat memuat data profil.");
+            }
+        }
+
+        // --- RENDER RAK LENCANA ---
+        function renderBadges(unlockedIds) {
+            const grid = document.getElementById('prof-badges-grid');
+            grid.innerHTML = '';
+            
+            BADGE_DEFS.forEach(badge => {
+                // Contoh: Jika punya gelar Bintang Teladan (unlocked)
+                // Untuk sementara, kita pakai deteksi sederhana:
+                let isUnlocked = false;
+                
+                // Logika Deteksi Lencana Otomatis (Hanya untuk profil sendiri)
+                if (currentViewedProfile === userProfile?.name) {
+                    if (badge.id === 'bintang_teladan' && userQuestData?.streak >= 7) isUnlocked = true;
+                    // Logika lainnya bisa dikembangkan dengan membaca skor per-kategori di database
+                }
+                
+                const badgeHtml = isUnlocked ? `
+                    <div class="flex flex-col items-center p-1 bg-white rounded-lg shadow-sm border border-amber-200 transform hover:scale-110 transition cursor-help" title="${badge.title}: ${badge.desc}">
+                        <span class="text-2xl">${badge.icon}</span>
+                        <span class="text-[8px] font-bold text-amber-700 text-center leading-tight mt-0.5 truncate w-full">${badge.title}</span>
+                    </div>
+                ` : `
+                    <div class="flex flex-col items-center p-1 bg-slate-50 opacity-40 grayscale rounded-lg border border-slate-200 cursor-not-allowed" title="Belum Terbuka">
+                        <span class="text-2xl">🔒</span>
+                        <span class="text-[8px] font-bold text-slate-500 text-center leading-tight mt-0.5 truncate w-full">${badge.title}</span>
+                    </div>
+                `;
+                grid.innerHTML += badgeHtml;
+            });
         }
 
         function restartGame() {
@@ -2367,8 +3164,735 @@
             }
         }
       
+        // --- FUNGSI UPLOAD FOTO KE SUPABASE STORAGE ---
+        async function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validasi tipe file & ukuran (Maksimal 2MB)
+            if (!file.type.startsWith('image/')) {
+                alert("Harap pilih file gambar (JPG/PNG).");
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                alert("Ukuran foto maksimal 2 MB.");
+                return;
+            }
+
+            const imgEl = document.getElementById('prof-photo-img');
+            const placeholderEl = document.getElementById('prof-photo-placeholder');
+            const loadingEl = document.getElementById('prof-photo-loading');
+
+            // Tampilkan Loading Overlay
+            loadingEl.classList.remove('hidden');
+
+            try {
+                // 1. Buat nama file unik berdasarkan nama pemain dan waktu (mencegah bentrok)
+                const fileExt = file.name.split('.').pop();
+                const fileName = `foto_${userProfile.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.${fileExt}`;
+
+                // 2. Upload ke Supabase Storage (Bucket 'avatars')
+                const { data, error: uploadErr } = await supabaseClient
+                    .storage
+                    .from('avatars')
+                    .upload(fileName, file, {
+                        cacheControl: '3600',
+                        upsert: true
+                    });
+
+                if (uploadErr) throw uploadErr;
+
+                // 3. Dapatkan URL Publik dari foto yang baru diupload
+                const { data: { publicUrl } } = supabaseClient
+                    .storage
+                    .from('avatars')
+                    .getPublicUrl(fileName);
+
+                // 4. Update Profile lokal dan Database Papan Peringkat dengan URL foto baru
+                userProfile.avatar = publicUrl;
+                localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+
+                // Update semua record di leaderboard untuk anak ini dengan foto barunya
+                const { error: dbErr } = await supabaseClient
+                    .from('k6_leaderboard_sd')
+                    .update({ avatar: publicUrl, updated_at: new Date() })
+                    .eq('name', userProfile.name)
+                    .eq('class_name', userProfile.className);
+                
+                if (dbErr) console.warn("Gagal update avatar di database:", dbErr);
+
+                // 5. Tampilkan Foto di Layar Profil
+                imgEl.src = publicUrl;
+                imgEl.onload = () => {
+                    imgEl.classList.remove('hidden');
+                    placeholderEl.classList.add('hidden');
+                    loadingEl.classList.add('hidden');
+                    updateHeaderUI(); // Perbarui header di beranda agar foto kecilnya langsung muncul!
+                    playSound('victory');
+                };
+
+            } catch (err) {
+                console.error("Upload error:", err);
+                alert("Gagal mengunggah foto. Pastikan Anda sudah membuat bucket 'avatars' di Supabase.");
+                loadingEl.classList.add('hidden');
+            }
+        }
+
+        // --- FUNGSI INTERAKSI DINDING SORAKAN ---
+        async function sendSorakan(pesan) {
+            if (!userProfile) {
+                alert("Kamu harus punya profil dulu sebelum bisa mengirim sorakan!");
+                return;
+            }
+
+            playSound('click');
+            
+              try {
+                // Pastikan nama penerima dan pengirim tidak kosong/undefined sebelum kirim
+                if (!currentViewedProfile || !userProfile.name) {
+                    alert("Gagal: Nama profil tidak ditemukan.");
+                    return;
+                }
+
+                // Simpan ke Supabase tabel k6_sorakan_sd
+                const { data, error } = await supabaseClient
+                    .from('k6_sorakan_sd')
+                    .insert([{
+                        penerima: currentViewedProfile,
+                        pengirim: userProfile.name,
+                        pesan: pesan
+                    }])
+                    .select(); // Tambahkan .select() untuk memastikan kembalian data valid di v2
+
+                if (error) throw error;
+                
+                // Segarkan daftar pesan setelah terkirim
+                fetchSorakan(currentViewedProfile);
+                alert("Sorakan berhasil dikirim! 💌");
+
+            } catch (err) {
+                console.error("Gagal kirim sorakan:", err);
+                alert("Gagal mengirim pesan.");
+            }
+        }
+
+        async function fetchSorakan(playerName) {
+            const listEl = document.getElementById('prof-sorakan-list');
+            const countEl = document.getElementById('prof-sorakan-count');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('k6_sorakan_sd')
+                    .select('*')
+                    .eq('penerima', playerName)
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+
+                if (error) throw error;
+
+                countEl.innerText = `${data.length} Pesan`;
+                listEl.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    listEl.innerHTML = `<div class="text-center p-4 text-xs font-bold text-slate-400 italic">Belum ada sorakan. Jadilah yang pertama!</div>`;
+                    return;
+                }
+
+                data.forEach(item => {
+                    const isSelf = userProfile && item.pengirim === userProfile.name;
+                    // Styling balon chat: kanan jika pengirim adalah diri sendiri, kiri jika orang lain
+                    const alignment = isSelf ? "ml-auto bg-purple-50 border-purple-200 text-right" : "mr-auto bg-white border-slate-200 text-left";
+                    const senderLabel = isSelf ? "Kamu" : escapeHtml(item.pengirim);
+
+                    const html = `
+                        <div class="border-2 rounded-2xl p-2 w-[85%] ${alignment} animate-[comboPop_0.3s_ease-out]">
+                            <div class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide mb-1">${senderLabel} berkata:</div>
+                            <div class="text-xs font-bold text-slate-700">${escapeHtml(item.pesan)}</div>
+                        </div>
+                    `;
+                    listEl.innerHTML += html;
+                });
+
+            } catch (err) {
+                console.error("Gagal memuat sorakan:", err);
+                listEl.innerHTML = `<div class="text-center p-4 text-xs font-bold text-rose-400 italic">Gagal memuat pesan.</div>`;
+            }
+        }
+      
         function escapeHtml(text) {
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // ==========================================
+        // TAHAP 2: LOGIKA TEMAN & CHAT REAL-TIME
+        // ==========================================
+        let currentViewedUserId = ""; 
+        let activeChatFriendId = null;
+        let chatSubscription = null;
+
+        // 1. Fungsi Pencarian Profil Teman (Berdasarkan user_id / ID Login)
+        async function searchFriendProfile() {
+            if (!userProfile) return;
+            const searchId = document.getElementById('friend-id-input').value.trim();
+            if (!searchId) {
+                alert("Masukkan ID Login atau Nama temanmu dulu!");
+                return;
+            }
+            if (searchId === userProfile.userId || searchId.toLowerCase() === userProfile.name.toLowerCase()) {
+                alert("Itu akun kamu sendiri! Cari teman yang lain ya.");
+                return;
+            }
+
+            playSound('click');
+            const btn = document.querySelector('button[onclick="searchFriendProfile()"]');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+
+            try {
+                // Cari di k6_leaderboard_sd berdasarkan user_id ATAU name
+                const { data, error } = await supabaseClient
+                    .from('k6_leaderboard_sd')
+                    .select('name, user_id')
+                    .eq('category', 'total')
+                    .or(`user_id.eq.${searchId},name.ilike.${searchId}`)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (data) {
+                    currentViewedUserId = data.user_id || searchId; // Simpan ID aslinya
+                    openPlayerProfile(data.name);
+                    document.getElementById('friend-id-input').value = '';
+                } else {
+                    alert("Pemain tidak ditemukan! Pastikan ID atau Namanya sudah benar.");
+                }
+            } catch (err) {
+                console.error("Gagal mencari:", err);
+                alert("Terjadi kesalahan saat mencari profil.");
+            } finally {
+                btn.innerHTML = originalHtml;
+            }
+        }
+
+        // 2. Fungsi Menambahkan Teman (Pending System)
+        async function sendFriendRequest() {
+            if (!userProfile) return;
+            playSound('click');
+            
+            try {
+                // Cek apakah sudah ada relasi (pending atau accepted)
+                const { data: existing, error: checkErr } = await supabaseClient
+                    .from('k6_friends_sd')
+                    .select('*')
+                    .or(`and(user_id.eq.${userProfile.userId},friend_user_id.eq.${currentViewedUserId}),and(user_id.eq.${currentViewedUserId},friend_user_id.eq.${userProfile.userId})`)
+                    .maybeSingle();
+
+                if (checkErr) throw checkErr;
+
+                if (existing) {
+                    if (existing.status === 'accepted') {
+                        alert("Kamu sudah berteman dengan " + currentViewedProfile + "!");
+                    } else {
+                        alert("Permintaan pertemanan sudah terkirim / menunggu persetujuan.");
+                    }
+                    return;
+                }
+
+                // Kirim permintaan (Relasi 2 Arah dengan status 'pending')
+                await supabaseClient.from('k6_friends_sd').insert([
+                    { user_id: userProfile.userId, friend_user_id: currentViewedUserId, friend_name: currentViewedProfile, status: 'pending', action_user_id: userProfile.userId },
+                    { user_id: currentViewedUserId, friend_user_id: userProfile.userId, friend_name: userProfile.name, status: 'pending', action_user_id: userProfile.userId }
+                ]);
+
+                alert("Permintaan pertemanan terkirim ke " + currentViewedProfile + "! ⏳");
+                document.getElementById('btn-add-friend').innerHTML = `<i class="fa-solid fa-clock mr-1"></i> Menunggu...`;
+                document.getElementById('btn-add-friend').classList.replace('bg-cyan-100', 'bg-amber-100');
+                document.getElementById('btn-add-friend').classList.replace('text-cyan-700', 'text-amber-700');
+                document.getElementById('btn-add-friend').onclick = null;
+            } catch (err) {
+                console.error("Gagal tambah teman:", err);
+                alert("Gagal menambahkan teman.");
+            }
+        }
+
+        // 3. Menampilkan Daftar Teman, Request & Status Online
+        async function fetchFriendsList() {
+            if (!userProfile) return;
+            const container = document.getElementById('friends-list-container');
+            const reqContainer = document.getElementById('friend-requests-container');
+            const reqSection = document.getElementById('friend-requests-section');
+            
+            container.innerHTML = `<div class="text-center p-4 text-xs font-bold text-slate-400 italic">Memuat data... <i class="fa-solid fa-spinner fa-spin"></i></div>`;
+            reqContainer.innerHTML = '';
+
+            try {
+                // A. Ambil relasi teman
+                const { data, error } = await supabaseClient
+                    .from('k6_friends_sd')
+                    .select('*')
+                    .eq('user_id', userProfile.userId);
+
+                if (error) throw error;
+
+                // Pisahkan mana yang masih diminta orang lain, dan mana yang sudah teman
+                let pendingRequests = data.filter(f => f.status === 'pending' && f.action_user_id !== userProfile.userId);
+                let acceptedFriends = data.filter(f => f.status === 'accepted');
+
+                // B. Ambil status online teman (last_seen)
+                const friendIds = acceptedFriends.map(f => f.friend_user_id);
+                let onlineMap = {};
+                if (friendIds.length > 0) {
+                    const { data: onlineData } = await supabaseClient
+                        .from('k6_leaderboard_sd')
+                        .select('user_id, last_seen')
+                        .in('user_id', friendIds);
+                    
+                    if (onlineData) {
+                        const now = new Date();
+                        onlineData.forEach(user => {
+                            if (user.last_seen) {
+                                const lastSeenDate = new Date(user.last_seen);
+                                const diffMin = (now - lastSeenDate) / 1000 / 60;
+                                onlineMap[user.user_id] = diffMin <= 3; // Dianggap Online jika aktif dlm 3 menit terakhir
+                            }
+                        });
+                    }
+                }
+
+                // C. Render Permintaan Pertemanan
+                if (pendingRequests.length > 0) {
+                    reqSection.classList.remove('hidden');
+                    document.getElementById('request-count-badge').innerText = pendingRequests.length;
+                    pendingRequests.forEach(req => {
+                        reqContainer.innerHTML += `
+                            <div class="flex items-center justify-between bg-orange-50 p-2 rounded-xl border border-orange-100 shadow-sm mb-2 animate-[comboPop_0.3s_ease-out]">
+                                <div class="flex items-center space-x-2 w-1/2">
+                                    <div class="w-8 h-8 bg-orange-200 text-orange-600 rounded-full flex items-center justify-center text-sm font-bold shrink-0">👋</div>
+                                    <div class="text-xs font-bold text-slate-700 truncate">${escapeHtml(req.friend_name)}</div>
+                                </div>
+                                <div class="flex space-x-1 shrink-0">
+                                    <button onclick="rejectFriendRequest('${req.friend_user_id}')" class="pulse-btn bg-slate-200 text-slate-500 hover:bg-rose-500 hover:text-white w-7 h-7 rounded-lg text-xs flex items-center justify-center transition shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+                                    <button onclick="acceptFriendRequest('${req.friend_user_id}')" class="pulse-btn bg-emerald-500 text-white hover:bg-emerald-600 px-2 h-7 rounded-lg text-[10px] font-bold flex items-center justify-center transition shadow-sm">Terima</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    reqSection.classList.add('hidden');
+                }
+
+                // D. Render Daftar Teman
+                document.getElementById('friend-count-badge').innerText = acceptedFriends.length;
+                if (acceptedFriends.length === 0) {
+                    container.innerHTML = `<div class="text-center p-4 text-xs font-bold text-slate-400 italic">Kamu belum punya teman. Yuk cari ID temanmu di atas!</div>`;
+                } else {
+                    container.innerHTML = '';
+                    acceptedFriends.forEach(friend => {
+                        const isOnline = onlineMap[friend.friend_user_id];
+                        const statusColor = isOnline ? 'text-emerald-500' : 'text-slate-400';
+                        const statusText = isOnline ? 'Online' : 'Offline';
+                        const statusDot = isOnline ? '🟢' : '⚪';
+
+                        container.innerHTML += `
+                            <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-slate-100 shadow-sm mb-2">
+                                <div class="flex items-center space-x-2 cursor-pointer w-[55%]" onclick="openPlayerProfile('${friend.friend_name}')">
+                                    <div class="w-8 h-8 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center text-sm font-bold shrink-0">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <div class="truncate w-full text-left">
+                                        <div class="text-xs font-bold text-slate-700 truncate">${escapeHtml(friend.friend_name)}</div>
+                                        <div class="text-[9px] ${statusColor} font-bold">${statusDot} ${statusText}</div>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-1 shrink-0">
+                                    <button onclick="openChatWith('${friend.friend_user_id}', '${friend.friend_name}')" class="pulse-btn bg-cyan-50 text-cyan-600 hover:bg-cyan-100 px-3 py-1.5 rounded-lg text-[10px] font-bold transition border border-cyan-200">
+                                        <i class="fa-solid fa-message"></i> Chat
+                                    </button>
+                                    <button onclick="removeFriend('${friend.friend_user_id}', '${friend.friend_name}')" class="pulse-btn bg-rose-50 text-rose-500 hover:bg-rose-100 w-7 h-7 rounded-lg text-[10px] flex items-center justify-center transition border border-rose-200" title="Hapus Teman">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error("Gagal memuat teman:", err);
+                container.innerHTML = `<div class="text-center p-4 text-xs font-bold text-rose-400 italic">Gagal memuat daftar teman.</div>`;
+            }
+        }
+
+        // --- FUNGSI AKSI PERTEMANAN ---
+        async function acceptFriendRequest(friendId) {
+            playSound('click');
+            try {
+                // Update relasi 2 arah menjadi 'accepted'
+                await supabaseClient
+                    .from('k6_friends_sd')
+                    .update({ status: 'accepted' })
+                    .in('user_id', [userProfile.userId, friendId])
+                    .in('friend_user_id', [userProfile.userId, friendId]);
+                
+                fetchFriendsList();
+            } catch (e) { console.error("Gagal menerima teman", e); }
+        }
+
+        async function rejectFriendRequest(friendId) {
+            playSound('click');
+            try {
+                // Hapus relasi yang masih pending
+                await supabaseClient
+                    .from('k6_friends_sd')
+                    .delete()
+                    .in('user_id', [userProfile.userId, friendId])
+                    .in('friend_user_id', [userProfile.userId, friendId]);
+                
+                fetchFriendsList();
+            } catch (e) { console.error("Gagal menolak teman", e); }
+        }
+
+        let friendToDeleteId = null;
+        let friendToDeleteName = "";
+
+        function removeFriend(friendId, friendName) {
+            playSound('click');
+            friendToDeleteId = friendId;
+            friendToDeleteName = friendName;
+            document.getElementById('remove-friend-name').innerText = escapeHtml(friendName);
+            document.getElementById('remove-friend-modal').classList.remove('hidden');
+        }
+
+        function closeRemoveFriendModal() {
+            playSound('click');
+            document.getElementById('remove-friend-modal').classList.add('hidden');
+            friendToDeleteId = null;
+            friendToDeleteName = "";
+        }
+
+        async function confirmRemoveFriend() {
+            playSound('click');
+            if (!friendToDeleteId) return;
+
+            const btn = document.getElementById('btn-confirm-remove');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
+
+            try {
+                await supabaseClient
+                    .from('k6_friends_sd')
+                    .delete()
+                    .in('user_id', [userProfile.userId, friendToDeleteId])
+                    .in('friend_user_id', [userProfile.userId, friendToDeleteId]);
+                
+                alert(`${friendToDeleteName} telah dihapus dari daftar teman.`);
+                closeRemoveFriendModal();
+                btn.innerHTML = originalText;
+                fetchFriendsList();
+            } catch (e) { 
+                console.error("Gagal menghapus teman", e); 
+                btn.innerHTML = originalText;
+            }
+        }
+
+        // --- SISTEM DETAK JANTUNG ONLINE (HEARTBEAT) ---
+        let onlineHeartbeat = null;
+
+        function startOnlineHeartbeat() {
+            if (onlineHeartbeat) clearInterval(onlineHeartbeat);
+            updateOnlineStatus(); // Jalankan 1x saat fungsi dipanggil
+            onlineHeartbeat = setInterval(updateOnlineStatus, 60000); // Update ke Supabase setiap 1 menit (60rb ms)
+        }
+
+        async function updateOnlineStatus() {
+            if (!userProfile) return;
+            try {
+                await supabaseClient
+                    .from('k6_leaderboard_sd')
+                    .update({ last_seen: new Date().toISOString() })
+                    .eq('name', userProfile.name)
+                    .eq('class_name', userProfile.className);
+            } catch (e) { console.error("Gagal update status online", e); }
+        }
+
+        // 4. Membuka Layar Chat Spesifik
+        function openChatWith(friendId, friendName) {
+            activeChatFriendId = friendId;
+            document.getElementById('chat-friend-name').innerText = friendName;
+            switchScreen('screen-chat');
+            loadChatHistory(friendId);
+            subscribeToChat(friendId);
+        }
+
+        // 5. Load Riwayat Obrolan & Undangan Battle
+        async function loadChatHistory(friendId) {
+            const container = document.getElementById('chat-messages-container');
+            container.innerHTML = '<div class="text-center text-xs text-slate-400 italic mt-4">Memuat obrolan... <i class="fa-solid fa-spinner fa-spin"></i></div>';
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('k6_chats_sd')
+                    .select('*')
+                    .or(`and(sender_id.eq.${userProfile.userId},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${userProfile.userId})`)
+                    .order('created_at', { ascending: true })
+                    .limit(50);
+
+                if (error) throw error;
+                
+                container.innerHTML = '';
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="text-center text-[10px] text-slate-400 italic mt-4 bg-white p-2 rounded-xl border border-slate-100">Belum ada obrolan. Mulai sapa temanmu! 👋</div>';
+                } else {
+                    data.forEach(msg => appendMessageToUI(msg));
+                }
+                scrollToBottom(container);
+            } catch (err) {
+                console.error("Gagal muat chat", err);
+                container.innerHTML = '<div class="text-center text-xs text-rose-400 italic mt-4">Gagal memuat obrolan.</div>';
+            }
+        }
+
+        // 6. Menggambar Balon Chat di Layar
+        function appendMessageToUI(msg) {
+            const container = document.getElementById('chat-messages-container');
+            if (container.innerHTML.includes('Belum ada obrolan')) container.innerHTML = '';
+
+            const isSelf = msg.sender_id === userProfile.userId;
+            
+            if (msg.is_battle_invite) {
+                // Balon Undangan Battle (Sistem Wager/Taruhan)
+                const inviteHtml = `
+                    <div class="w-full flex justify-center my-2">
+                        <div class="bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-200 p-3 rounded-xl shadow-sm text-center max-w-[85%] animate-[comboPop_0.3s_ease-out]">
+                            <div class="text-lg mb-1 bouncing-toy">⚔️</div>
+                            <div class="text-[10px] font-bold text-orange-700">${escapeHtml(msg.sender_name)} ${isSelf ? 'mengajak bertanding!' : 'menantangmu!'}</div>
+                            <div class="text-xs font-extrabold text-slate-800 my-1 bg-white px-2 py-1 rounded-full inline-block border border-orange-100">Taruhan: ${msg.wager_points} 🪙</div>
+                            ${!isSelf && msg.status === 'pending' ? `
+                                <div class="flex space-x-2 mt-2">
+                                    <button onclick="rejectBattleInvite('${msg.id}')" class="pulse-btn flex-1 bg-slate-200 text-slate-600 hover:bg-slate-300 py-1.5 rounded-lg text-[10px] font-bold transition">Tolak</button>
+                                    <button onclick="acceptBattleInvite('${msg.id}', ${msg.wager_points})" class="pulse-btn flex-1 bg-orange-500 hover:bg-orange-600 text-white py-1.5 rounded-lg text-[10px] font-bold shadow border-b-2 border-orange-700 transition">Terima!</button>
+                                </div>
+                            ` : `
+                                <div class="text-[9px] font-bold ${msg.status==='accepted'?'text-emerald-500':'text-slate-400'} mt-1 uppercase tracking-widest bg-white/50 px-2 py-0.5 rounded-full inline-block">Status: ${msg.status}</div>
+                            `}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += inviteHtml;
+            } else {
+                // Balon Chat Teks Biasa
+                const alignment = isSelf ? "ml-auto bg-cyan-500 text-white rounded-br-none" : "mr-auto bg-white border border-slate-200 text-slate-700 rounded-bl-none";
+                const html = `
+                    <div class="max-w-[75%] p-2.5 rounded-2xl shadow-sm text-xs font-bold w-fit ${alignment} animate-[comboPop_0.2s_ease-out]">
+                        ${escapeHtml(msg.message)}
+                    </div>
+                `;
+                container.innerHTML += html;
+            }
+            scrollToBottom(container);
+        }
+
+        function scrollToBottom(el) {
+            setTimeout(() => { el.scrollTop = el.scrollHeight; }, 100);
+        }
+
+        // 7. Mengirim Pesan Teks Biasa
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-message-input');
+            const message = input.value.trim();
+            if (!message || !activeChatFriendId) return;
+
+            input.value = ''; // Kosongkan input
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('k6_chats_sd')
+                    .insert([{
+                        sender_id: userProfile.userId,
+                        sender_name: userProfile.name,
+                        receiver_id: activeChatFriendId,
+                        message: message,
+                        is_battle_invite: false,
+                        status: 'delivered'
+                    }]);
+                if (error) throw error;
+                playSound('click');
+            } catch (err) {
+                console.error("Gagal kirim pesan:", err);
+            }
+        }
+
+        // 8. Berlangganan Real-Time WebSockets Supabase
+        function subscribeToChat(friendId) {
+            if (chatSubscription) {
+                supabaseClient.removeChannel(chatSubscription);
+            }
+
+            chatSubscription = supabaseClient.channel('custom-chat-channel')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'k6_chats_sd' },
+                    (payload) => {
+                        // Reload history chat HANYA 1 KALI agar memori tidak bocor
+                        loadChatHistory(activeChatFriendId);
+
+                        // Trigger game otomatis untuk kedua pemain
+                        const updatedMsg = payload.new;
+                        if (updatedMsg.is_battle_invite && updatedMsg.status === 'accepted') {
+                            if (updatedMsg.sender_id === userProfile.userId || updatedMsg.receiver_id === userProfile.userId) {
+                                if (activeBattleId !== updatedMsg.id) {
+                                    triggerBattleStart(updatedMsg.id, updatedMsg.wager_points);
+                                }
+                            }
+                        }
+                    }
+                )
+                .subscribe();
+        }
+
+        // ==========================================
+        // TAHAP 3: LOGIKA BATTLE 1 VS 1
+        // ==========================================
+        let currentBattleWager = 0;
+        let activeBattleId = null;
+
+        // Buka Pop-Up Daftar Teman untuk ditantang
+        function openInviteFriendModal() {
+            const wagerInput = document.getElementById('battle-wager-input').value;
+            currentBattleWager = wagerInput ? parseInt(wagerInput) : 0; // Jika kosong, anggap 0
+
+            if (currentBattleWager > 0 && userProfile.coins < currentBattleWager) {
+                alert(`Koinmu tidak cukup! Kamu hanya punya ${userProfile.coins} 🪙.`);
+                return;
+            }
+
+            document.getElementById('battle-invite-modal').classList.remove('hidden');
+            populateBattleFriends();
+        }
+
+        function closeInviteFriendModal() {
+            document.getElementById('battle-invite-modal').classList.add('hidden');
+        }
+
+        // Memuat daftar teman yang sudah 'accepted'
+        async function populateBattleFriends() {
+            const container = document.getElementById('battle-friends-list');
+            container.innerHTML = '<div class="text-xs text-slate-400 italic py-4"><i class="fa-solid fa-spinner fa-spin"></i> Memuat daftar lawan...</div>';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('k6_friends_sd')
+                    .select('*')
+                    .eq('user_id', userProfile.userId)
+                    .eq('status', 'accepted');
+
+                if (error) throw error;
+
+                container.innerHTML = '';
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="text-xs text-slate-400 italic py-4">Kamu belum punya teman untuk ditantang.</div>';
+                    return;
+                }
+
+                data.forEach(friend => {
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-100 mb-2 hover:border-orange-200 transition">
+                            <span class="text-xs font-bold text-slate-700 truncate w-3/4 text-left">
+                                <i class="fa-solid fa-user-ninja text-orange-400 mr-1"></i> ${escapeHtml(friend.friend_name)}
+                            </span>
+                            <button onclick="sendBattleInvite('${friend.friend_user_id}', '${friend.friend_name}')" class="pulse-btn shrink-0 bg-orange-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow border-b-2 border-orange-700 transition hover:bg-orange-600">
+                                Tantang!
+                            </button>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                container.innerHTML = '<div class="text-xs text-rose-500 italic py-4">Gagal memuat teman.</div>';
+            }
+        }
+
+        // Kirim undangan ke chat database
+        async function sendBattleInvite(friendId, friendName) {
+            playSound('click');
+            closeInviteFriendModal();
+
+            try {
+                const { error } = await supabaseClient
+                    .from('k6_chats_sd')
+                    .insert([{
+                        sender_id: userProfile.userId,
+                        sender_name: userProfile.name,
+                        receiver_id: friendId,
+                        message: `⚔️ TANTANGAN BATTLE! ⚔️`, // Teks ini tidak tampil karena balon chat digambar custom
+                        is_battle_invite: true,
+                        wager_points: currentBattleWager,
+                        status: 'pending'
+                    }]);
+                
+                if (error) throw error;
+                
+                alert(`Tantangan berhasil dikirim ke ${friendName}! Tunggu dia menerima tantanganmu di menu Chat.`);
+                switchScreen('screen-friends'); // Lempar kembali ke menu teman
+            } catch (err) {
+                console.error("Gagal kirim tantangan", err);
+                alert("Gagal mengirim tantangan.");
+            }
+        }
+
+        // Ketika teman menerima tantangan di chat
+        async function acceptBattleInvite(chatId, wagerPoints) {
+            playSound('click');
+            if (userProfile.coins < wagerPoints) {
+                alert(`Koinmu tidak cukup untuk menerima tantangan ini! (Butuh ${wagerPoints} 🪙)`);
+                return;
+            }
+
+            try {
+                // Update status jadi accepted. (Ini akan memicu Realtime Listener di kedua HP)
+                await supabaseClient
+                    .from('k6_chats_sd')
+                    .update({ status: 'accepted' })
+                    .eq('id', chatId);
+                
+            } catch (err) { console.error("Gagal terima battle", err); }
+        }
+
+        // Ketika teman menolak tantangan
+        async function rejectBattleInvite(chatId) {
+            playSound('click');
+            try {
+                await supabaseClient
+                    .from('k6_chats_sd')
+                    .update({ status: 'rejected' })
+                    .eq('id', chatId);
+            } catch (err) { console.error("Gagal tolak battle", err); }
+        }
+
+        // Fungsi pamungkas: Mengeksekusi game untuk kedua pemain secara bersamaan!
+        function triggerBattleStart(chatId, wagerPoints) {
+            activeBattleId = chatId;
+            currentBattleWager = wagerPoints;
+            
+            // 1. Potong koin JIKA ada taruhan
+            if (wagerPoints > 0) {
+                if (userProfile.coins < wagerPoints) {
+                    alert("Koin tidak cukup untuk taruhan ini!");
+                    return;
+                }
+                userProfile.coins -= wagerPoints;
+            }
+            
+            // Simpan perubahan koin ke lokal dan Supabase (Pastikan fungsi saveProfileToSupabase dipanggil jika ada)
+            localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+            updateHeaderUI();
+
+            // 2. Beri peringatan bahwa game dimulai!
+            playSound('victory'); 
+            const infoTaruhan = wagerPoints > 0 ? `Taruhan: ${wagerPoints} 🪙` : `Mode Kejar Rank Murni`;
+            alert(`⚔️ BATTLE DIMULAI! ⚔️\n${infoTaruhan}\nPersiapkan dirimu!`);
+            
+            // 3. Arahkan ke mode kuis. (Untuk tahap 3, kita lempar ke mapel umum sebagai arena)
+            // Di Tahap 4 (Opsional), skor mereka berdua saat main kuis bisa diadu secara realtime!
+            startGame('umum'); 
         }
     </script>
 </body>
