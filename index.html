@@ -1471,6 +1471,30 @@
             if (!userProfile) {
                 openProfileModal();
             } else {
+                // Cek dan generate ID Login untuk pemain lama (akun sebelum sistem ID ada)
+                if (!userProfile.userId) {
+                    let generatedName = userProfile.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    if (!generatedName) generatedName = 'player';
+                    userProfile.userId = generatedName + Math.floor(1000 + Math.random() * 9000);
+                    
+                    // Simpan profil yang sudah diperbarui dengan userId ke penyimpanan lokal
+                    localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+                    
+                    // Update juga di daftar akun tersimpan / account switcher (jika ada)
+                    let accIndex = savedAccounts.findIndex(a => a.name === userProfile.name);
+                    if (accIndex !== -1) {
+                        savedAccounts[accIndex].userId = userProfile.userId;
+                        localStorage.setItem('quiz_saved_accounts_sd', JSON.stringify(savedAccounts));
+                    }
+                    
+                    // Sinkronkan ID baru ke database secara otomatis agar bisa dicari teman
+                    supabaseClient.from('k6_leaderboard_sd')
+                        .update({ user_id: userProfile.userId })
+                        .eq('name', userProfile.name)
+                        .eq('class_name', userProfile.className)
+                        .then();
+                }
+
                 updateHeaderUI();
                 initDailyQuest(); 
                 startOnlineHeartbeat(); // Mulai deteksi online
