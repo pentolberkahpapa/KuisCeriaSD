@@ -127,6 +127,45 @@
             display: inline-block;
             transform: scaleX(-1);
         }
+
+        /* --- STYLING PION & DADU ULAR TANGGA --- */
+        .pawn {
+            font-size: 20px;
+            position: absolute;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 20;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.4));
+            transform: translate(-50%, 50%);
+        }
+        .dice-container { perspective: 800px; width: 64px; height: 64px; }
+        .dice {
+            width: 100%; height: 100%; position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.15, 0.85, 0.15, 1);
+        }
+        .dice-face {
+            position: absolute; width: 64px; height: 64px;
+            background: #ffffff; border: 3px solid #cbd5e1; border-radius: 14px;
+            display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); padding: 8px;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.1); backface-visibility: hidden;
+        }
+        .dot {
+            background: #1e293b; border-radius: 50%; width: 9px; height: 9px;
+            align-self: center; justify-self: center;
+        }
+        .face-1 { transform: rotateY(0deg) translateZ(32px); }
+        .face-2 { transform: rotateY(180deg) translateZ(32px); }
+        .face-3 { transform: rotateY(-90deg) translateZ(32px); }
+        .face-4 { transform: rotateY(90deg) translateZ(32px); }
+        .face-5 { transform: rotateX(-90deg) translateZ(32px); }
+        .face-6 { transform: rotateX(90deg) translateZ(32px); }
+        .d-center { grid-area: 2 / 2 / 3 / 3; }
+        .d-top-left { grid-area: 1 / 1 / 2 / 2; }
+        .d-top-right { grid-area: 1 / 3 / 2 / 4; }
+        .d-bottom-left { grid-area: 3 / 1 / 4 / 2; }
+        .d-bottom-right { grid-area: 3 / 3 / 4 / 4; }
+        .d-mid-left { grid-area: 2 / 1 / 3 / 2; }
+        .d-mid-right { grid-area: 2 / 3 / 3 / 4; }
       
     </style>
 </head>
@@ -349,6 +388,109 @@
             <p class="text-xs text-slate-500 font-bold border-t border-pink-100 pt-2">Pilih teman dari kontakmu:</p>
             <div id="suit-friends-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
                 <!-- Teman akan diload lewat JS -->
+            </div>
+        </div>
+    </div>
+
+      <!-- MODAL CARI LAWAN GLOBAL ULAR TANGGA -->
+    <div id="ulartangga-global-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 border-4 border-indigo-200 animate-pop-modern">
+            <div class="flex justify-between items-center border-b border-indigo-100 pb-2">
+                <h3 class="text-lg font-playful text-slate-800">Lawan Global Ular Tangga! 🌐</h3>
+                <button onclick="closeGlobalUlartanggaModal()" class="text-slate-400 hover:text-rose-500 transition pulse-btn w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 shadow-sm text-left">
+                <label class="block text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest mb-1">Seting Taruhan Koin 🪙</label>
+                <input type="number" id="ulartangga-coin-global" placeholder="Kosongkan jika main santai" min="0" class="w-full px-3 py-2 rounded-xl border-2 border-indigo-200 focus:border-indigo-500 focus:outline-none font-bold text-slate-700">
+            </div>
+            <button onclick="openUlartanggaCharacterSelection('global')" class="pulse-btn w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-playful py-3 rounded-xl shadow border-b-4 border-purple-800 text-sm">
+                Pilih Karakter & Main! 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL PILIH LAWAN TEMAN ULAR TANGGA -->
+    <div id="ulartangga-invite-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 border-4 border-fuchsia-200 animate-pop-modern">
+            <div class="flex justify-between items-center border-b border-fuchsia-100 pb-2">
+                <h3 class="text-lg font-playful text-slate-800">Tantang Teman! ⚔️</h3>
+                <button onclick="closeInviteFriendUlartanggaModal()" class="text-slate-400 hover:text-rose-500 transition pulse-btn w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="bg-fuchsia-50 p-3 rounded-xl border border-fuchsia-100 shadow-sm text-left">
+                <label class="block text-[10px] font-extrabold text-fuchsia-600 uppercase tracking-widest mb-1">Seting Taruhan Koin 🪙</label>
+                <input type="number" id="ulartangga-coin-friend" placeholder="Kosongkan jika main santai" min="0" class="w-full px-3 py-2 rounded-xl border-2 border-fuchsia-200 focus:border-fuchsia-500 focus:outline-none font-bold text-slate-700">
+            </div>
+            <p class="text-xs text-slate-500 font-bold border-t border-fuchsia-100 pt-2">Pilih teman dari kontakmu:</p>
+            <div id="ulartangga-friends-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                <!-- Teman diload JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PILIH 10 KARAKTER BIDAK -->
+    <div id="ulartangga-character-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 text-center space-y-4 border-4 border-purple-200 animate-pop-modern">
+            <div class="flex justify-between items-center border-b border-purple-100 pb-2">
+                <h3 class="text-xl font-playful text-slate-800">Pilih Bidak Jagoanmu! 🎒</h3>
+                <button onclick="document.getElementById('ulartangga-character-modal').classList.add('hidden')" class="text-slate-400 hover:text-rose-500 transition pulse-btn w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-xs text-slate-500 font-bold">Pilih 1 dari 10 karakter lucu ini untuk bertanding.</p>
+            
+            <div class="grid grid-cols-5 gap-2" id="ut-char-selector">
+                <!-- Radio Karakter 1-5 -->
+                <label class="cursor-pointer text-center"><input type="radio" name="ut_char" value="🐱" class="peer hidden" checked><div class="text-2xl bg-slate-50 peer-checked:bg-purple-100 peer-checked:ring-2 peer-checked:ring-purple-400 p-2 rounded-xl transition hover:scale-110">🐱</div></label>
+                <label class="cursor-pointer text-center"><input type="radio" name="ut_char" value="🤖" class="peer hidden"><div class="text-2xl bg-slate-50 peer-checked:bg-purple-100 peer-checked:ring-2 peer-checked:ring-purple-400 p-2 rounded-xl transition hover:scale-110">🤖</div></label>
+                <label class="cursor-pointer text-center"><input type="radio" name="ut_char" value="🦊" class="peer hidden"><div class="text-2xl bg-slate-50 peer-checked:bg-purple-100 peer-checked:ring-2 peer-checked:ring-purple-400 p-2 rounded-xl transition hover:scale-110">🦊</div></label>
+                <label class="cursor-pointer text-center"><input type="radio" name="ut_char" value="🦉" class="peer hidden"><div class="text-2xl bg-slate-50 peer-checked:bg-purple-100 peer-checked:ring-2 peer-checked:ring-purple-400 p-2 rounded-xl transition hover:scale-110">🦉</div></label>
+                <label class="cursor-pointer text-center"><input type="radio" name="ut_char" value="🦖" class="peer hidden"><div class="text-2xl bg-slate-50 peer-checked:bg-purple-100 peer-checked:ring-2 peer-checked:ring-purple-400 p-2 rounded-xl transition hover:scale-110">🦖</div></label>
+                <!-- Radio Karakter 6-10 -->
+                <label class="cursor-pointer text-center"><input type="radio" name="ut_char" value="🦄" class="peer hidden"><div class="text-2xl bg-slate-50 peer-checked:bg-purple-100 peer-checked:ring-2 peer-checked:ring-purple-400 p-2 rounded-xl transition hover:scale-110">🦄</div></label>
+                <label class="cursor-pointer text-center"><input type="radio" name="ut_char" value="🐼" class="peer hidden"><div class="text-2xl bg-slate-50 peer-checked:bg-purple-100 peer-checked:ring-2 peer-checked:ring-purple-400 p-2 rounded-xl transition hover:scale-110">🐼</div></label>
+                <label class="cursor-pointer text-center"><input type="radio" name="ut_char" value="🐙" class="peer hidden"><div class="text-2xl bg-slate-50 peer-checked:bg-purple-100 peer-checked:ring-2 peer-checked:ring-purple-400 p-2 rounded-xl transition hover:scale-110">🐙</div></label>
+                <label class="cursor-pointer text-center"><input type="radio" name="ut_char" value="🐸" class="peer hidden"><div class="text-2xl bg-slate-50 peer-checked:bg-purple-100 peer-checked:ring-2 peer-checked:ring-purple-400 p-2 rounded-xl transition hover:scale-110">🐸</div></label>
+                <label class="cursor-pointer text-center"><input type="radio" name="ut_char" value="🐧" class="peer hidden"><div class="text-2xl bg-slate-50 peer-checked:bg-purple-100 peer-checked:ring-2 peer-checked:ring-purple-400 p-2 rounded-xl transition hover:scale-110">🐧</div></label>
+            </div>
+
+            <button onclick="startUlartanggaGame()" class="pulse-btn w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-playful py-3 rounded-xl shadow-lg border-b-4 border-purple-800 text-sm mt-4">
+                Masuk Arena Pertandingan! 🎲
+            </button>
+        </div>
+    </div>
+
+        <!-- MODAL KONFIRMASI KELUAR ARENA (SUIT & ULAR TANGGA) -->
+    <div id="custom-exit-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-6 border-4 border-rose-200 animate-pop-modern">
+            <div class="text-6xl bouncing-toy">⚠️</div>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-playful text-slate-800">Yakin Mau Keluar?</h3>
+                <p class="text-slate-500 text-sm font-bold">Kalau kamu keluar sekarang, kamu akan dianggap <span class="text-rose-500 font-extrabold">KALAH</span> dan koin taruhanmu akan hangus.</p>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="closeCustomExitModal()" class="pulse-btn flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl text-sm transition border-b-4 border-slate-300">
+                    Batal
+                </button>
+                <button onclick="executeExitGame()" class="pulse-btn flex-1 bg-rose-500 hover:bg-rose-600 text-white font-playful py-3 rounded-xl shadow text-sm transition border-b-4 border-rose-700">
+                    Ya, Keluar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TAWARAN MAIN LAWAN BOT AI -->
+    <div id="bot-offer-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-6 border-4 border-cyan-200 animate-[comboPop_0.3s_ease-out]">
+            <div class="text-6xl bouncing-toy">🤖</div>
+            <div class="space-y-2">
+                <h3 class="text-xl font-playful text-slate-800">Pemain Global Kosong</h3>
+                <p class="text-slate-500 text-sm font-bold">Wah, sepertinya belum ada pemain yang online nih. Mau latihan tanding ngelawan <span class="text-cyan-600 font-extrabold">Robot AI</span> dulu?</p>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="declineBotMatch()" class="pulse-btn flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl text-sm transition border-b-4 border-slate-300">
+                    Nanti Saja
+                </button>
+                <button onclick="acceptBotMatch()" class="pulse-btn flex-1 bg-cyan-500 hover:bg-cyan-600 text-white font-playful py-3 rounded-xl shadow text-sm transition border-b-4 border-cyan-700">
+                    Lawan Robot! 🚀
+                </button>
             </div>
         </div>
     </div>
@@ -588,6 +730,13 @@
                         <span class="font-playful text-lg text-center">Game Suit Online</span>
                         <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Batu Gunting Kertas Seru!</span>
                     </button>
+                    
+                  <!-- Mode 3: Ular Tangga 1v1 -->
+                    <button onclick="switchScreen('screen-ulartangga-lobby'); fetchOnlinePlayersUlartangga();" class="pulse-btn sm:col-span-2 bg-gradient-to-br from-indigo-400 to-purple-600 hover:from-indigo-500 hover:to-purple-700 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 border-b-4 border-purple-800">
+                        <i class="fa-solid fa-dice text-3xl"></i>
+                        <span class="font-playful text-lg text-center">Ular Tangga 1v1</span>
+                        <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Keberuntungan & Taktik Jitu</span>
+                    </button>
                 </div>
                 
                 <!-- Tombol Kembali ke Beranda -->
@@ -602,10 +751,10 @@
             <div id="screen-battle-setup" class="hidden space-y-4">
                 <div class="flex items-center justify-between bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
                     <h2 class="text-lg font-playful text-slate-700 flex items-center">
-                        <i class="fa-solid fa-bolt text-orange-500 mr-2"></i> Arena Battle
+                        <i class="fa-solid fa-bolt text-orange-500 mr-2"></i> Cerdas Cermat
                     </h2>
-                    <button onclick="returnHome()" class="pulse-btn bg-slate-100 hover:bg-slate-200 text-slate-500 w-8 h-8 rounded-full flex items-center justify-center transition">
-                        <i class="fa-solid fa-xmark"></i>
+                    <button onclick="switchScreen('screen-battle-hub')" class="pulse-btn bg-slate-100 hover:bg-slate-200 text-slate-500 w-8 h-8 rounded-full flex items-center justify-center transition" title="Kembali ke Lobby Battle">
+                        <i class="fa-solid fa-arrow-left"></i>
                     </button>
                 </div>
 
@@ -631,7 +780,7 @@
               </div>
             </div>
 
-                       <!-- SCREEN SUIT LOBBY -->
+              <!-- SCREEN SUIT LOBBY -->
             <div id="screen-suit-lobby" class="hidden space-y-5">
                 <div class="flex items-center justify-between bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
                     <h2 class="text-lg font-playful text-slate-700 flex items-center">
@@ -673,14 +822,27 @@
                         </div>
                         <i class="fa-solid fa-chevron-right opacity-70 text-lg"></i>
                     </button>
+
+                    <!-- Pemain Global Online (Accordion) -->
+                    <div class="bg-white rounded-2xl shadow-sm border-2 border-slate-200 overflow-hidden">
+                        <button onclick="document.getElementById('suit-online-box').classList.toggle('hidden'); document.getElementById('suit-icon-toggle').classList.toggle('fa-chevron-up'); document.getElementById('suit-icon-toggle').classList.toggle('fa-chevron-down');" class="w-full bg-slate-50 hover:bg-slate-100 p-3 flex justify-between items-center transition cursor-pointer">
+                            <span class="font-playful text-sm text-slate-700"><i class="fa-solid fa-wifi text-emerald-500 mr-2"></i> Pemain Global Online</span>
+                            <i id="suit-icon-toggle" class="fa-solid fa-chevron-down text-slate-400"></i>
+                        </button>
+                        <div id="suit-online-box" class="hidden p-3 border-t-2 border-slate-100 bg-slate-50/50">
+                            <!-- FIX: Menampilkan Pemain Global Online -->
+                            <div id="suit-online-players" class="flex overflow-x-auto space-x-3 py-2 px-1 scrollbar-none items-center min-h-[60px]">
+                                <!-- Pemain online akan diload lewat JS -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Daftar Pemain Online (Di Bawah) -->
-                <div class="bg-white border-2 border-slate-200 rounded-2xl p-3 shadow-sm mt-4">
-                    <h3 class="text-xs font-extrabold text-slate-500 uppercase tracking-widest mb-2 flex items-center"><i class="fa-solid fa-globe text-cyan-500 mr-1"></i> Pemain Online Saat Ini</h3>
-                    <div id="suit-online-players" class="flex space-x-3 overflow-x-auto pb-2 scrollbar-none">
-                        <!-- Disuntik melalui JS -->
-                    </div>
+                <!-- Tombol Kembali ke Beranda -->
+                <div class="text-center pt-2 mt-4">
+                    <button onclick="returnHome()" class="pulse-btn w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl shadow-sm border border-slate-300">
+                        <i class="fa-solid fa-house mr-2"></i> Kembali ke Beranda
+                    </button>
                 </div>
             </div>
 
@@ -693,7 +855,7 @@
                         <i class="fa-solid fa-hand-back-fist text-teal-500 text-lg"></i>
                         <h2 class="text-base font-playful text-slate-700">Arena Suit</h2>
                     </div>
-                    <button onclick="returnHome()" class="pulse-btn bg-rose-100 hover:bg-rose-200 text-rose-600 px-3 py-1.5 rounded-full text-[10px] font-bold border border-rose-200 flex items-center shadow-sm transition" title="Berhenti Main">
+                    <button onclick="confirmExitGame('suit')" class="pulse-btn bg-rose-100 hover:bg-rose-200 text-rose-600 px-3 py-1.5 rounded-full text-[10px] font-bold border border-rose-200 flex items-center shadow-sm transition" title="Berhenti Main">
                         <i class="fa-solid fa-power-off mr-1"></i> Keluar
                     </button>
                 </div>
@@ -742,8 +904,122 @@
                     </div>
                 </div>
             </div>
+                
+            <!-- SCREEN ULAR TANGGA LOBBY -->
+            <div id="screen-ulartangga-lobby" class="hidden space-y-5">
+                <div class="flex items-center justify-between bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-playful text-slate-700 flex items-center">
+                        <i class="fa-solid fa-dice text-purple-500 mr-2"></i> Lobi Ular Tangga
+                    </h2>
+                    <button onclick="switchScreen('screen-battle-hub')" class="pulse-btn bg-slate-100 hover:bg-slate-200 text-slate-500 w-8 h-8 rounded-full flex items-center justify-center transition">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
 
-                         <!-- SCREEN ARENA KUIS PINTAR (HUB 5 MAPEL) -->
+                <div class="text-center space-y-1 mt-2">
+                    <div class="text-5xl bouncing-toy">🐍🪜</div>
+                    <p class="text-slate-500 text-xs font-bold">Pilih mode tantangan Ular Tanggamu!</p>
+                </div>
+
+                    <div class="space-y-3">
+                    <!-- Cari Lawan Cepat Ular Tangga -->
+                    <button onclick="openGlobalUlartanggaModal()" class="pulse-btn w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 rounded-2xl shadow-lg border-b-4 border-purple-800 p-4 text-white flex items-center justify-between text-left transition">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl shrink-0">🌐</div>
+                            <div>
+                                <h3 class="font-playful text-base">Cari Lawan Cepat</h3>
+                                <p class="text-[10px] opacity-90">Tantang pemain global secara acak!</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right opacity-70 text-lg"></i>
+                    </button>
+
+                    <!-- Tantang Teman Ular Tangga -->
+                    <button onclick="openInviteFriendUlartanggaModal()" class="pulse-btn w-full bg-gradient-to-r from-fuchsia-400 to-pink-500 hover:from-fuchsia-500 hover:to-pink-600 rounded-2xl shadow-lg border-b-4 border-pink-700 p-4 text-white flex items-center justify-between text-left transition">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl shrink-0">⚔️</div>
+                            <div>
+                                <h3 class="font-playful text-base">Tantang Teman</h3>
+                                <p class="text-[10px] opacity-90">Kirim undangan main ke teman kontakmu!</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right opacity-70 text-lg"></i>
+                    </button>
+
+                    <!-- Pemain Global Online (Accordion) -->
+                    <div class="bg-white rounded-2xl shadow-sm border-2 border-slate-200 overflow-hidden">
+                        <button onclick="document.getElementById('ut-online-box').classList.toggle('hidden'); document.getElementById('ut-icon-toggle').classList.toggle('fa-chevron-up'); document.getElementById('ut-icon-toggle').classList.toggle('fa-chevron-down');" class="w-full bg-slate-50 hover:bg-slate-100 p-3 flex justify-between items-center transition cursor-pointer">
+                            <span class="font-playful text-sm text-slate-700"><i class="fa-solid fa-wifi text-emerald-500 mr-2"></i> Pemain Global Online</span>
+                            <i id="ut-icon-toggle" class="fa-solid fa-chevron-down text-slate-400"></i>
+                        </button>
+                        <div id="ut-online-box" class="hidden p-3 border-t-2 border-slate-100 bg-slate-50/50">
+                            <!-- FIX: Menampilkan Pemain Global Online -->
+                            <div id="ut-online-players" class="flex overflow-x-auto space-x-3 py-2 px-1 scrollbar-none items-center min-h-[60px]">
+                                <!-- Pemain online akan diload lewat JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Kembali ke Beranda -->
+                <div class="text-center pt-2 mt-4">
+                    <button onclick="returnHome()" class="pulse-btn w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl shadow-sm border border-slate-300">
+                        <i class="fa-solid fa-house mr-2"></i> Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN ULAR TANGGA ARENA (PROTOTYPE) -->
+            <div id="screen-ulartangga-arena" class="hidden space-y-3">
+                
+                <!-- HEADER ARENA & KELUAR -->
+                <div class="flex flex-wrap justify-between items-center bg-gradient-to-r from-orange-400 to-pink-500 px-4 py-3 rounded-2xl text-white shadow-md gap-2">
+                    <div>
+                        <h1 class="text-lg font-playful flex items-center gap-1.5">Ular Tangga 1v1 🎲</h1>
+                        <p class="text-[10px] opacity-95">Giliran: <span id="ut-turn-text" class="font-bold underline text-xs">Pemain 1 (🐱)</span></p>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <div class="bg-white/25 px-2 py-1 rounded-full text-[10px] font-bold tracking-wide shadow-inner flex items-center gap-1">
+                            <span>Taruhan:</span> <span class="text-yellow-200" id="ut-wager-display">10 🪙</span>
+                        </div>
+                        <button onclick="confirmExitGame('ulartangga')" class="pulse-btn bg-rose-100 hover:bg-rose-200 text-rose-600 px-3 py-1.5 rounded-full text-[10px] font-bold border border-rose-200 flex items-center shadow-sm transition" title="Berhenti Main">
+                            <i class="fa-solid fa-power-off mr-1"></i> Keluar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PAPAN PERMAINAN & PION -->
+                <div class="relative w-full aspect-square max-w-[420px] mx-auto rounded-2xl overflow-hidden shadow-inner border-4 border-slate-200 bg-slate-900" id="board-container">
+                    <img src="https://i.ibb.co.com/Y5WZSWj/Snakes-and-ladders.jpg" alt="Papan Ular Tangga" class="w-full h-full object-cover select-none pointer-events-none">
+                    <div id="pawn-1" class="pawn" style="bottom: 5%; left: 5%;">🐱</div>
+                    <div id="pawn-2" class="pawn" style="bottom: 5%; left: 12%;">🤖</div>
+                </div>
+
+                <!-- KONTROL LEMPAR DADU 3D -->
+                <div class="bg-slate-50 border-2 border-slate-200 p-3.5 rounded-2xl flex flex-col items-center space-y-3 shadow-sm">
+                    <div class="flex items-center justify-center space-x-4 w-full">
+                        <div class="dice-container flex-shrink-0">
+                            <div id="dice" class="dice">
+                                <div class="dice-face face-1"><div class="dot d-center"></div></div>
+                                <div class="dice-face face-2"><div class="dot d-top-left"></div><div class="dot d-bottom-right"></div></div>
+                                <div class="dice-face face-3"><div class="dot d-top-left"></div><div class="dot d-center"></div><div class="dot d-bottom-right"></div></div>
+                                <div class="dice-face face-4"><div class="dot d-top-left"></div><div class="dot d-top-right"></div><div class="dot d-bottom-left"></div><div class="dot d-bottom-right"></div></div>
+                                <div class="dice-face face-5"><div class="dot d-top-left"></div><div class="dot d-top-right"></div><div class="dot d-center"></div><div class="dot d-bottom-left"></div><div class="dot d-bottom-right"></div></div>
+                                <div class="dice-face face-6"><div class="dot d-top-left"></div><div class="dot d-top-right"></div><div class="dot d-mid-left"></div><div class="dot d-mid-right"></div><div class="dot d-bottom-left"></div><div class="dot d-bottom-right"></div></div>
+                            </div>
+                        </div>
+                        <div class="text-left flex-grow">
+                            <div id="ut-action-status" class="text-[10px] text-purple-700 font-extrabold uppercase tracking-wider">Menunggu Lawan Masuk..</div>
+                            <div id="ut-dice-result-text" class="text-[10px] font-bold text-slate-600 mt-0.5">Sistem sedang menyiapkan ruang..</div>
+                        </div>
+                    </div>
+                    <button id="ut-roll-btn" onclick="rollDiceAction()" disabled class="w-full bg-slate-300 text-slate-500 font-playful py-3 rounded-xl shadow border-b-4 border-slate-400 transition text-sm">
+                        Belum Giliranmu 🔒
+                    </button>
+                </div>
+            </div>
+
+              <!-- SCREEN ARENA KUIS PINTAR (HUB 5 MAPEL) -->
             <div id="screen-arena-kuis" class="hidden space-y-6">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xl sm:text-2xl font-playful text-slate-700 flex items-center">
@@ -1404,8 +1680,8 @@
                     avatarDisplay = `<span class="text-sm mr-1">${userAvatar}</span>`;
                 }
                 
-                // Memasukkan avatar ke dalam Header Tag menggunakan innerHTML
-                document.getElementById('header-user-tag').innerHTML = `${avatarDisplay} Halo, ${userProfile.name}`;
+                // Memasukkan avatar ke dalam Header Tag menggunakan innerHTML (FIX: Aman dari celah injeksi XSS)
+                document.getElementById('header-user-tag').innerHTML = `${avatarDisplay} Halo, ${escapeHtml(userProfile.name)}`;
                 document.getElementById('welcome-greeting').innerText = `Halo, ${userProfile.name}! ✨`;
                 document.getElementById('lb-class-badge').innerText = userProfile.className;
                 document.getElementById('header-coin-tag').innerText = userProfile.coins;
@@ -1440,16 +1716,12 @@
             }
         }
 
-        // --- WEB AUDIO API & BGM SYNTHESIZER ---
-        let audioCtx = null;
-        let bgmTimer = null;
+        // --- INSTRUMEN MUSIK BGM ---
         let isBgmPlaying = false;
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
+        // Memuat musik instrumen game otomatis (Royalty-free)
+        let bgmAudio = new Audio('https://raw.githubusercontent.com/mdn/webaudio-examples/main/audio-basics/outfoxing.mp3');
+        bgmAudio.loop = true;
+        bgmAudio.volume = 0.2; // Volume diatur 20% agar nyaman di telinga & tidak menutupi efek suara
 
         function toggleBGM() {
             const icon = document.getElementById('bgm-icon');
@@ -1463,45 +1735,29 @@
         }
 
         function startBGM() {
-            initAudio();
-            if (!audioCtx) return;
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
             if (isBgmPlaying) return;
-            isBgmPlaying = true;
-            document.getElementById('bgm-icon').className = "fa-solid fa-volume-high";
-
-            const melody = [523.25, 587.33, 659.25, 698.46, 783.99, 659.25, 587.33, 523.25];
-            let noteIndex = 0;
-
-            bgmTimer = setInterval(() => {
-                if (!isBgmPlaying) return;
-                try {
-                    const now = audioCtx.currentTime;
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(melody[noteIndex], now);
-                    gain.gain.setValueAtTime(0.04, now);
-                    gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.3);
-
-                    noteIndex = (noteIndex + 1) % melody.length;
-                } catch (e) {
-                    console.log("BGM Error:", e);
-                }
-            }, 350);
+            bgmAudio.play().then(() => {
+                isBgmPlaying = true;
+                document.getElementById('bgm-icon').className = "fa-solid fa-volume-high";
+            }).catch(e => {
+                console.log("Browser menahan autoplay, tunggu interaksi klik dari user.");
+            });
         }
 
         function stopBGM() {
             isBgmPlaying = false;
-            if (bgmTimer) {
-                clearInterval(bgmTimer);
-                bgmTimer = null;
+            bgmAudio.pause();
+        }
+
+        // --- WEB AUDIO API (HANYA UNTUK EFEK SUARA GAME/SFX) ---
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            // FIX: Memaksa audio aktif di browser modern (Chrome/Safari strict autoplay)
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
             }
         }
 
@@ -1614,6 +1870,46 @@
                     noiseFilter.connect(noiseGain);
                     noiseGain.connect(audioCtx.destination);
                     noise.start(now);
+                } else if (type === 'step-beep') {
+                    // Bunyi tut/beb pendek saat pion jalan per kotak
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'ladder-yay') {
+                    // Bunyi yeeyy (nada melompat naik) saat naik tangga
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; 
+                    notes.forEach((freq, i) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'square';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.1);
+                        gain.gain.setValueAtTime(0.1, now + i * 0.1);
+                        gain.gain.linearRampToValueAtTime(0.01, now + i * 0.1 + 0.2);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + i * 0.1);
+                        osc.stop(now + i * 0.1 + 0.2);
+                    });
+                } else if (type === 'snake-nenot') {
+                    // Bunyi nenotttt (nada melorot turun) saat kena ular
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(160, now);
+                    osc.frequency.linearRampToValueAtTime(60, now + 0.7); 
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.7);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.7);
                 }
             } catch (e) {
                 console.log("Audio not allowed yet");
@@ -2494,7 +2790,8 @@
             const allScreens = [
                 'screen-home', 'screen-quiz', 'screen-result', 
                 'screen-leaderboard', 'screen-arena-kuis', 'screen-ringkasan', 'screen-ebook-math', 
-                'screen-profile', 'screen-friends', 'screen-battle-setup', 'screen-chat', 'screen-battle-hub', 'screen-suit-lobby', 'screen-suit-arena'
+                'screen-profile', 'screen-friends', 'screen-battle-setup', 'screen-chat', 'screen-battle-hub', 'screen-suit-lobby', 'screen-suit-arena',
+                'screen-ulartangga-lobby', 'screen-ulartangga-arena'
             ];
             
             allScreens.forEach(id => {
@@ -2513,6 +2810,11 @@
         function returnHome() {
             // Menghentikan timer kuis jika pengguna kembali ke beranda secara paksa
             if (timer) clearInterval(timer); 
+            if (typeof battleCheckInterval !== 'undefined' && battleCheckInterval) clearInterval(battleCheckInterval); // FIX: Mematikan wasit pencari skor jika user kabur dari layar result
+            if (window.botTimer) { clearTimeout(window.botTimer); window.botTimer = null; } // FIX: Mencegah hantu bot jalan sendiri saat user kabur ke beranda
+            
+            stopBGM(); // FIX: Matikan musik agar tidak overlap
+            utTurn = 0; // FIX: Reset giliran Ular Tangga
             
             // Reset state battle jika pengguna membatalkan/keluar di tengah permainan
             activeBattleId = null;
@@ -2567,6 +2869,69 @@
         function confirmQuitGame() {
             document.getElementById('quit-confirm-modal').classList.add('hidden');
             returnHome();
+        }
+
+        let pendingExitGameType = '';
+        let pendingBotGame = '';
+
+        function confirmExitGame(gameType) {
+            pendingExitGameType = gameType;
+            document.getElementById('custom-exit-modal').classList.remove('hidden');
+        }
+
+        function closeCustomExitModal() {
+            document.getElementById('custom-exit-modal').classList.add('hidden');
+        }
+
+        function executeExitGame() {
+            document.getElementById('custom-exit-modal').classList.add('hidden');
+            if (window.botTimer) { clearTimeout(window.botTimer); window.botTimer = null; } // FIX: Bersihkan state bot saat menyerah
+            utTurn = 0; // FIX: Reset state giliran pemain
+            
+            let penalty = 0;
+            if (pendingExitGameType === 'suit') {
+                penalty = currentSuitCoinSetting || 0;
+                if (penalty > 0) {
+                    userProfile.coins = Math.max(0, userProfile.coins - penalty);
+                    localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+                    updateHeaderUI();
+                }
+                stopBGM(); // Matikan musik saat dipaksa keluar
+                switchScreen('screen-suit-lobby');
+            } else if (pendingExitGameType === 'ulartangga') {
+                penalty = utCurrentWager || 0;
+                if (penalty > 0) {
+                    userProfile.coins = Math.max(0, userProfile.coins - penalty);
+                    localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+                    updateHeaderUI();
+                }
+                if (activeUTRoomId && !activeUTRoomId.toString().startsWith('BOT_')) {
+                    try { supabaseClient.from('k6_ular_tangga').update({ status: 'finished' }).eq('id', activeUTRoomId); } catch(e){}
+                }
+                stopBGM(); // Matikan musik saat dipaksa keluar
+                switchScreen('screen-ulartangga-lobby');
+            }
+        }
+
+        function acceptBotMatch() {
+            document.getElementById('bot-offer-modal').classList.add('hidden');
+            if (pendingBotGame === 'suit') {
+                prepareSuitArena();
+                document.getElementById('suit-opponent-name-display').innerText = "Robot AI 🤖";
+            } else if (pendingBotGame === 'ulartangga') {
+                activeUTRoomId = 'BOT_' + Date.now();
+                utPlayers = [
+                    { id: 1, name: userProfile.name, icon: utMyChar, pos: 1, uid: userProfile.userId },
+                    { id: 2, name: "Robot AI", icon: "🤖", pos: 1, uid: 'BOT' }
+                ];
+                setupUlartanggaBoard();
+                updateUTUI();
+                updatePawnPositions();
+            }
+        }
+
+        function declineBotMatch() {
+            document.getElementById('bot-offer-modal').classList.add('hidden');
         }
 
         // --- START GAME & FETCH WITH SMART POOL (0% REPETITION) ---
@@ -2896,6 +3261,8 @@
 
         // --- LOGIKA WASIT BATTLE ---
         async function checkBattleResult(battleCategory, wager) {
+            if (battleCheckInterval) clearInterval(battleCheckInterval); // FIX: Cegah duplikasi interval wasit
+            
             // Ubah UI Result menjadi status "Menunggu Lawan"
             document.getElementById('result-title').innerText = "Menunggu Lawan... ⏳";
             document.getElementById('result-subtitle').innerText = "Wasit sedang memantau skor lawanmu. Tolong jangan tutup layar ini ya!";
@@ -2906,7 +3273,7 @@
             buttons.forEach(btn => btn.classList.add('hidden'));
 
             let attempts = 0;
-            const checkInterval = setInterval(async () => {
+                battleCheckInterval = setInterval(async () => {
                 attempts++;
                 
                 // Cek apakah ada 2 baris skor dengan ID Battle yang sama masuk ke database
@@ -2916,10 +3283,10 @@
                     .eq('category', battleCategory);
                 
                 if (data && data.length === 2) {
-                    clearInterval(checkInterval); // Wasit menemukan skor keduanya
+                    clearInterval(battleCheckInterval); // Wasit menemukan skor keduanya
                     processBattleWinner(data, wager, buttons);
                 } else if (attempts > 20) { // Timeout setelah 60 detik (20 x 3 detik)
-                    clearInterval(checkInterval);
+                    clearInterval(battleCheckInterval);
                     alert("Lawan sepertinya terputus atau kehabisan waktu. Taruhan koinmu dikembalikan.");
                     userProfile.coins += wager;
                     localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
@@ -3202,6 +3569,7 @@
                 if (profErr) throw profErr;
 
                 if (profileData) {
+                    currentViewedUserId = profileData.user_id; // Set ID agar teman bisa di-invite saat diklik dari Papan Peringkat
                     // Update Info Dasar & Tambahkan Ikon Edit Jika Pemilik
                     const editIconHtml = isOwner ? `<button onclick="openProfileModal()" class="ml-2 text-slate-400 hover:text-purple-600 transition" title="Edit Nama & Profil"><i class="fa-solid fa-pen text-sm bg-slate-100 p-1.5 rounded-full"></i></button>` : '';
                     document.getElementById('prof-name-title').innerHTML = `${escapeHtml(profileData.name)} <span id="prof-class-badge" class="ml-2 text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">${escapeHtml(profileData.class_name)}</span> ${editIconHtml}`;
@@ -3577,7 +3945,8 @@
         }
       
         function escapeHtml(text) {
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            if (!text) return ""; // FIX: Mencegah crash jika data text null/undefined
+            return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
         // ==========================================
@@ -3611,7 +3980,7 @@
                     .from('k6_leaderboard_sd')
                     .select('name, user_id')
                     .eq('category', 'total')
-                    .or(`user_id.eq.${searchId},name.ilike.${searchId}`)
+                    .or(`user_id.eq."${searchId}",name.ilike."${searchId}"`) // Tambahan tanda kutip ganda agar nama berspasi tidak error
                     .maybeSingle();
 
                 if (error) throw error;
@@ -3641,7 +4010,8 @@
                 const { data: existing, error: checkErr } = await supabaseClient
                     .from('k6_friends_sd')
                     .select('*')
-                    .or(`and(user_id.eq.${userProfile.userId},friend_user_id.eq.${currentViewedUserId}),and(user_id.eq.${currentViewedUserId},friend_user_id.eq.${userProfile.userId})`)
+                    .eq('user_id', userProfile.userId)
+                    .eq('friend_user_id', currentViewedUserId)
                     .maybeSingle();
 
                 if (checkErr) throw checkErr;
@@ -4011,6 +4381,7 @@
         // ==========================================
         let currentBattleWager = 0;
         let activeBattleId = null;
+        let battleCheckInterval = null; // FIX: Menyimpan instance interval wasit agar bisa dibersihkan (mencegah memory leak)
 
         // Buka Pop-Up Daftar Teman untuk ditantang
         function openInviteFriendModal() {
@@ -4157,6 +4528,7 @@
 
         async function fetchOnlinePlayers() {
             const container = document.getElementById('suit-online-players');
+            if (!container) return; // FIX: Mencegah Null Pointer Exception (Crash) jika elemen UI disembunyikan/dihapus
             container.innerHTML = '<div class="text-xs font-bold text-slate-400 italic py-2">Memuat pemain global...</div>';
             try {
                 // Ambil daftar pemain yang online (last_seen dalam 5 menit terakhir)
@@ -4211,8 +4583,25 @@
                 alert(`Koin kamu tidak cukup! Kamu cuma punya ${userProfile.coins} 🪙.`);
                 return;
             }
-            closeGlobalSuitModal();
-            prepareSuitArena();
+            
+            const btn = document.querySelector('#suit-global-modal button[onclick="startSuitGameGlobal()"]');
+            const originalText = btn.innerHTML;
+            if (btn) {
+                btn.innerHTML = 'Mencari Lawan... ⏳';
+                btn.disabled = true;
+            }
+
+            // Simulasi mencari lawan global
+            setTimeout(() => {
+                if (btn) {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+                closeGlobalSuitModal();
+                
+                pendingBotGame = 'suit';
+                document.getElementById('bot-offer-modal').classList.remove('hidden');
+            }, 2000);
         }
 
         function openInviteFriendSuitModal() {
@@ -4263,6 +4652,373 @@
             closeInviteFriendSuitModal();
             alert(`Sistem sedang mengirim notifikasi dan menunggu ${friendName} masuk...`);
             prepareSuitArena();
+        }
+
+        // ==========================================
+        // TAHAP 4: LOGIKA ULAR TANGGA 1 VS 1 ONLINE (REAL-TIME SUPABASE)
+        // ==========================================
+        let utPlayers = [];
+        let utTurn = 0; 
+        let utIsMoving = false;
+        let activeUTRoomId = null;
+        let utSubscription = null;
+        let utOpponentName = "Lawan";
+        let utMyChar = "🐱";
+        let utCurrentWager = 0;
+        
+        const snakesAndLadders = {
+            2: 23, 8: 31, 15: 26, 21: 42, 28: 77, 36: 44, 51: 67, 71: 91, 78: 98, 87: 94,
+            99: 80, 95: 76, 92: 88, 74: 54, 64: 60, 62: 19, 49: 32, 35: 25, 16: 6
+        };
+
+        // Fungsi fetch online (sama seperti suit tapi beda ID wadah)
+        async function fetchOnlinePlayersUlartangga() {
+            const container = document.getElementById('ut-online-players');
+            if (!container) return; // FIX: Mencegah Null Pointer Exception (Crash) jika elemen tidak ada di HTML
+            container.innerHTML = '<div class="text-xs font-bold text-slate-400 italic py-2">Memuat...</div>';
+            try {
+                const { data, error } = await supabaseClient.from('k6_leaderboard_sd').select('name, avatar, last_seen').neq('name', userProfile.name).order('last_seen', { ascending: false }).limit(15);
+                if (error) throw error;
+                const now = new Date();
+                const onlinePlayers = data.filter(p => p.last_seen && ((now - new Date(p.last_seen)) / 1000 / 60) <= 5);
+                if (onlinePlayers.length === 0) return container.innerHTML = '<div class="text-xs font-bold text-slate-400 italic py-2">Sedang sepi.</div>';
+                container.innerHTML = '';
+                onlinePlayers.forEach(p => {
+                    const avatarSrc = p.avatar && p.avatar.startsWith('http') ? `<img src="${p.avatar}" class="w-8 h-8 rounded-full object-cover">` : `<div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-sm">${p.avatar || '👤'}</div>`;
+                    container.innerHTML += `<div class="flex flex-col items-center shrink-0 w-12 cursor-pointer hover:scale-105 transition" onclick="openPlayerProfile('${p.name}')"><div class="relative">${avatarSrc}<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span></div><span class="text-[9px] font-bold text-slate-600 mt-1 truncate w-full text-center">${escapeHtml(p.name)}</span></div>`;
+                });
+            } catch (err) {}
+        }
+
+        // Modals Pengaturan Ular Tangga
+        function openGlobalUlartanggaModal() { document.getElementById('ulartangga-global-modal').classList.remove('hidden'); }
+        function closeGlobalUlartanggaModal() { document.getElementById('ulartangga-global-modal').classList.add('hidden'); }
+        
+        function openInviteFriendUlartanggaModal() { 
+            document.getElementById('ulartangga-invite-modal').classList.remove('hidden'); 
+            populateUlartanggaFriends(); 
+        }
+        function closeInviteFriendUlartanggaModal() { document.getElementById('ulartangga-invite-modal').classList.add('hidden'); }
+
+        async function populateUlartanggaFriends() {
+            const container = document.getElementById('ulartangga-friends-list');
+            container.innerHTML = '<div class="text-xs text-slate-400 italic py-4">Memuat...</div>';
+            try {
+                const { data } = await supabaseClient.from('k6_friends_sd').select('*').eq('user_id', userProfile.userId).eq('status', 'accepted');
+                if (data.length === 0) return container.innerHTML = '<div class="text-xs text-slate-400 italic py-4">Kamu belum punya teman.</div>';
+                container.innerHTML = '';
+                data.forEach(friend => {
+                    container.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-100 mb-2 hover:border-fuchsia-200 transition"><span class="text-xs font-bold text-slate-700 truncate w-3/4 text-left"><i class="fa-solid fa-user-group text-fuchsia-400 mr-1"></i> ${escapeHtml(friend.friend_name)}</span><button onclick="openUlartanggaCharacterSelection('${friend.friend_user_id}', '${friend.friend_name}')" class="pulse-btn bg-fuchsia-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow border-b-2 border-fuchsia-700 hover:bg-fuchsia-600">Tantang!</button></div>`;
+                });
+            } catch (err) {}
+        }
+
+        // Flow Pemilihan Karakter Ular Tangga
+        let utTargetOpponentId = null;
+        let utTargetOpponentName = null;
+        let utIsGlobalMatch = false;
+
+        function openUlartanggaCharacterSelection(targetId, targetName) {
+            let coinInput = 0;
+            if (targetId === 'global') {
+                coinInput = document.getElementById('ulartangga-coin-global').value;
+                utIsGlobalMatch = true;
+                closeGlobalUlartanggaModal();
+            } else {
+                coinInput = document.getElementById('ulartangga-coin-friend').value;
+                utTargetOpponentId = targetId;
+                utTargetOpponentName = targetName;
+                utIsGlobalMatch = false;
+                closeInviteFriendUlartanggaModal();
+            }
+            utCurrentWager = coinInput ? parseInt(coinInput) : 0;
+            if (utCurrentWager > 0 && userProfile.coins < utCurrentWager) {
+                alert(`Koin kamu tidak cukup! (Milikmu: ${userProfile.coins})`);
+                return;
+            }
+            document.getElementById('ulartangga-character-modal').classList.remove('hidden');
+        }
+
+        async function startUlartanggaGame() {
+            playSound('click');
+            const btn = document.querySelector('#ulartangga-character-modal button[onclick="startUlartanggaGame()"]');
+            const originalBtnText = btn.innerHTML;
+            
+            const selectedChar = document.querySelector('input[name="ut_char"]:checked').value;
+            utMyChar = selectedChar;
+
+            if (utIsGlobalMatch) {
+                btn.innerHTML = 'Mencari Lawan Global... ⏳';
+                btn.disabled = true;
+
+                try {
+                    const { data: rooms } = await supabaseClient.from('k6_ular_tangga').select('*').eq('status', 'waiting').limit(1);
+                    
+                    setTimeout(async () => {
+                        btn.innerHTML = originalBtnText;
+                        btn.disabled = false;
+                        document.getElementById('ulartangga-character-modal').classList.add('hidden');
+
+                        if (rooms && rooms.length > 0) {
+                            activeUTRoomId = rooms[0].id;
+                            await supabaseClient.from('k6_ular_tangga').update({ player2_id: userProfile.userId, p2_char: utMyChar, status: 'playing' }).eq('id', activeUTRoomId);
+                            utPlayers = [
+                                { id: 1, name: "Pemain 1", icon: rooms[0].p1_char || "🤖", pos: 1, uid: rooms[0].player1_id },
+                                { id: 2, name: userProfile.name, icon: utMyChar, pos: 1, uid: userProfile.userId }
+                            ];
+                            alert("Lawan global ditemukan! Memasuki arena...");
+                            setupUlartanggaBoard();
+                            startUlartanggaSubscription(activeUTRoomId);
+                            updateUTUI();
+                            updatePawnPositions();
+                        } else {
+                            pendingBotGame = 'ulartangga';
+                            document.getElementById('bot-offer-modal').classList.remove('hidden');
+                        }
+                    }, 2000);
+
+                } catch (err) { 
+                    console.error("Gagal buat room", err); 
+                    btn.innerHTML = originalBtnText;
+                    btn.disabled = false;
+                }
+            } else {
+                document.getElementById('ulartangga-character-modal').classList.add('hidden');
+                setupUlartanggaBoard();
+                alert("Menunggu " + utTargetOpponentName + " masuk...");
+                try {
+                    const { data: newRoom } = await supabaseClient.from('k6_ular_tangga').insert([{ room_id: `UT_${Date.now()}`, player1_id: userProfile.userId, p1_char: utMyChar, turn: userProfile.userId, status: 'waiting' }]).select().single();
+                    activeUTRoomId = newRoom.id;
+                    utPlayers = [
+                        { id: 1, name: userProfile.name, icon: utMyChar, pos: 1, uid: userProfile.userId },
+                        { id: 2, name: "Menunggu Lawan...", icon: "⏳", pos: 1, uid: null }
+                    ];
+                    startUlartanggaSubscription(activeUTRoomId);
+                    updateUTUI();
+                    updatePawnPositions();
+                } catch (err) { console.error(err); }
+            }
+        }
+
+        // Tampilan Papan & Gerakan
+        function setupUlartanggaBoard() {
+            switchScreen('screen-ulartangga-arena');
+            startBGM(); // Memutar musik instrumen otomatis saat masuk arena
+            document.getElementById('ut-wager-display').innerText = `${utCurrentWager} 🪙`;
+            document.getElementById('ut-action-status').innerText = "Menyiapkan Arena...";
+            document.getElementById('ut-dice-result-text').innerText = "Tunggu aba-aba sistem!";
+            utIsMoving = false;
+        }
+
+        function getUTPixelCoordinates(squareNum) {
+            let row = Math.floor((squareNum - 1) / 10); 
+            let col = (squareNum - 1) % 10;            
+            if (row % 2 === 1) { col = 9 - col; }
+            return { x: (col * 10) + 5, y: (row * 10) + 5 };
+        }
+
+        function updatePawnPositions() {
+            utPlayers.forEach((p, index) => {
+                const coord = getUTPixelCoordinates(p.pos);
+                const pawnEl = document.getElementById(`pawn-${p.id}`);
+                if(pawnEl){
+                    pawnEl.innerText = p.icon;
+                    let offsetX = index === 0 ? -4 : 4;
+                    pawnEl.style.left = `calc(${coord.x}% + ${offsetX}px)`;
+                    pawnEl.style.bottom = `${coord.y}%`;
+                }
+            });
+        }
+
+        function updateUTUI() {
+            if(!utPlayers[0] || !utPlayers[1]) return;
+            const amIPlayer1 = utPlayers[0].uid === userProfile.userId;
+            const myTurn = (utTurn === 0 && amIPlayer1) || (utTurn === 1 && !amIPlayer1);
+            
+            const currentPlayer = utPlayers[utTurn];
+            document.getElementById('ut-turn-text').innerText = `${currentPlayer.name} (${currentPlayer.icon})`;
+            
+            const rollBtn = document.getElementById('ut-roll-btn');
+            if(utPlayers[1].uid === null) {
+                rollBtn.disabled = true;
+                rollBtn.innerText = "Menunggu Lawan Masuk ⏳";
+                rollBtn.className = "w-full bg-slate-300 text-slate-500 font-playful py-3 rounded-xl shadow border-b-4 border-slate-400 transition text-sm";
+            } else if (currentPlayer.uid === 'BOT') {
+                // Logika Otomatis BOT
+                rollBtn.disabled = true;
+                rollBtn.innerHTML = "BOT Sedang Bermain... 🤖";
+                rollBtn.className = "w-full bg-slate-300 text-slate-500 font-playful py-3 rounded-xl shadow border-b-4 border-slate-400 transition text-sm";
+                if (!utIsMoving && !window.botTimer) {
+                    window.botTimer = setTimeout(() => { 
+                        window.botTimer = null;
+                        rollDiceAction(); 
+                    }, 1500);
+                }
+            } else if (myTurn && !utIsMoving) {
+                rollBtn.disabled = false;
+                rollBtn.innerHTML = "Lempar Dadu! 🎲";
+                rollBtn.className = "w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-playful py-3 rounded-xl shadow-lg border-b-4 border-purple-800 transition active:scale-95 text-sm";
+            } else {
+                rollBtn.disabled = true;
+                rollBtn.innerHTML = `Giliran Lawan 🔒`;
+                rollBtn.className = "w-full bg-slate-300 text-slate-500 font-playful py-3 rounded-xl shadow border-b-4 border-slate-400 transition text-sm";
+            }
+        }
+
+        async function rollDiceAction() {
+            if (utIsMoving) return;
+            utIsMoving = true;
+            updateUTUI(); // Disable button
+
+            // 1. Kunci nilai dadu
+            const diceRoll = Math.floor(Math.random() * 6) + 1;
+            
+            // 2. Broadcast ke Supabase HANYA JIKA bukan melawan BOT
+            if (activeUTRoomId && !activeUTRoomId.toString().startsWith('BOT_')) {
+                try {
+                    const nextTurn = utTurn === 0 ? utPlayers[1].uid : utPlayers[0].uid;
+                    await supabaseClient.from('k6_ular_tangga').update({ dice_result: diceRoll, turn: nextTurn }).eq('id', activeUTRoomId);
+                } catch(e) {}
+            }
+            
+            // 3. Mainkan Animasi Putar Lokal
+            playDiceAnimation(diceRoll);
+        }
+
+        function playDiceAnimation(diceRoll) {
+            utIsMoving = true;
+            playSound('click');
+            const dice = document.getElementById('dice');
+            const statusText = document.getElementById('ut-action-status');
+            const resultText = document.getElementById('ut-dice-result-text');
+
+            statusText.innerText = "Mengocok Dadu...";
+            resultText.innerText = "Dadu sedang berputar...";
+
+            // Menyesuaikan inverse sudut kamera agar muka dadu menghadap lurus ke depan pemain
+            const calibratedRotations = { 1: "rotateX(0deg) rotateY(0deg)", 2: "rotateX(0deg) rotateY(180deg)", 3: "rotateX(0deg) rotateY(90deg)", 4: "rotateX(0deg) rotateY(-90deg)", 5: "rotateX(90deg) rotateY(0deg)", 6: "rotateX(-90deg) rotateY(0deg)" };
+            let randomSpins = 1440 + (Math.floor(Math.random() * 3) * 360); // Putaran presisi kelipatan 360
+            let targetRotation = calibratedRotations[diceRoll];
+
+            dice.style.transition = "transform 1.2s cubic-bezier(0.15, 0.85, 0.15, 1)";
+            dice.style.transform = `rotateX(${randomSpins}deg) rotateY(${randomSpins}deg) ` + targetRotation;
+
+            setTimeout(() => {
+                const p = utPlayers[utTurn];
+                resultText.innerHTML = `<b>${p.name}</b> keluar angka <span class="text-purple-700 text-sm font-black">[ ${diceRoll} ]</span>!`;
+                statusText.innerText = `Berjalan ${diceRoll} langkah...`;
+
+                setTimeout(() => { moveUTPawn(utTurn, diceRoll); }, 400);
+            }, 1200);
+        }
+
+        function moveUTPawn(playerIndex, steps) {
+            let p = utPlayers[playerIndex];
+            let currentStep = 0;
+            let direction = 1;
+
+            let stepInterval = setInterval(() => {
+                if (currentStep < steps) {
+                    playSound('step-beep');
+                    p.pos += direction;
+                    if (p.pos > 100) { p.pos = 100 - (p.pos - 100); direction = -1; }
+                    updatePawnPositions();
+                    currentStep++;
+                } else {
+                    clearInterval(stepInterval);
+                    checkUTSnakesAndLadders(playerIndex);
+                }
+            }, 300);
+        }
+
+        async function checkUTSnakesAndLadders(playerIndex) {
+            let p = utPlayers[playerIndex];
+            const statusText = document.getElementById('ut-action-status');
+
+            if (snakesAndLadders[p.pos]) {
+                let oldPos = p.pos;
+                let newPos = snakesAndLadders[p.pos];
+                let isLadder = newPos > oldPos;
+
+                setTimeout(() => {
+                    playSound(isLadder ? 'ladder-yay' : 'snake-nenot');
+                    p.pos = newPos;
+                    updatePawnPositions();
+                    statusText.innerText = isLadder ? `NAIK TANGGA! 📈` : `KENA ULAR! 🐍`;
+                    finalizeUTTurn(playerIndex);
+                }, 500);
+            } else {
+                finalizeUTTurn(playerIndex);
+            }
+        }
+
+        async function finalizeUTTurn(playerIndex) {
+            let p = utPlayers[playerIndex];
+            const statusText = document.getElementById('ut-action-status');
+
+            // Sync Posisi ke Supabase HANYA JIKA bukan melawan BOT
+            if (activeUTRoomId && !activeUTRoomId.toString().startsWith('BOT_')) {
+                try {
+                    if(playerIndex === 0) await supabaseClient.from('k6_ular_tangga').update({ p1_pos: p.pos }).eq('id', activeUTRoomId);
+                    else await supabaseClient.from('k6_ular_tangga').update({ p2_pos: p.pos }).eq('id', activeUTRoomId);
+                } catch(e){}
+            }
+
+            if (p.pos === 100) {
+                // Game Over - Tentukan Pemenang
+                const amIWinner = p.uid === userProfile.userId;
+                if(amIWinner) {
+                    playSound('perfect');
+                    alert(`🎉 SELAMAT! Kamu MEMENANGKAN Ular Tangga dan merebut ${utCurrentWager} 🪙 taruhan!`);
+                    userProfile.coins += utCurrentWager;
+                } else {
+                    playSound('wrong');
+                    alert(`😭 Yaaah, ${p.name} menang! Kamu kehilangan ${utCurrentWager} 🪙.`);
+                    userProfile.coins = Math.max(0, userProfile.coins - utCurrentWager);
+                }
+                localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+                updateHeaderUI();
+                syncCoinsToSupabase();
+                
+                try { await supabaseClient.from('k6_ular_tangga').update({ status: 'finished' }).eq('id', activeUTRoomId); } catch(e){}
+                stopBGM(); // Mematikan musik saat permainan selesai
+                setTimeout(() => returnHome(), 2000);
+                return;
+            }
+
+            utTurn = utTurn === 0 ? 1 : 0;
+            statusText.innerText = "Giliran Selanjutnya";
+            utIsMoving = false;
+            updateUTUI();
+        }
+
+        // Supabase Real-Time Listener untuk Room Ular Tangga
+        function startUlartanggaSubscription(roomId) {
+            if (utSubscription) supabaseClient.removeChannel(utSubscription);
+
+            utSubscription = supabaseClient.channel('ut-room-channel')
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'k6_ular_tangga', filter: `id=eq.${roomId}` }, (payload) => {
+                    const row = payload.new;
+                    
+                    // 1. Jika Player 2 masuk
+                    if (row.player2_id && utPlayers[1].uid === null) {
+                        utPlayers[1].uid = row.player2_id;
+                        utPlayers[1].icon = row.p2_char || "🤖";
+                        // Ambil nama player 2 via API cepat
+                        supabaseClient.from('k6_leaderboard_sd').select('name').eq('user_id', row.player2_id).single().then(({data}) => {
+                            if(data) utPlayers[1].name = data.name;
+                            updateUTUI();
+                        });
+                    }
+
+                    // 2. Jika Lawan Lempar Dadu (Animasi harus jalan di HP kita)
+                    // (Logika sederhana: Jika dice_result berubah dan isMoving masih false, berarti lawan yg lempar)
+                    if (row.dice_result && row.turn === userProfile.userId && !utIsMoving) {
+                        // Lawan melempar, turn sudah pindah ke kita. Kita putar dadu lokal berdasarkan angka yg diset lawan!
+                        playDiceAnimation(row.dice_result);
+                    }
+                })
+                .subscribe();
         }
 
         function prepareSuitArena() {
