@@ -1651,6 +1651,28 @@
             }
             localStorage.setItem('quiz_saved_accounts_sd', JSON.stringify(savedAccounts));
 
+            // Daftarkan ke Supabase agar ID langsung bisa dicari teman walau belum main kuis
+            try {
+                const { data: exist } = await supabaseClient
+                    .from('k6_leaderboard_sd')
+                    .select('id')
+                    .eq('user_id', userId)
+                    .eq('category', 'total')
+                    .maybeSingle();
+
+                if (exist) {
+                    await supabaseClient.from('k6_leaderboard_sd').update({
+                        name: nameInput, class_name: classInput, avatar: avatarInput, coins: currentCoins, updated_at: new Date()
+                    }).eq('id', exist.id);
+                } else {
+                    await supabaseClient.from('k6_leaderboard_sd').insert([{
+                        name: nameInput, class_name: classInput, category: 'total', score: 0,
+                        avatar: avatarInput, user_id: userId, coins: currentCoins, battle_rank_points: 0,
+                        updated_at: new Date()
+                    }]);
+                }
+            } catch(e) { console.warn("Gagal simpan profil ke cloud", e); }
+
             document.getElementById('profile-modal').classList.add('hidden');
             updateHeaderUI();
             initDailyQuest();
@@ -3992,12 +4014,14 @@
         // 1. Fungsi Pencarian Profil Teman (Berdasarkan user_id / ID Login)
         async function searchFriendProfile() {
             if (!userProfile) return;
-            const searchId = document.getElementById('friend-id-input').value.trim();
+            let searchId = document.getElementById('friend-id-input').value.trim();
+            searchId = searchId.replace(/"/g, ''); // Hapus tanda kutip jika user iseng mengetiknya agar query tidak error
+            
             if (!searchId) {
                 alert("Masukkan ID Login atau Nama temanmu dulu!");
                 return;
             }
-            if (searchId === userProfile.userId || searchId.toLowerCase() === userProfile.name.toLowerCase()) {
+            if (searchId.toLowerCase() === userProfile.userId.toLowerCase() || searchId.toLowerCase() === userProfile.name.toLowerCase()) {
                 alert("Itu akun kamu sendiri! Cari teman yang lain ya.");
                 return;
             }
@@ -4010,10 +4034,11 @@
             try {
                
                 // Cari di k6_leaderboard_sd berdasarkan user_id ATAU name
+                // Menggunakan ilike untuk user_id agar tidak sensitif huruf besar/kecil (kalau user terketik huruf kapital)
                 const { data, error } = await supabaseClient
                     .from('k6_leaderboard_sd')
                     .select('name, user_id')
-                    .or(`user_id.eq."${searchId}",name.ilike."${searchId}"`) // Tambahan tanda kutip ganda agar nama berspasi tidak error
+                    .or(`user_id.ilike."${searchId}",name.ilike."%${searchId}%"`) 
                     .limit(1)
                     .maybeSingle();
 
@@ -4060,7 +4085,7 @@
                 }
 
                 if (!currentViewedUserId) {
-                    alert("ID Pemain tidak ditemukan. Pemain ini mungkin belum memiliki data yang cukup.");
+                    alert("Maaf, pemain ini belum bisa ditambahkan karena ia memakai akun versi lama. Suruh dia main kuis 1x dulu ya agar ID-nya terupdate otomatis!");
                     return;
                 }
 
