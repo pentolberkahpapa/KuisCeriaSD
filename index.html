@@ -3558,18 +3558,20 @@
             }
 
             try {
-                // Ambil Data Profil dari Supabase (Cari skor 'total' untuk dapat info dasar)
-                const { data: profileData, error: profErr } = await supabaseClient
+                // Ambil Data Profil dari Supabase (Cari semua kategori untuk jaga-jaga pemain baru)
+                const { data: allProfiles, error: profErr } = await supabaseClient
                     .from('k6_leaderboard_sd')
                     .select('*')
-                    .eq('name', playerName)
-                    .eq('category', 'total')
-                    .maybeSingle();
+                    .eq('name', playerName);
 
                 if (profErr) throw profErr;
 
-                if (profileData) {
+                let profileData = null;
+                if (allProfiles && allProfiles.length > 0) {
+                    // Coba cari kategori 'total', jika tidak ada pakai record pertama yang ditemukan
+                    profileData = allProfiles.find(p => p.category === 'total') || allProfiles[0];
                     currentViewedUserId = profileData.user_id; // Set ID agar teman bisa di-invite saat diklik dari Papan Peringkat
+                    
                     // Update Info Dasar & Tambahkan Ikon Edit Jika Pemilik
                     const editIconHtml = isOwner ? `<button onclick="openProfileModal()" class="ml-2 text-slate-400 hover:text-purple-600 transition" title="Edit Nama & Profil"><i class="fa-solid fa-pen text-sm bg-slate-100 p-1.5 rounded-full"></i></button>` : '';
                     document.getElementById('prof-name-title').innerHTML = `${escapeHtml(profileData.name)} <span id="prof-class-badge" class="ml-2 text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">${escapeHtml(profileData.class_name)}</span> ${editIconHtml}`;
@@ -3592,7 +3594,8 @@
                         `;
                     }
                 } else {
-                    // Kasus untuk pemain baru yang belum punya skor 'total' di database
+                    currentViewedUserId = ""; // Reset ID jika pemain benar-benar tidak ditemukan
+                    // Kasus untuk pemain baru yang belum punya data di database
                     const avatarToDisplay = (isOwner && userProfile && userProfile.avatar) ? (userProfile.avatar.startsWith('http') ? 'foto' : userProfile.avatar) : '👤';
                     
                     const editIconHtml = isOwner ? `<button onclick="openProfileModal()" class="ml-2 text-slate-400 hover:text-purple-600 transition" title="Edit Nama & Profil"><i class="fa-solid fa-pen text-sm bg-slate-100 p-1.5 rounded-full"></i></button>` : '';
@@ -3614,6 +3617,36 @@
 
                 // Render Rak Lencana (Untuk sekarang kita beri contoh data acak, nanti bisa disinkron ke database)
                 renderBadges([]); 
+
+                // Cek status pertemanan jika bukan pemilik
+                if (!isOwner && currentViewedUserId) {
+                    const btnAdd = document.getElementById('btn-add-friend');
+                    // Reset tombol ke default dulu
+                    btnAdd.onclick = sendFriendRequest;
+                    btnAdd.className = "pulse-btn w-full bg-cyan-100 hover:bg-cyan-200 text-cyan-700 font-bold py-1.5 rounded-lg text-xs flex items-center justify-center transition border border-cyan-200 shadow-sm";
+                    btnAdd.innerHTML = `<i class="fa-solid fa-user-plus mr-1"></i> Tambah Teman`;
+
+                    try {
+                        const { data: friendData } = await supabaseClient
+                            .from('k6_friends_sd')
+                            .select('status')
+                            .eq('user_id', userProfile.userId)
+                            .eq('friend_user_id', currentViewedUserId)
+                            .maybeSingle();
+
+                        if (friendData) {
+                            if (friendData.status === 'accepted') {
+                                btnAdd.innerHTML = `<i class="fa-solid fa-user-check mr-1"></i> Berteman`;
+                                btnAdd.className = "pulse-btn w-full bg-emerald-100 text-emerald-700 font-bold py-1.5 rounded-lg text-xs flex items-center justify-center transition border border-emerald-200 shadow-sm";
+                                btnAdd.onclick = null;
+                            } else if (friendData.status === 'pending') {
+                                btnAdd.innerHTML = `<i class="fa-solid fa-clock mr-1"></i> Menunggu...`;
+                                btnAdd.className = "pulse-btn w-full bg-amber-100 text-amber-700 font-bold py-1.5 rounded-lg text-xs flex items-center justify-center transition border border-amber-200 shadow-sm";
+                                btnAdd.onclick = null;
+                            }
+                        }
+                    } catch(e) { console.warn("Gagal cek status teman", e); }
+                }
 
                 // Ambil Daftar Sorakan
                 fetchSorakan(playerName);
@@ -3975,12 +4008,13 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
 
             try {
+               
                 // Cari di k6_leaderboard_sd berdasarkan user_id ATAU name
                 const { data, error } = await supabaseClient
                     .from('k6_leaderboard_sd')
                     .select('name, user_id')
-                    .eq('category', 'total')
                     .or(`user_id.eq."${searchId}",name.ilike."${searchId}"`) // Tambahan tanda kutip ganda agar nama berspasi tidak error
+                    .limit(1)
                     .maybeSingle();
 
                 if (error) throw error;
@@ -4025,17 +4059,25 @@
                     return;
                 }
 
+                if (!currentViewedUserId) {
+                    alert("ID Pemain tidak ditemukan. Pemain ini mungkin belum memiliki data yang cukup.");
+                    return;
+                }
+
                 // Kirim permintaan (Relasi 2 Arah dengan status 'pending')
-                await supabaseClient.from('k6_friends_sd').insert([
+                const { error: insertErr } = await supabaseClient.from('k6_friends_sd').insert([
                     { user_id: userProfile.userId, friend_user_id: currentViewedUserId, friend_name: currentViewedProfile, status: 'pending', action_user_id: userProfile.userId },
                     { user_id: currentViewedUserId, friend_user_id: userProfile.userId, friend_name: userProfile.name, status: 'pending', action_user_id: userProfile.userId }
-                ]);
+                ]).select();
+                
+                if (insertErr) throw insertErr;
 
                 alert("Permintaan pertemanan terkirim ke " + currentViewedProfile + "! ⏳");
-                document.getElementById('btn-add-friend').innerHTML = `<i class="fa-solid fa-clock mr-1"></i> Menunggu...`;
-                document.getElementById('btn-add-friend').classList.replace('bg-cyan-100', 'bg-amber-100');
-                document.getElementById('btn-add-friend').classList.replace('text-cyan-700', 'text-amber-700');
-                document.getElementById('btn-add-friend').onclick = null;
+                const btnAdd = document.getElementById('btn-add-friend');
+                btnAdd.innerHTML = `<i class="fa-solid fa-clock mr-1"></i> Menunggu...`;
+                btnAdd.className = "pulse-btn w-full bg-amber-100 text-amber-700 font-bold py-1.5 rounded-lg text-xs flex items-center justify-center transition border border-amber-200 shadow-sm";
+                btnAdd.onclick = null;
+
             } catch (err) {
                 console.error("Gagal tambah teman:", err);
                 alert("Gagal menambahkan teman.");
