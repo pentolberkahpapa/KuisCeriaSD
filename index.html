@@ -3581,10 +3581,11 @@
         }
 
         // --- FUNGSI BUKA LAYAR PROFIL (PUBLIK / SENDIRI) ---
-        async function openPlayerProfile(playerName) {
-            currentViewedProfile = playerName;
-            
-            // Siapkan Layar (Bersihkan Data Lama)
+        async function openPlayerProfile(playerName, explicitUserId = null) {
+          currentViewedProfile = playerName;
+          currentViewedUserId = explicitUserId; // Pakai ID dari pencarian (jika ada) agar tidak salah invite
+
+          // Siapkan Layar (Bersihkan Data Lama)
             switchScreen('screen-profile');
             document.getElementById('prof-name-title').innerHTML = `Memuat...`;
             document.getElementById('prof-photo-img').classList.add('hidden');
@@ -3615,8 +3616,12 @@
                 let profileData = null;
                 if (allProfiles && allProfiles.length > 0) {
                     // Coba cari kategori 'total', jika tidak ada pakai record pertama yang ditemukan
-                    profileData = allProfiles.find(p => p.category === 'total') || allProfiles[0];
-                    currentViewedUserId = profileData.user_id; // Set ID agar teman bisa di-invite saat diklik dari Papan Peringkat
+                  profileData = allProfiles.find(p => p.category === 'total') || allProfiles[0];
+                  // FIX BUG INVITE: Jika bukan dari pencarian, cari baris riwayat mana saja yang punya user_id
+                  if (!currentViewedUserId) {
+                      const validProfile = allProfiles.find(p => p.user_id) || profileData;
+                      currentViewedUserId = validProfile.user_id;
+                  }
                     
                     // Update Info Dasar & Tambahkan Ikon Edit Jika Pemilik
                     const editIconHtml = isOwner ? `<button onclick="openProfileModal()" class="ml-2 text-slate-400 hover:text-purple-600 transition" title="Edit Nama & Profil"><i class="fa-solid fa-pen text-sm bg-slate-100 p-1.5 rounded-full"></i></button>` : '';
@@ -4069,10 +4074,10 @@
                 if (error) throw error;
 
                 if (data) {
-                    currentViewedUserId = data.user_id || searchId; // Simpan ID aslinya
-                    openPlayerProfile(data.name);
-                    document.getElementById('friend-id-input').value = '';
-                } else {
+                  // Teruskan ID secara spesifik agar tidak hilang/tertimpa
+                  openPlayerProfile(data.name, data.user_id || searchId); 
+                  document.getElementById('friend-id-input').value = '';
+              } else {
                     alert("Pemain tidak ditemukan! Pastikan ID atau Namanya sudah benar.");
                 }
             } catch (err) {
@@ -4114,10 +4119,11 @@
                 }
 
                 // Kirim permintaan (Relasi 2 Arah dengan status 'pending')
+                // Hapus .select() agar tidak terblokir oleh RLS (keamanan database) saat menyisipkan data untuk ID lawan
                 const { error: insertErr } = await supabaseClient.from('k6_friends_sd').insert([
                     { user_id: userProfile.userId, friend_user_id: currentViewedUserId, friend_name: currentViewedProfile, status: 'pending', action_user_id: userProfile.userId },
                     { user_id: currentViewedUserId, friend_user_id: userProfile.userId, friend_name: userProfile.name, status: 'pending', action_user_id: userProfile.userId }
-                ]).select();
+                ]);
                 
                 if (insertErr) throw insertErr;
 
