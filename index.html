@@ -531,6 +531,45 @@
         </div>
     </div>
 
+      <!-- MODAL HADIAH SPIN THE WHEEL -->
+    <div id="reward-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-gradient-to-b from-yellow-100 to-amber-100 rounded-3xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 border-4 border-yellow-400 animate-[comboPop_0.4s_ease-out] relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 text-7xl opacity-20">🎉</div>
+            <div class="absolute -left-4 -bottom-4 text-7xl opacity-20">🪙</div>
+            
+            <div class="text-7xl bouncing-toy drop-shadow-md relative z-10">🎁</div>
+            <h3 class="text-3xl font-playful text-amber-800 drop-shadow-sm relative z-10">Horeee!!</h3>
+            <p class="text-amber-900 font-bold text-xs relative z-10">Roda ajaib berhenti! Kamu mendapatkan koin gratis:</p>
+            
+            <div class="bg-white py-4 rounded-2xl border-4 border-yellow-300 shadow-inner relative z-10 transform hover:scale-105 transition duration-300">
+                <span id="reward-amount" class="text-5xl font-playful text-amber-600 drop-shadow-sm">10 🪙</span>
+            </div>
+            
+            <button onclick="closeRewardModal()" class="pulse-btn w-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-playful py-3.5 rounded-xl shadow-lg text-lg border-b-4 border-orange-700 relative z-10">
+                Ambil Koinnya! 💰
+            </button>
+        </div>
+    </div>
+
+        <!-- MODAL PEMBERITAHUAN SUPER SERU (MISI & KLAIM) -->
+    <div id="cute-alert-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4 hidden">
+        <div class="bg-gradient-to-b from-emerald-100 to-teal-100 rounded-3xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 border-4 border-emerald-400 animate-[comboPop_0.4s_ease-out] relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 text-7xl opacity-20 pointer-events-none">✨</div>
+            <div class="absolute -left-4 -bottom-4 text-7xl opacity-20 pointer-events-none">🎯</div>
+            
+            <div id="cute-alert-emoji" class="text-7xl bouncing-toy drop-shadow-md relative z-10">🎉</div>
+            <h3 id="cute-alert-title" class="text-2xl font-playful text-teal-800 drop-shadow-sm relative z-10 leading-tight">Yeeeaaay!</h3>
+            
+            <div class="bg-white p-4 rounded-2xl border-4 border-emerald-300 shadow-inner relative z-10">
+                <p id="cute-alert-desc" class="text-teal-900 font-bold text-xs relative z-10 leading-relaxed">Pesan di sini</p>
+            </div>
+            
+            <button onclick="document.getElementById('cute-alert-modal').classList.add('hidden')" class="pulse-btn w-full bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white font-playful py-3 rounded-xl shadow-lg text-sm border-b-4 border-teal-700 relative z-10 transition">
+                Lanjut Berpetualang! 🚀
+            </button>
+        </div>
+    </div>
+
     <!-- Main Container -->
     <div id="app-container" class="w-full max-w-xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border-4 border-white my-auto">
         
@@ -574,31 +613,89 @@
                     <h2 class="text-2xl font-playful text-slate-700" id="welcome-greeting">Halo, Bintang Kelas! ✨</h2>
                     <p class="text-slate-500 text-sm mb-4">Pilih mata pelajaran favoritmu dan kumpulkan skor tertinggi!</p>
                 </div>
+
+                <!-- KOTAK BONUS LOGIN (SPIN THE WHEEL) -->
+                <div id="spin-wheel-box" class="bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-200 rounded-2xl shadow-sm relative overflow-hidden group mb-4">
+                    <div class="absolute -right-4 -top-4 text-6xl opacity-10 group-hover:rotate-45 transition pointer-events-none duration-500">🎡</div>
+                    
+                    <!-- HEADER BISA DIKLIK -->
+                    <button onclick="document.getElementById('spin-wheel-content').classList.toggle('hidden'); document.getElementById('spin-icon-toggle').classList.toggle('fa-chevron-up'); document.getElementById('spin-icon-toggle').classList.toggle('fa-chevron-down');" class="w-full p-4 flex items-center justify-between cursor-pointer transition hover:bg-yellow-100/50">
+                        <div class="flex items-center">
+                            <i id="spin-icon-toggle" class="fa-solid fa-chevron-down text-yellow-600 mr-2 transition-transform"></i>
+                            <span class="text-xs font-bold text-yellow-700 uppercase tracking-widest flex items-center"> Bonus Login Harian</span>
+                        </div>
+                        <div class="flex items-center space-x-1 bg-white px-2 py-0.5 rounded-full border border-yellow-200 shadow-sm relative z-10" title="Sisa Tiket Spin">
+                            <span class="text-sm">🎫</span>
+                            <span id="spin-ticket-count" class="text-xs font-bold text-yellow-600 font-playful">0 Tiket</span>
+                        </div>
+                    </button>
+                    
+                    <!-- KONTEN SPIN (BISA DI-HIDE) -->
+                    <div id="spin-wheel-content" class="px-4 pb-4 border-t border-yellow-200/50 hidden text-center">
+                        <p class="text-[10px] text-yellow-700 font-bold mt-2 mb-3 leading-tight">✨ Putar roda harian untuk mendapatkan koin gratis! Tiket akan diakumulasi jika kamu lupa memutarnya hari ini.</p>
+                        
+                            <div class="flex flex-col items-center justify-center py-4">
+                            <!-- RODA PUTAR VISUAL BARU -->
+                            <div class="relative w-48 h-48 mx-auto mb-6 overflow-hidden rounded-full border-[6px] border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.5)] bg-white">
+                                <!-- Jarum Penunjuk -->
+                                <div class="absolute -top-1 left-1/2 -translate-x-1/2 text-3xl z-20 drop-shadow-lg" style="transform: rotate(180deg);">📍</div>
+                                
+                                <!-- Lingkaran Roda -->
+                                <div id="actual-wheel" class="w-full h-full rounded-full relative shadow-inner" style="transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1); background: conic-gradient(#fca5a5 0deg 45deg, #fcd34d 45deg 90deg, #6ee7b7 90deg 135deg, #93c5fd 135deg 180deg, #c4b5fd 180deg 225deg, #f9a8d4 225deg 270deg, #fde047 270deg 315deg, #86efac 315deg 360deg);">
+                                    <!-- Angka/Teks Hadiah di dalam Roda -->
+                                    <div class="absolute inset-0 text-slate-800 drop-shadow-sm">
+                                        <div class="absolute inset-0 flex justify-center pt-3" style="transform: rotate(22.5deg);"><span class="font-extrabold text-[13px] bg-white/40 px-1.5 rounded text-rose-700">1 🪙</span></div>
+                                        <div class="absolute inset-0 flex justify-center pt-3" style="transform: rotate(67.5deg);"><span class="font-extrabold text-[13px] bg-white/40 px-1.5 rounded text-amber-700">5 🪙</span></div>
+                                        <div class="absolute inset-0 flex justify-center pt-3" style="transform: rotate(112.5deg);"><span class="font-extrabold text-[13px] bg-white/40 px-1.5 rounded text-emerald-700">10 🪙</span></div>
+                                        <div class="absolute inset-0 flex justify-center pt-3" style="transform: rotate(157.5deg);"><span class="font-extrabold text-[13px] bg-white/40 px-1.5 rounded text-blue-700">20 🪙</span></div>
+                                        <div class="absolute inset-0 flex justify-center pt-3" style="transform: rotate(202.5deg);"><span class="font-extrabold text-[13px] bg-white/40 px-1.5 rounded text-purple-700">30 🪙</span></div>
+                                        <div class="absolute inset-0 flex justify-center pt-3" style="transform: rotate(247.5deg);"><span class="font-extrabold text-[13px] bg-white/40 px-1.5 rounded text-pink-700">40 🪙</span></div>
+                                        <div class="absolute inset-0 flex justify-center pt-3" style="transform: rotate(292.5deg);"><span class="font-extrabold text-[13px] bg-white/40 px-1.5 rounded text-yellow-700">50 🪙</span></div>
+                                        <div class="absolute inset-0 flex justify-center pt-3" style="transform: rotate(337.5deg);"><span class="font-extrabold text-[13px] bg-white/40 px-1.5 rounded text-green-700">100 🪙</span></div>
+                                    </div>
+                                </div>
+                                <!-- Titik Tengah Roda -->
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full border-4 border-amber-400 z-10 shadow-inner"></div>
+                            </div>
+                            
+                            <button id="btn-spin-wheel" onclick="executeSpinWheel()" class="pulse-btn w-full max-w-[200px] bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white font-playful py-3 rounded-xl text-sm shadow-md border-b-4 border-amber-700 transition relative z-10">
+                                Putar Roda Sekarang! 🎡
+                            </button>
+                        </div>
+                    </div>
+                </div>
               
-              <!-- KOTAK MISI HARIAN (DAILY QUEST) BARU -->
-                <div id="daily-quest-box" class="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 p-4 rounded-2xl shadow-sm relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 text-6xl opacity-10 group-hover:rotate-12 transition">🎯</div>
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="text-xs font-bold text-emerald-700 uppercase tracking-widest flex items-center"><i class="fa-solid fa-calendar-check mr-1"></i> Misi Hari Ini</span>
-                        <div class="flex items-center space-x-1 bg-white px-2 py-0.5 rounded-full border border-orange-200 shadow-sm" title="Streak Beruntun">
+                <!-- KOTAK MISI HARIAN (DAILY QUEST) BARU DENGAN TOGGLE -->
+                <div id="daily-quest-box" class="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-2xl shadow-sm relative overflow-hidden group">
+                    <div class="absolute -right-4 -top-4 text-6xl opacity-10 group-hover:rotate-12 transition pointer-events-none">🎯</div>
+                    
+                    <!-- HEADER BISA DIKLIK -->
+                    <button onclick="document.getElementById('daily-quest-content').classList.toggle('hidden'); document.getElementById('quest-icon-toggle').classList.toggle('fa-chevron-up'); document.getElementById('quest-icon-toggle').classList.toggle('fa-chevron-down');" class="w-full p-4 flex items-center justify-between cursor-pointer transition hover:bg-emerald-100/50">
+                        <div class="flex items-center">
+                            <i id="quest-icon-toggle" class="fa-solid fa-chevron-down text-emerald-600 mr-2 transition-transform"></i>
+                            <span class="text-xs font-bold text-emerald-700 uppercase tracking-widest flex items-center"> Misi Hari Ini</span>
+                        </div>
+                        <div class="flex items-center space-x-1 bg-white px-2 py-0.5 rounded-full border border-orange-200 shadow-sm relative z-10" title="Streak Beruntun">
                             <span class="text-sm">🔥</span>
                             <span id="streak-count" class="text-xs font-bold text-orange-600 font-playful">0/7 Hari</span>
                         </div>
-                    </div>
-                    
-                    <!-- Keterangan Tambahan Sesuai Permintaan -->
-                    <p class="text-[10px] text-emerald-600 font-bold mb-2 leading-tight">✨ Selesaikan misi 7 hari berturut-turut untuk mendapatkan Gelar "Bintang Teladan"!</p>
-                    
-                    <h3 id="quest-title" class="font-playful text-slate-800 text-base leading-tight mb-3 pr-8">Selesaikan 1 Kuis Matematika</h3>
-                    
-                    <button id="btn-claim-quest" onclick="claimQuestReward()" class="pulse-btn w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-sm shadow-sm transition hidden">
-                        Klaim Hadiah! 🎁
                     </button>
                     
-                    <div id="quest-progress-box" class="w-full bg-emerald-100 h-2.5 rounded-full overflow-hidden">
-                        <div id="quest-progress-bar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
+                    <!-- KONTEN MISI (BISA DI-HIDE) -->
+                    <div id="daily-quest-content" class="px-4 pb-4 border-t border-emerald-200/50 hidden">
+                        <p class="text-[10px] text-emerald-600 font-bold mt-2 mb-2 leading-tight">✨ Selesaikan misi 7 hari berturut-turut untuk mendapatkan Gelar "Anak Teladan"!</p>
+                        
+                        <h3 id="quest-title" class="font-playful text-slate-800 text-base leading-tight mb-3 pr-8 relative z-10">Selesaikan 1 Kuis Matematika</h3>
+                        
+                        <button id="btn-claim-quest" onclick="claimQuestReward()" class="pulse-btn w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-sm shadow-sm transition hidden relative z-10">
+                            Klaim Hadiah! 🎁
+                        </button>
+                        
+                        <div id="quest-progress-box" class="w-full bg-emerald-100 h-2.5 rounded-full overflow-hidden relative z-10">
+                            <div id="quest-progress-bar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                        <p id="quest-status-text" class="text-[10px] font-bold text-emerald-600 mt-1.5 text-center relative z-10">Belum Selesai (0/1)</p>
                     </div>
-                    <p id="quest-status-text" class="text-[10px] font-bold text-emerald-600 mt-1.5 text-center">Belum Selesai (0/1)</p>
                 </div>
               
               <!-- CARD MENU BARU: CHAT & BATTLE -->
@@ -1549,12 +1646,11 @@
             if (acc) {
                 userProfile = acc;
                 localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
-            document.getElementById('profile-modal').classList.add('hidden');
-            updateHeaderUI();
-            initDailyQuest();
-            startBGM();
-            startOnlineHeartbeat(); // Aktifkan jika dia baru bikin profil
+                document.getElementById('profile-modal').classList.add('hidden');
+                updateHeaderUI();
                 initDailyQuest();
+                startBGM();
+                startOnlineHeartbeat(); 
                 switchScreen('screen-home');
             }
         }
@@ -3869,6 +3965,8 @@
         let userQuestData = JSON.parse(localStorage.getItem('quiz_quest_data')) || null;
 
         function initDailyQuest() {
+            initSpinBonus(); // Mengaktifkan pengecekan tiket Spin Harian
+            
             const todayDate = new Date().toDateString(); // Contoh: "Wed Nov 04 2026"
             
             // Jika belum ada data atau data sudah beda hari
@@ -3910,6 +4008,128 @@
             localStorage.setItem('quiz_quest_data', JSON.stringify(userQuestData));
         }
 
+        // --- SISTEM SPIN THE WHEEL HARIAN ---
+        let spinTickets = 0;
+
+        function initSpinBonus() {
+            if (!userProfile) return;
+            const todayDate = new Date().toDateString(); // Jam 00:00 akan menjadi hari baru (string berubah)
+            let spinData = JSON.parse(localStorage.getItem(`quiz_spin_data_${userProfile.userId}`)) || {
+                lastLoginDate: "",
+                tickets: 0
+            };
+
+            // Jika pergantian hari (jam 00:00), berikan 1 tiket dan jangan hanguskan tiket lama
+            if (spinData.lastLoginDate !== todayDate) {
+                spinData.tickets += 1;
+                spinData.lastLoginDate = todayDate;
+                localStorage.setItem(`quiz_spin_data_${userProfile.userId}`, JSON.stringify(spinData));
+            }
+            
+            spinTickets = spinData.tickets;
+            renderSpinUI();
+        }
+
+        function renderSpinUI() {
+            const ticketCountEl = document.getElementById('spin-ticket-count');
+            const spinBtn = document.getElementById('btn-spin-wheel');
+            if (!ticketCountEl || !spinBtn) return;
+            
+            ticketCountEl.innerText = `${spinTickets} Tiket`;
+            
+            if (spinTickets > 0) {
+                spinBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale');
+                spinBtn.innerText = "Putar Roda! 🎡";
+                spinBtn.disabled = false;
+            } else {
+                spinBtn.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
+                spinBtn.innerText = "Tiket Habis 🔒";
+                spinBtn.disabled = true;
+            }
+        }
+
+        let currentWheelRotation = 0; // State untuk menyimpan sudut putaran roda
+
+        function executeSpinWheel() {
+            if (spinTickets <= 0) return;
+            
+            playSound('click');
+            const spinBtn = document.getElementById('btn-spin-wheel');
+            const actualWheel = document.getElementById('actual-wheel');
+            
+            spinBtn.disabled = true;
+            spinBtn.innerText = "Memutar... ⏳";
+
+            // Kurangi tiket & Simpan state
+            spinTickets -= 1;
+            let spinData = JSON.parse(localStorage.getItem(`quiz_spin_data_${userProfile.userId}`));
+            spinData.tickets = spinTickets;
+            localStorage.setItem(`quiz_spin_data_${userProfile.userId}`, JSON.stringify(spinData));
+            renderSpinUI();
+
+            // 1. Gacha Menentukan Hadiah (Logika Probabilitas Tetap)
+            const rand = Math.random() * 111.111; 
+            let prize = 1;
+            if (rand <= 0.001) prize = 100;
+            else if (rand <= 0.011) prize = 50;
+            else if (rand <= 0.111) prize = 40;
+            else if (rand <= 1.111) prize = 30;
+            else if (rand <= 11.111) prize = 20;
+            else if (rand <= 31.111) prize = 10;
+            else if (rand <= 61.111) prize = 5;
+            else prize = 1;
+
+            // 2. Kalkulasi Matematika Rotasi Visual ke Hadiah yang Tepat
+            const prizeArray = [1, 5, 10, 20, 30, 40, 50, 100];
+            const sliceIndex = prizeArray.indexOf(prize);
+            
+            // Mencari target derajat berdasarkan posisi irisan (tiap irisan 45 derajat)
+            const targetAngle = 360 - (sliceIndex * 45 + 22.5);
+            
+            // Kalkulasi sisa putaran terakhir agar rodanya jalan maju, bukan mundur
+            const currentMod = currentWheelRotation % 360;
+            let diff = targetAngle - currentMod;
+            if (diff < 0) diff += 360; // Paksa arah jarum jam
+            
+            // Tambahkan 5 putaran penuh (1800 derajat) efek dramatis + sudut tujuan
+            const extraSpins = 1800; 
+            currentWheelRotation += extraSpins + diff;
+            
+            // 3. Mainkan Animasi Rotasi CSS
+            actualWheel.style.transform = `rotate(${currentWheelRotation}deg)`;
+
+            // 4. Tunggu roda berhenti (3 detik sesuai transisi CSS)
+            setTimeout(() => {
+                // Tampilkan Modal Anak Ceria
+                document.getElementById('reward-amount').innerText = `${prize} 🪙`;
+                document.getElementById('reward-modal').classList.remove('hidden');
+                
+                playSound('victory');
+                triggerConfetti();
+
+                // Inject Koin ke Data User
+                userProfile.coins += prize;
+                localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+                updateHeaderUI();
+                syncCoinsToSupabase();
+                
+            }, 3000); // Harus sama dengan duration-[3000ms] di HTML
+        }
+
+        function closeRewardModal() {
+            playSound('click');
+            document.getElementById('reward-modal').classList.add('hidden');
+            
+            const spinBtn = document.getElementById('btn-spin-wheel');
+            if (spinTickets > 0) {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "Putar Lagi! 🎡";
+                spinBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale');
+            } else {
+                spinBtn.innerText = "Tiket Habis 🔒";
+            }
+        }
+
         function renderQuestUI() {
             if (!userQuestData) return;
             
@@ -3942,13 +4162,26 @@
             }
         }
 
+        // Fungsi pembantu untuk memanggil modal pop-up ceria
+        function showCuteAlert(emoji, title, desc) {
+            document.getElementById('cute-alert-emoji').innerText = emoji;
+            document.getElementById('cute-alert-title').innerText = title;
+            document.getElementById('cute-alert-desc').innerText = desc;
+            document.getElementById('cute-alert-modal').classList.remove('hidden');
+            triggerConfetti(); // Efek hujan kertas warna-warni!
+        }
+
         function triggerQuestEvent(type, target) {
             if (userQuestData && !userQuestData.completed && userQuestData.type === type && userQuestData.target === target) {
                 userQuestData.completed = true;
                 saveQuestData();
+                renderQuestUI(); // Memperbarui tampilan box misi
                 playSound('correct');
-                // Beri tahu user kalau misinya selesai
-                setTimeout(() => alert("🎉 Misi Harian Selesai! Jangan lupa Klaim Hadiahnya di Beranda!"), 500);
+                
+                // Panggil pop-up ceria
+                setTimeout(() => {
+                    showCuteAlert("🎯", "Misi Selesai!", "Wah kamu hebat! Jangan lupa klik tombol Klaim Hadiah di Beranda ya!");
+                }, 500);
             }
         }
 
@@ -3960,10 +4193,9 @@
             renderQuestUI();
 
             if (userQuestData.streak === 7) {
-                alert("🏆 LUAR BIASA! Kamu menyelesaikan misi 7 hari beruntun! Kamu mendapatkan Gelar 'Bintang Teladan'!");
-                // Opsional: Anda bisa tambahkan logika simpan badge ini ke Supabase nanti
+                showCuteAlert("🏆", "LUAR BIASA!", "Kamu berhasil selesaikan misi 7 hari berturut-turut! Kamu hebat banget!");
             } else {
-                alert(`🎁 Mantap! Misi hari ini diklaim. Kamu sudah beruntun ${userQuestData.streak} hari!`);
+                showCuteAlert("🎁", "Klaim Berhasil!", `Mantap sekali! Kamu sudah rajin belajar selama ${userQuestData.streak} hari berturut-turut!`);
             }
         }
 
@@ -4858,6 +5090,14 @@
         }
 
         function startSuitFriendGame(friendName) {
+            const coinInput = document.getElementById('suit-coin-friend').value;
+            currentSuitCoinSetting = coinInput ? parseInt(coinInput) : 0;
+            
+            if (currentSuitCoinSetting > 0 && userProfile.coins < currentSuitCoinSetting) {
+                alert(`Koin kamu tidak cukup! Kamu cuma punya ${userProfile.coins} 🪙.`);
+                return;
+            }
+
             closeInviteFriendSuitModal();
             alert(`Sistem sedang mengirim notifikasi dan menunggu ${friendName} masuk...`);
             prepareSuitArena();
@@ -5094,6 +5334,8 @@
             playDiceAnimation(diceRoll);
         }
 
+        let currentDiceRotation = 0; // State akumulasi putaran
+
         function playDiceAnimation(diceRoll) {
             utIsMoving = true;
             playSound('click');
@@ -5106,11 +5348,11 @@
 
             // Menyesuaikan inverse sudut kamera agar muka dadu menghadap lurus ke depan pemain
             const calibratedRotations = { 1: "rotateX(0deg) rotateY(0deg)", 2: "rotateX(0deg) rotateY(180deg)", 3: "rotateX(0deg) rotateY(90deg)", 4: "rotateX(0deg) rotateY(-90deg)", 5: "rotateX(90deg) rotateY(0deg)", 6: "rotateX(-90deg) rotateY(0deg)" };
-            let randomSpins = 1440 + (Math.floor(Math.random() * 3) * 360); // Putaran presisi kelipatan 360
+            currentDiceRotation += 1440 + (Math.floor(Math.random() * 3) * 360); // Akumulasi putaran agar selalu bergerak maju
             let targetRotation = calibratedRotations[diceRoll];
 
             dice.style.transition = "transform 1.2s cubic-bezier(0.15, 0.85, 0.15, 1)";
-            dice.style.transform = `rotateX(${randomSpins}deg) rotateY(${randomSpins}deg) ` + targetRotation;
+            dice.style.transform = `rotateX(${currentDiceRotation}deg) rotateY(${currentDiceRotation}deg) ` + targetRotation;
 
             setTimeout(() => {
                 const p = utPlayers[utTurn];
