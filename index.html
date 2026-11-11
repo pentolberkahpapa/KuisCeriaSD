@@ -495,6 +495,42 @@
         </div>
     </div>
 
+      <!-- MODAL INFO PIALA / MISI -->
+    <div id="badge-info-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 border-4 border-amber-200 animate-pop-modern relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 text-6xl opacity-10">🏆</div>
+            <div class="flex justify-between items-center border-b border-amber-100 pb-2 relative z-10">
+                <h3 class="text-xl font-playful text-amber-700">Info Piala</h3>
+                <button onclick="document.getElementById('badge-info-modal').classList.add('hidden')" class="text-slate-400 hover:text-rose-500 transition pulse-btn w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="py-2 space-y-2 relative z-10">
+                <div id="badge-modal-icon" class="text-6xl bouncing-toy drop-shadow-md">🏆</div>
+                <h4 id="badge-modal-title" class="font-playful text-xl text-slate-800">Nama Piala</h4>
+                <p id="badge-modal-desc" class="text-sm font-bold text-slate-500">Bentuk Piala: ...</p>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mt-3 text-left">
+                    <p class="text-[10px] font-extrabold text-amber-800 mb-1 uppercase tracking-wide">Misi untuk mendapatkan:</p>
+                    <p id="badge-modal-mission" class="text-xs font-bold text-slate-700 leading-tight">Syarat...</p>
+                </div>
+                
+                <!-- Progress Misi -->
+                <div class="mt-4 text-left">
+                    <div class="flex justify-between text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1">
+                        <span>Progress Misi</span>
+                        <span id="badge-modal-progress-text">0/10</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+                        <div id="badge-modal-progress-bar" class="bg-amber-500 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="document.getElementById('badge-info-modal').classList.add('hidden')" class="pulse-btn w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-playful py-3 rounded-xl shadow border-b-4 border-slate-300 text-sm mt-2 relative z-10">
+                Tutup
+            </button>
+        </div>
+    </div>
+
     <!-- Main Container -->
     <div id="app-container" class="w-full max-w-xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border-4 border-white my-auto">
         
@@ -3560,12 +3596,12 @@
 
         // --- DEFINISI LENCANA PENGHARGAAN (BADGES) ---
         const BADGE_DEFS = [
-            { id: 'bintang_teladan', icon: '🌟', title: 'Bintang Teladan', desc: 'Selesai Misi 7 Hari' },
-            { id: 'si_kilat', icon: '⚡', title: 'Si Kilat', desc: 'Combo Benar x5' },
-            { id: 'jenius_mtk', icon: '📐', title: 'Jenius MTK', desc: 'Skor 100 Matematika' },
-            { id: 'penjelajah', icon: '🌍', title: 'Penjelajah', desc: 'Skor 100 IPAS' },
-            { id: 'pakar_bahasa', icon: '📖', title: 'Pakar Bahasa', desc: 'Skor 100 B. Indo' },
-            { id: 'ahli_ibadah', icon: '🕌', title: 'Ahli Ibadah', desc: 'Skor 100 PAI' }
+            { id: 'bintang_teladan', icon: '🌟', title: 'Anak Teladan', shape: 'Piala klasik dengan ukiran bintang bersinar di puncaknya.', reqDesc: 'Menyelesaikan misi harian selama 7 hari berturut-turut.', target: 7 },
+            { id: 'kutu_buku', icon: '🎓', title: 'Kutu Buku', shape: 'Piala berbentuk tumpukan buku dengan topi toga wisuda di atasnya.', reqDesc: 'Menyelesaikan membaca e-book semua mata pelajaran.', target: 5 },
+            { id: 'anak_jenius', icon: '🧠', title: 'Anak Jenius', shape: 'Piala dengan lambang otak bercahaya atau simbol bohlam emas.', reqDesc: 'Menyelesaikan semua kuis 5 mata pelajaran (maksimal salah 1 di tiap mapel).', target: 5 },
+            { id: 'quiz_wizard', icon: '🧙‍♂️', title: 'The Quiz Wizard', shape: 'Piala dengan lambang buku terbuka dengan simbol sihir/bintang.', reqDesc: 'Menangkan 10x cerdas cermat online.', target: 10 },
+            { id: 'psychic_hand', icon: '✌️', title: 'Psychic Hand', shape: 'Piala artistik dengan patokan tangan berbentuk simbol jari suit (batu/gunting/kertas) berwarna metalik emas.', reqDesc: 'Menangkan 10x game suit.', target: 10 },
+            { id: 'master_destiny', icon: '🎲', title: 'Master of Destiny', shape: 'Piala dengan hiasan dadu besar di puncaknya yang dikelilingi ornamen tangga melingkar.', reqDesc: 'Menangkan 10x game ular tangga.', target: 10 }
         ];
 
         // Variabel global untuk mengingat profil siapa yang sedang dilihat
@@ -3714,29 +3750,105 @@
             grid.innerHTML = '';
             
             BADGE_DEFS.forEach(badge => {
-                // Contoh: Jika punya gelar Bintang Teladan (unlocked)
-                // Untuk sementara, kita pakai deteksi sederhana:
                 let isUnlocked = false;
+                let progress = { current: 0, target: badge.target };
                 
-                // Logika Deteksi Lencana Otomatis (Hanya untuk profil sendiri)
+                // Hitung progres (Untuk profil sendiri menggunakan data lokal)
                 if (currentViewedProfile === userProfile?.name) {
-                    if (badge.id === 'bintang_teladan' && userQuestData?.streak >= 7) isUnlocked = true;
-                    // Logika lainnya bisa dikembangkan dengan membaca skor per-kategori di database
+                    progress = getBadgeProgress(badge.id);
+                    if (progress.current >= progress.target) isUnlocked = true;
+                } else {
+                    // Jika profil teman/orang lain (Tunggu sinkronisasi Database, fallback manual sementara)
+                    if (unlockedIds && unlockedIds.includes(badge.id)) {
+                        isUnlocked = true;
+                        progress = { current: badge.target, target: badge.target };
+                    }
                 }
                 
                 const badgeHtml = isUnlocked ? `
-                    <div class="flex flex-col items-center p-1 bg-white rounded-lg shadow-sm border border-amber-200 transform hover:scale-110 transition cursor-help" title="${badge.title}: ${badge.desc}">
+                    <div onclick="showBadgeInfo('${badge.id}', true)" class="flex flex-col items-center p-1 bg-white rounded-lg shadow-sm border border-amber-200 transform hover:scale-110 transition cursor-pointer" title="Klik untuk lihat info">
                         <span class="text-2xl">${badge.icon}</span>
                         <span class="text-[8px] font-bold text-amber-700 text-center leading-tight mt-0.5 truncate w-full">${badge.title}</span>
                     </div>
                 ` : `
-                    <div class="flex flex-col items-center p-1 bg-slate-50 opacity-40 grayscale rounded-lg border border-slate-200 cursor-not-allowed" title="Belum Terbuka">
+                    <div onclick="showBadgeInfo('${badge.id}', false)" class="flex flex-col items-center p-1 bg-slate-50 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 rounded-lg border border-slate-200 cursor-pointer transition transform hover:scale-110" title="Klik untuk lihat misi">
                         <span class="text-2xl">🔒</span>
                         <span class="text-[8px] font-bold text-slate-500 text-center leading-tight mt-0.5 truncate w-full">${badge.title}</span>
                     </div>
                 `;
                 grid.innerHTML += badgeHtml;
             });
+        }
+
+        // Tampilkan Modal Misi
+        function showBadgeInfo(badgeId, isUnlocked) {
+            playSound('click');
+            const badge = BADGE_DEFS.find(b => b.id === badgeId);
+            if (!badge) return;
+            
+            document.getElementById('badge-modal-icon').innerText = isUnlocked ? badge.icon : '🔒';
+            document.getElementById('badge-modal-title').innerText = badge.title;
+            document.getElementById('badge-modal-desc').innerText = `Badge: ${badge.shape}`;
+            document.getElementById('badge-modal-mission').innerText = badge.reqDesc;
+            
+            let progress = { current: 0, target: badge.target };
+            if (currentViewedProfile === userProfile?.name) {
+                progress = getBadgeProgress(badge.id);
+            } else if (isUnlocked) {
+                progress = { current: badge.target, target: badge.target };
+            }
+            
+            document.getElementById('badge-modal-progress-text').innerText = `${progress.current}/${progress.target}`;
+            const percent = (progress.current / progress.target) * 100;
+            document.getElementById('badge-modal-progress-bar').style.width = `${percent}%`;
+            
+            if (percent >= 100) {
+                document.getElementById('badge-modal-progress-bar').classList.replace('bg-amber-500', 'bg-emerald-500');
+            } else {
+                document.getElementById('badge-modal-progress-bar').classList.replace('bg-emerald-500', 'bg-amber-500');
+            }
+            
+            document.getElementById('badge-info-modal').classList.remove('hidden');
+        }
+
+        // Ambil Tracker Progress Lokal (Mencatat Kemenangan Anak)
+        function getBadgeProgress(badgeId) {
+            let current = 0;
+            const badge = BADGE_DEFS.find(b => b.id === badgeId);
+            const target = badge ? badge.target : 1;
+            
+            // Simpan variabel hitungan di lokal storage jika anak bermain
+            let stats = JSON.parse(localStorage.getItem('quiz_user_stats')) || {
+                ebooksRead: 0,
+                perfectQuizzes: 0,
+                battleWins: 0,
+                suitWins: 0,
+                utWins: 0
+            };
+
+            switch(badgeId) {
+                case 'bintang_teladan':
+                    current = userQuestData ? userQuestData.streak : 0;
+                    break;
+                case 'kutu_buku':
+                    current = stats.ebooksRead;
+                    break;
+                case 'anak_jenius':
+                    current = stats.perfectQuizzes;
+                    break;
+                case 'quiz_wizard':
+                    current = stats.battleWins;
+                    break;
+                case 'psychic_hand':
+                    current = stats.suitWins;
+                    break;
+                case 'master_destiny':
+                    current = stats.utWins;
+                    break;
+            }
+            
+            if (current > target) current = target;
+            return { current, target };
         }
 
         function restartGame() {
