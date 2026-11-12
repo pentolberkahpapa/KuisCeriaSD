@@ -4241,11 +4241,22 @@
             loadingEl.classList.remove('hidden');
 
             try {
-                // 1. Buat nama file unik berdasarkan nama pemain dan waktu (mencegah bentrok)
-                const fileExt = file.name.split('.').pop();
-                const fileName = `foto_${userProfile.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.${fileExt}`;
+            // 1. Buat nama file unik berdasarkan nama pemain dan waktu (mencegah bentrok)
+            const fileExt = file.name.split('.').pop();
+            const fileName = `foto_${userProfile.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.${fileExt}`;
 
-                // 2. Upload ke Supabase Storage (Bucket 'avatars')
+            // HAPUS FOTO LAMA: Cek apakah user sudah punya foto di Supabase, jika ada maka hapus file lamanya
+            if (userProfile.avatar && userProfile.avatar.includes('/avatars/')) {
+                try {
+                    // Ekstrak nama file lama dari URL (memisahkan dari link public)
+                    const oldFileName = userProfile.avatar.split('/avatars/')[1].split('?')[0];
+                    await supabaseClient.storage.from('avatars').remove([oldFileName]);
+                } catch (delErr) {
+                    console.warn("Gagal menghapus foto lama di Supabase:", delErr);
+                }
+            }
+
+            // 2. Upload ke Supabase Storage (Bucket 'avatars')
                 const { data, error: uploadErr } = await supabaseClient
                     .storage
                     .from('avatars')
