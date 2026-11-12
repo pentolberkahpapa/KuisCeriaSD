@@ -1769,7 +1769,7 @@
             try {
                 const { data: existingUser } = await supabaseClient
                     .from('k6_leaderboard_sd')
-                    .select('coins, user_id')
+                    .select('coins, user_id, avatar')
                     .eq('name', nameInput)
                     .eq('class_name', classInput)
                     .eq('category', 'total')
@@ -1777,6 +1777,7 @@
                 
                 if (existingUser) {
                     currentCoins = existingUser.coins || 0; // Tarik koin lama dari cloud
+                    if (existingUser.avatar) avatarInput = existingUser.avatar; // Tarik foto lama dari cloud
                     if (!userProfile) userProfile = { userId: existingUser.user_id };
                 }
             } catch (e) { console.log("Gagal cek koin cloud"); }
@@ -4264,6 +4265,13 @@
                 // 4. Update Profile lokal dan Database Papan Peringkat dengan URL foto baru
                 userProfile.avatar = publicUrl;
                 localStorage.setItem('quiz_user_profile_sd', JSON.stringify(userProfile));
+                
+                // Update juga di daftar akun tersimpan (Account Switcher) agar saat login besoknya foto tidak hilang
+                let accountIndex = savedAccounts.findIndex(acc => acc.userId === userProfile.userId);
+                if (accountIndex !== -1) {
+                    savedAccounts[accountIndex].avatar = publicUrl;
+                    localStorage.setItem('quiz_saved_accounts_sd', JSON.stringify(savedAccounts));
+                }
 
                 // Update semua record di leaderboard untuk anak ini dengan foto barunya
                 const { error: dbErr } = await supabaseClient
