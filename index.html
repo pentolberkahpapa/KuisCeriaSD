@@ -3200,9 +3200,9 @@
                 // Cek apakah bolong sehari (reset streak jika iya)
                 if (userQuestData) {
                     const lastDate = new Date(userQuestData.date);
-                    const today = new Date();
+                    const today = new Date(todayDate); // Diubah: Hanya ambil tanggal (jam 00:00) agar presisi
                     const diffTime = Math.abs(today - lastDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); // Diubah: Pakai round untuk membulatkan hasil secara akurat
                     
                     if (diffDays > 1) currentStreak = 0; // Bolong, reset ke 0
                 }
